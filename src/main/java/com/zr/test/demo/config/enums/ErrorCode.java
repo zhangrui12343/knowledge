@@ -18,7 +18,9 @@ public enum  ErrorCode {
     SYS_NO_AUTHORITY(203,"没有权限"),
     SYS_AUTHORITY_INVALID_ERR(204,"鉴权失败"),
     SYS_ACCOUNT_HAS_EXPIRED_ERR(205,"账号过期"),
+    SYS_ACCOUNT_HAS_BANED_ERR(205,"账号被禁用"),
     SYS_USER_OR_PWD_ERROR_ERR(206,"用户名密码错误"),
+    SYS_USERNAME_EXIST_ERROR_ERR(206,"用户名已存在"),
     SYS_PARAM_NUM_ERROR(207,"参数数量错误"),
     SYS_PARAM_ERR(208,"参数校验失败"),
     SYS_PARAM_INNER_ERR(208,"参数内部校验失败"),
@@ -56,7 +58,8 @@ public enum  ErrorCode {
 
 
     SEARCH_TERREC_FAIL(400,"查询错误"),
-    DEVICE_NOT_ONLINE(401,"设备不在线"),
+    FILE_UPLOAD_FAIL(401,"上传文件失败"),
+    FILE_DELETE_FAIL(402,"文件删除失败"),
     GROUP_EXIST(404,"车组已经存"),
     FATHER_GROUP_EXIST(405,"父车组已存在"),
     GROUP_NOT_EXIST(406,"车组不存在"),
@@ -83,20 +86,6 @@ public enum  ErrorCode {
     MORE_THARN_TWO_MONTHS(426,"时间跨度大于2个月"),
     NO_USAABLE_VEHICLE(427,"角色绑定车辆为空"),
     PARSE_SQL_ERROR(428,"sql 查询解析失败"),
-
-    //ARMS
-    PARAM_ERROR(26,"参数错误"),
-    DB_ERROR(25,"数据库错误"),
-    FILE_NOEXIST(14,"文件不存在"),
-    UNKONWN(1,"未知错误"),
-    NOPOWER(5,"没有权限"),
-    NO_THE_TASK(18,"没有该任务"),
-    UNSUPPORT(29,"服务器不支持"),
-    NORESULT(4,"没有查询到相符的结果"),
-    ARMS_SUCCESS(0,"成功"),
-    USER_PASSWORD_ERROR(2,"用户名密码错误"),
-    //parking area exception message
-    REDIS_NO_DATA(429,"查询redis无数据")
 
 
     ;
