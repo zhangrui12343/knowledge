@@ -1,0 +1,2 @@
+INSERT INTO `user`(`id`, `name`, `username`, `password`, `phone`, `register`, `lastlogin`, `status`, `role`) VALUES (1, 'zhangrui', 'zhangrui', 'e10adc3949ba59abbe56e057f20f883e', '18408243933', '2022-05-13 21:22:20', '2022-05-14 12:40:15', 1, 0);
+INSERT INTO `user`(`id`, `name`, `username`, `password`, `phone`, `register`, `lastlogin`, `status`, `role`) VALUES (2, 'lisi', 'lisi', 'e10adc3949ba59abbe56e057f20f883e', '18408243931', '2022-05-13 23:18:46', '2022-05-14 00:38:11', 1, 3);
