@@ -13,6 +13,11 @@ public class Constant {
     public static final int COURSE_XUE_KE_LEVEL =2;
     public static final int COURSE_CE_CI_LEVEL =3;
 
+    public static final int AFTER_COURSE =0;
+    public static final int TOPIC =1;
+    public static final int TEACHER_TEACH =2;
+
+
     public static final String TOKEN ="token";
 
 }

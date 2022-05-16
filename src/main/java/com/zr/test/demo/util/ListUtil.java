@@ -24,6 +24,16 @@ public class ListUtil {
           return list == null || list.size() <= 0;
      }
 
+     public static String listToString(List<String> tag) {
+          if(ListUtil.isEmpty(tag)){
+               return null;
+          }
+          StringBuilder sb=new StringBuilder();
+          tag.forEach(t->{
+               sb.append(t).append(",");
+          });
+          return sb.substring(0,sb.length()-1);
+     }
      /**
       * 对list进行分组
       *

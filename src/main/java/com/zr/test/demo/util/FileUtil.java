@@ -8,6 +8,8 @@ import org.springframework.util.StringUtils;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
@@ -74,8 +76,26 @@ public class FileUtil {
           }
 
      }
-
-
+     public static String getBase64FilePath(String filePath) {
+          try {
+               filePath = URLEncoder.encode(
+                       Base64Utils.encodeToString(
+                               filePath.getBytes(StandardCharsets.UTF_8)), "utf-8");
+          } catch (Exception e) {
+               log.error("导出文件地址base64出错:" + e.getMessage(), e);
+               throw new CustomException(ErrorCode.SYS_KEY_PARAM_ERR);
+          }
+          return filePath;
+     }
+     public static String getFilePath(String base64FilePath) {
+          try {
+               base64FilePath = URLDecoder.decode(new String(Base64Utils.decodeFromString(base64FilePath), StandardCharsets.UTF_8), "utf-8");
+          } catch (Exception e) {
+               log.error("导出文件地址base64出错:" + e.getMessage(), e);
+               throw new CustomException(ErrorCode.SYS_KEY_PARAM_ERR);
+          }
+          return base64FilePath;
+     }
      /**
       * 根据base64的编码 解码成字符串
       * @param base64Str base64Str

@@ -17,6 +17,7 @@ import com.zr.test.demo.model.vo.CourseVO;
 import com.zr.test.demo.repository.CourseCategoryMapperImpl;
 import com.zr.test.demo.repository.CourseMapperImpl;
 import com.zr.test.demo.service.ICourseService;
+import com.zr.test.demo.util.FileUtil;
 import com.zr.test.demo.util.ListUtil;
 import com.zr.test.demo.config.cache.LocalUtil;
 import com.zr.test.demo.util.StringUtil;
@@ -82,23 +83,25 @@ public class CourseServiceImpl implements ICourseService {
             p.mkdir();
         }
         try {
-            if (!img.isEmpty()) {
+            if (img!=null&&!img.isEmpty()) {
                 //获取文件的原始文件名
                 //保存到服务器transferTo()方法
                 imgPath = path + System.currentTimeMillis() + "-" + img.getOriginalFilename();
                 img.transferTo(new File(imgPath));
             }
             //如果接收过来的数组不为空便遍历出每个文件，然后上传
-            if (pdf.length > 0) {
+            if (pdf!=null&&pdf.length > 0) {
                 for (MultipartFile photo : pdf) {
-                    String originalFilename = photo.getOriginalFilename();
-                    String temp = path + System.currentTimeMillis() + "-" + originalFilename;
-                    photo.transferTo(new File(temp));
-                    pdfPath.append(temp).append(split);
+                    if(photo!=null&&!photo.isEmpty()){
+                        String originalFilename = photo.getOriginalFilename();
+                        String temp = path + System.currentTimeMillis() + "-" + originalFilename;
+                        photo.transferTo(new File(temp));
+                        pdfPath.append(temp).append(split);
+                    }
                 }
                 pdfPath.substring(0, pdfPath.length() - split.length());
             }
-            if (!video.isEmpty()) {
+            if (video!=null&&!video.isEmpty()) {
                 //获取文件的原始文件名
                 //保存到服务器transferTo()方法
                 videoPath = path + System.currentTimeMillis() + "-" + video.getOriginalFilename();
@@ -161,17 +164,17 @@ public class CourseServiceImpl implements ICourseService {
             v.setName(e.getName());
             v.setId(e.getId());
             if (!StringUtil.isEmpty(e.getImg())) {
-                v.setImg(getBase64FilePath(e.getImg()));
+                v.setImg(FileUtil.getBase64FilePath(e.getImg()));
             }
             if (!StringUtil.isEmpty(e.getPdf())) {
                 String[] arr = e.getPdf().split(split);
                 for (String temp : arr) {
-                    getBase64FilePath(temp);
+                    FileUtil.getBase64FilePath(temp);
                 }
                 v.setPdf(arr);
             }
             if (!StringUtil.isEmpty(e.getVideo())) {
-                v.setVideo(getBase64FilePath(e.getVideo()));
+                v.setVideo(FileUtil.getBase64FilePath(e.getVideo()));
             }
             v.setSecondCategoryName(categoryAll.get(e.getSecondCategoryId()));
             v.setTagName(tagAll.get(e.getTagId()));
@@ -196,23 +199,29 @@ public class CourseServiceImpl implements ICourseService {
                 String imgPath = path + System.currentTimeMillis() + "-" + img.getOriginalFilename();
                 img.transferTo(new File(imgPath));
                 entity.setImg(imgPath);
-                String oldPath = getFilePath(dto.getImg());
-                File oldImg = new File(oldPath);
-                if (oldImg.exists()) {
-                    if(!oldImg.delete()){
-                        throw new CustomException(ErrorCode.FILE_DELETE_FAIL,"图片文件删除失败");
+                //如果重新上传了文件，需要将旧文件的文件路径放到dto里
+                if(!StringUtil.isEmpty(dto.getImg())){
+                    String oldPath = FileUtil.getFilePath(dto.getImg());
+                    File oldImg = new File(oldPath);
+                    if (oldImg.exists()) {
+                        if(!oldImg.delete()){
+                            log.error("图片文件删除失败,path={}",oldPath);
+                        }
                     }
                 }
+
             }
             if (!video.isEmpty()) {
                 String imgPath = path + System.currentTimeMillis() + "-" + video.getOriginalFilename();
                 video.transferTo(new File(imgPath));
                 entity.setVideo(imgPath);
-                String oldPath = getFilePath(dto.getVideo());
-                File oldImg = new File(oldPath);
-                if (oldImg.exists()) {
-                    if(!oldImg.delete()){
-                        throw new CustomException(ErrorCode.FILE_DELETE_FAIL,"视频文件删除失败");
+                if(!StringUtil.isEmpty(dto.getVideo())){
+                    String oldPath = FileUtil.getFilePath(dto.getVideo());
+                    File oldImg = new File(oldPath);
+                    if (oldImg.exists()) {
+                        if(!oldImg.delete()){
+                            log.error("视频文件删除失败,path={}",oldPath);
+                        }
                     }
                 }
             }
@@ -222,18 +231,22 @@ public class CourseServiceImpl implements ICourseService {
                     String imgPath = path + System.currentTimeMillis() + "-" + pdf[i].getOriginalFilename();
                     pdf[i].transferTo(new File(imgPath));
                     sb.append(imgPath).append(split);
-                    String oldPath = getFilePath(dto.getPdf()[i]);
-                    File oldImg = new File(oldPath);
-                    if (oldImg.exists()) {
-                        if(!oldImg.delete()){
-                            throw new CustomException(ErrorCode.FILE_DELETE_FAIL,"pdf文件删除失败");
+                    if(!StringUtil.isEmpty(dto.getPdf()[i])){
+                        String oldPath = FileUtil.getFilePath(dto.getPdf()[i]);
+                        File oldImg = new File(oldPath);
+                        if (oldImg.exists()) {
+                            if(!oldImg.delete()){
+                                log.error("pdf文件删除失败,path={}",oldPath);
+                            }
                         }
                     }
+
                 }
                 sb.substring(0, sb.length() - split.length());
                 entity.setPdf(sb.toString());
             }
         } catch (IOException e) {
+            log.error("修改课程出错,e:{}",e.getMessage());
             throw new CustomException(ErrorCode.FILE_UPLOAD_FAIL);
         }
         entity.setTime(new Date());
@@ -253,7 +266,7 @@ public class CourseServiceImpl implements ICourseService {
             File video = new File(e.getVideo());
             if (video.exists()) {
                 if(!video.delete()){
-                    throw new CustomException(ErrorCode.FILE_DELETE_FAIL,"视频文件删除失败");
+                    log.error("视频文件删除失败,path={}",e.getVideo());
                 }
             }
         }
@@ -261,7 +274,7 @@ public class CourseServiceImpl implements ICourseService {
             File img = new File(e.getImg());
             if (img.exists()) {
                 if(!img.delete()){
-                    throw new CustomException(ErrorCode.FILE_DELETE_FAIL,"图片文件删除失败");
+                    log.error("图片文件删除失败,path={}",e.getImg());
                 }
             }
         }
@@ -271,7 +284,7 @@ public class CourseServiceImpl implements ICourseService {
                 File pd = new File(p);
                 if (pd.exists()) {
                     if(!pd.delete()){
-                        throw new CustomException(ErrorCode.FILE_DELETE_FAIL,"pdf文件删除失败");
+                        log.error("pdf文件删除失败,path={}",p);
                     }
                 }
             }
@@ -279,25 +292,4 @@ public class CourseServiceImpl implements ICourseService {
         return Result.success(service.deleteById(id));
     }
 
-    private String getBase64FilePath(String filePath) {
-        try {
-            filePath = URLEncoder.encode(
-                    Base64Utils.encodeToString(
-                            filePath.getBytes(StandardCharsets.UTF_8)), "utf-8");
-        } catch (Exception e) {
-            log.error("导出文件地址base64出错:" + e.getMessage(), e);
-            throw new CustomException(ErrorCode.SYS_KEY_PARAM_ERR);
-        }
-        return filePath;
-    }
-
-    private String getFilePath(String base64FilePath) {
-        try {
-            base64FilePath = URLDecoder.decode(new String(Base64Utils.decodeFromString(base64FilePath), StandardCharsets.UTF_8), "utf-8");
-        } catch (Exception e) {
-            log.error("导出文件地址base64出错:" + e.getMessage(), e);
-            throw new CustomException(ErrorCode.SYS_KEY_PARAM_ERR);
-        }
-        return base64FilePath;
-    }
 }
