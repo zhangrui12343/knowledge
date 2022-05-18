@@ -7,145 +7,66 @@ import com.zr.test.demo.common.Result;
 import com.zr.test.demo.component.exception.CustomException;
 import com.zr.test.demo.config.enums.ErrorCode;
 import com.zr.test.demo.model.dto.*;
+import com.zr.test.demo.model.entity.SysUserEntity;
 import com.zr.test.demo.model.entity.UserEntity;
 import com.zr.test.demo.model.pojo.AuthKey;
 import com.zr.test.demo.model.vo.GeneralUserVO;
+import com.zr.test.demo.model.vo.StudentVO;
 import com.zr.test.demo.model.vo.SystemUserVO;
+import com.zr.test.demo.repository.SysUserDaoImpl;
 import com.zr.test.demo.repository.UserDaoImpl;
-import com.zr.test.demo.service.IUserService;
+import com.zr.test.demo.service.ISysUserService;
 import com.zr.test.demo.util.*;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import java.net.URLEncoder;
-import java.security.SecureRandom;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Slf4j
-public class UserServiceImpl implements IUserService {
-    private final UserDaoImpl userDao;
+public class SysUserServiceImpl implements ISysUserService {
+    private final SysUserDaoImpl userDao;
+    private final UserDaoImpl gUserDao;
 
     @Autowired
-    public UserServiceImpl(UserDaoImpl userDao) {
+    public SysUserServiceImpl(SysUserDaoImpl userDao, UserDaoImpl gUserDao) {
         this.userDao = userDao;
+        this.gUserDao = gUserDao;
     }
 
 
     @Override
-    public Result<Object> register(UserDTO user) {
-        UserEntity userEntity = new UserEntity();
-        if (user.getStudent() == 1) {
-            //学生用户
-            if (StringUtil.isEmpty(user.getSchool())) {
-                throw new CustomException(ErrorCode.SYS_PARAM_ERR, "学校名称不能为空!");
-            }
-            if (StringUtil.isEmpty(user.getStudentNo())) {
-                throw new CustomException(ErrorCode.SYS_PARAM_ERR, "学籍号不能为空!");
-            }
-            //判断学籍号是否存在
-            userEntity.setStudent(1);
-            userEntity.setStudentNo(user.getStudentNo());
-            List<UserEntity> list = userDao.selectByEntity(userEntity);
-            if (!ListUtil.isEmpty(list)) {
-                return Result.fail(ErrorCode.SYS_USERNAME_EXIST_ERROR_ERR, "学籍号已存在");
-            }
-            userEntity.setSchool(user.getSchool());
-            userEntity.setIntranet(0);
-        } else if (user.getStudent() == 0) {
-            //普通用户
-            if (StringUtil.isEmpty(user.getPhone())) {
-                throw new CustomException(ErrorCode.SYS_PARAM_ERR, "手机号不能为空!");
-            }
-            if (StringUtil.isEmpty(user.getPassword())) {
-                throw new CustomException(ErrorCode.SYS_PARAM_ERR, "密码不能为空!");
-            }
-            //判断手机号是否存在
-            userEntity.setStudent(0);
-            userEntity.setPhone(user.getPhone());
-            List<UserEntity> list = userDao.selectByEntity(userEntity);
-            if (!ListUtil.isEmpty(list)) {
-                return Result.fail(ErrorCode.SYS_USERNAME_EXIST_ERROR_ERR, "手机号已存在");
-            }
-            userEntity.setPhone(user.getPhone());
-            userEntity.setPassword(Md5Util.getMD5(user.getPassword()));
-        } else {
-            throw new CustomException(ErrorCode.SYS_PARAM_ERR);
+    public Result<Object> login(SysLoginDTO loginDTO, HttpServletRequest request) {
+        SysUserEntity userEntity = new SysUserEntity();
+        SysUserEntity user;
+        //校验参数
+        userEntity.setUsername(loginDTO.getUsername());
+        List<SysUserEntity> list = userDao.selectByEntity(userEntity);
+        if (ListUtil.isEmpty(list)) {
+            return Result.fail(ErrorCode.SYS_USERNAME_EXIST_ERROR_ERR, "用户名不存在");
         }
-        userEntity.setName(user.getName());
-        userEntity.setStatus(1);
-        userEntity.setRegister(TimeUtil.getTime());
-        userDao.insertOne(userEntity);
-        return Result.success("注册成功");
-    }
-
-    @Override
-    public Result<Object> login(LoginDTO loginDTO, HttpServletRequest request) {
-        UserEntity userEntity = new UserEntity();
-        UserEntity user;
-        if (loginDTO.getStudent() == 1) {
-            //校验参数
-            if (StringUtil.isEmpty(loginDTO.getName())) {
-                throw new CustomException(ErrorCode.SYS_PARAM_ERR, "姓名不能为空");
-            }
-            if (StringUtil.isEmpty(loginDTO.getStudentNo())) {
-                throw new CustomException(ErrorCode.SYS_PARAM_ERR, "学籍号不能为空");
-            }
-            //判断学籍号是否存在
-            userEntity.setStudentNo(loginDTO.getStudentNo());
-            List<UserEntity> list = userDao.selectByEntity(userEntity);
-            if (ListUtil.isEmpty(list)) {
-                //学籍号不存在
-                return Result.fail(ErrorCode.SYS_USERNAME_EXIST_ERROR_ERR, "学籍号不存在");
-            }
-            if (list.size() > 1) {
-                throw new CustomException(ErrorCode.SEARCH_TERREC_FAIL, "查询错误，请联系管理员");
-            }
-            user = list.get(0);
-            if (!user.getName().equals(loginDTO.getName())) {
-                return Result.fail(ErrorCode.SYS_USER_OR_PWD_ERROR_ERR, "姓名错误");
-            }
-        } else if (loginDTO.getStudent() == 0) {
-            //校验参数
-            if (StringUtil.isEmpty(loginDTO.getPhone())) {
-                throw new CustomException(ErrorCode.SYS_PARAM_ERR, "手机号不能为空");
-            }
-            if (StringUtil.isEmpty(loginDTO.getPassword())) {
-                throw new CustomException(ErrorCode.SYS_PARAM_ERR, "密码不能为空");
-            }
-            //判断手机号是否存在
-            userEntity.setPhone(loginDTO.getPhone());
-            List<UserEntity> list = userDao.selectByEntity(userEntity);
-            if (ListUtil.isEmpty(list)) {
-                //手机号不存在
-                return Result.fail(ErrorCode.SYS_USERNAME_EXIST_ERROR_ERR, "手机号不存在");
-            }
-            if (list.size() > 1) {
-                throw new CustomException(ErrorCode.SEARCH_TERREC_FAIL, "查询错误，请联系管理员");
-            }
-            user = list.get(0);
-            if (!user.getPassword().equals(Md5Util.getMD5(loginDTO.getPassword()))) {
-                return Result.fail(ErrorCode.SYS_USER_OR_PWD_ERROR_ERR);
-            }
-        } else {
-            throw new CustomException(ErrorCode.SYS_PARAM_ERR);
+        if (list.size() > 1) {
+            throw new CustomException(ErrorCode.SEARCH_TERREC_FAIL, "查询错误，请联系管理员");
+        }
+        user = list.get(0);
+        if (!user.getPassword().equals(Md5Util.getMD5(loginDTO.getPassword()))) {
+            return Result.fail(ErrorCode.SYS_USER_OR_PWD_ERROR_ERR, "密码错误");
         }
         if (user.getStatus() == 0) {
             return Result.fail(ErrorCode.SYS_ACCOUNT_HAS_BANED_ERR);
         }
         //登录成功后的操作
-        user.setLastLogin(TimeUtil.getTime());
-        userDao.updateById(user);
         String token;
         try {
             //是否是系统用户|userid|time|是否是学生|是否是内网|权限id
             token = DESUtils.encrypt(DESUtils.KEY_DEFALUT, MessageFormat.format("{0}|{1}|{2}|{3}|{4}|{5}",
-                    0, user.getId(), TimeUtil.getTime(), user.getStudent(), Optional.of(user.getIntranet()).orElse(0),-1));
+                    1, user.getId(), TimeUtil.getTime(), 0, 0, user.getRole()));
         } catch (Exception e) {
             throw new CustomException(ErrorCode.SYS_ENCRIPT_ERR, e.getMessage());
         }
@@ -160,75 +81,76 @@ public class UserServiceImpl implements IUserService {
         }
         AuthKey authKey = new AuthKey();
         authKey.setIntranet(0);
-        authKey.setSystem(0);
-        authKey.setStudent(user.getStudent());
-        authKey.setRoleId(-1);
+        authKey.setSystem(1);
+        authKey.setStudent(0);
+        authKey.setRoleId(user.getRole());
         authKey.setUserId(user.getId());
         authKey.setTime(TimeUtil.getTime());
         request.getSession().setAttribute(token, authKey);
         return Result.success(token);
-
     }
-
-
     @Override
-    public Result<Object> logout(HttpServletRequest request) {
-        request.getSession().invalidate();
-        return Result.success(null);
-    }
-
-    @Override
-    public Result<Object> getCode(HttpServletRequest request, String phone) {
-        //通过手机号发送到阿里云短袖服务 获得验证码
-        return null;
-    }
-
-    @Override
-    public Result<Object> findPassword(HttpServletRequest request, FindPasswordDTO dto) {
-        if(!"123456".equals(dto.getCode())){
-            return Result.fail(ErrorCode.SYS_Code_ERRO);
+    public Result<PageInfo<StudentVO>> queryStudent(StudentDTO user, HttpServletRequest request) {
+        String token = request.getHeader(Constant.TOKEN);
+        AuthKey authKey = (AuthKey) request.getSession().getAttribute(token);
+        if (authKey.getRoleId() == Constant.ROLE_SUPPER_ADMIN_USER&&authKey.getRoleId() == Constant.ROLE_GENERAL_ADMIN) {
+            throw new CustomException(ErrorCode.EVIDENCE_UNLOCK_AUTH);
         }
-        UserEntity userEntity=new UserEntity();
-        //判断手机号是否存在
-        userEntity.setPhone(dto.getPhone());
-        List<UserEntity> list = userDao.selectByEntity(userEntity);
-        if (ListUtil.isEmpty(list)) {
-            //手机号不存在
-            return Result.fail(ErrorCode.SYS_USERNAME_EXIST_ERROR_ERR, "手机号不存在");
+        UserEntity userEntity = new UserEntity();
+        if (!StringUtil.isEmpty(user.getName())) {
+            userEntity.setName(user.getName());
         }
-        if (list.size() > 1) {
-            throw new CustomException(ErrorCode.SEARCH_TERREC_FAIL, "查询错误，请联系管理员");
+        if (!StringUtil.isEmpty(user.getStudentNo())) {
+            userEntity.setStudentNo(user.getStudentNo());
         }
-        UserEntity user = list.get(0);
-        user.setPassword(Md5Util.getMD5(dto.getPassword()));
-        return Result.success(userDao.updateById(user));
+        if (user.getStatus()!=null) {
+            userEntity.setStatus(user.getStatus());
+        }
+        IPage<UserEntity> page = gUserDao.selectByPage(userEntity, user.getPage(), user.getPageSize(), true, "register");
+        List<UserEntity> list = page.getRecords();
+        long total = page.getTotal();
+        List<StudentVO> res = new ArrayList<>(list.size());
+        list.forEach(l -> {
+            StudentVO vo = new StudentVO();
+            vo.setId(l.getId());
+            vo.setLastLogin(l.getLastLogin());
+            vo.setName(l.getName());
+            vo.setIntranet(l.getIntranet());
+            vo.setSchool(l.getSchool());
+            vo.setRegister(l.getRegister());
+            vo.setStatus(l.getStatus());
+            vo.setStudentNo(l.getStudentNo());
+            res.add(vo);
+        });
+        PageInfo<StudentVO> pageInfo = new PageInfo<>();
+        pageInfo.setTotal(ListUtil.isEmpty(res) ? 0 : total);
+        pageInfo.setList(res);
+        pageInfo.setPage(user.getPage());
+        pageInfo.setPageSize(user.getPageSize());
+        return Result.success(pageInfo);
     }
 
     @Override
     public Result<PageInfo<GeneralUserVO>> queryGeneral(GeneralUserDTO user, HttpServletRequest request) {
         String token = request.getHeader(Constant.TOKEN);
         AuthKey authKey = (AuthKey) request.getSession().getAttribute(token);
-        if (authKey.getRoleId() > Constant.ROLE_CUSTOMER_SERVICE) {
+        if (authKey.getRoleId() == Constant.ROLE_SUPPER_ADMIN_USER&&authKey.getRoleId() == Constant.ROLE_GENERAL_ADMIN) {
             throw new CustomException(ErrorCode.EVIDENCE_UNLOCK_AUTH);
         }
         UserEntity userEntity = new UserEntity();
         if (!StringUtil.isEmpty(user.getPhone())) {
             userEntity.setPhone(user.getPhone());
         }
-        userEntity.setStatus(user.getStatus());
-        IPage<UserEntity> page = userDao.selectByPage(userEntity, user.getPage(), user.getPageSize(), true, "register");
+        if (user.getStatus()!=null) {
+            userEntity.setStatus(user.getStatus());
+        }
+        IPage<UserEntity> page = gUserDao.selectByPage(userEntity, user.getPage(), user.getPageSize(), true, "register");
         List<UserEntity> list = page.getRecords();
         long total = page.getTotal();
-        list = ListUtil.page(list, user.getPage(), user.getPageSize());
         List<GeneralUserVO> res = new ArrayList<>(list.size());
         list.forEach(l -> {
             GeneralUserVO vo = new GeneralUserVO();
-            vo.setId(l.getId());
-            vo.setLastLogin(l.getLastLogin());
-            vo.setName(l.getName());
-            vo.setPhone(l.getPhone());
-            vo.setRegister(l.getRegister());
-            vo.setStatus(l.getId());
+            BeanUtils.copyProperties(l,vo);
             res.add(vo);
         });
         PageInfo<GeneralUserVO> pageInfo = new PageInfo<>();
@@ -243,15 +165,12 @@ public class UserServiceImpl implements IUserService {
     public Result<Object> updateGeneral(UpdateUserDTO user, HttpServletRequest request) {
         String token = request.getHeader(Constant.TOKEN);
         AuthKey authKey = (AuthKey) request.getSession().getAttribute(token);
-        if (authKey.getRoleId() > Constant.ROLE_CUSTOMER_SERVICE) {
+        if (authKey.getRoleId() == Constant.ROLE_SUPPER_ADMIN_USER&&authKey.getRoleId() == Constant.ROLE_GENERAL_ADMIN) {
             throw new CustomException(ErrorCode.EVIDENCE_UNLOCK_AUTH);
         }
-        //暂时修改状态
         UserEntity userEntity = new UserEntity();
-        userEntity.setId(user.getId());
-        userEntity.setStatus(user.getStatus());
-
-        return Result.success(userDao.updateById(userEntity));
+        BeanUtils.copyProperties(user,userEntity);
+        return Result.success(gUserDao.updateById(userEntity));
     }
 
     @Override
@@ -271,7 +190,7 @@ public class UserServiceImpl implements IUserService {
         if (authKey.getRoleId() != Constant.ROLE_SUPPER_ADMIN_USER) {
             throw new CustomException(ErrorCode.EVIDENCE_UNLOCK_AUTH);
         }
-        UserEntity userEntity = new UserEntity();
+        SysUserEntity userEntity = new SysUserEntity();
         userEntity.setName(user.getName());
         userEntity.setUsername(user.getUsername());
         userEntity.setPassword(Md5Util.getMD5(user.getPassword()));
@@ -344,6 +263,21 @@ public class UserServiceImpl implements IUserService {
             throw new CustomException(ErrorCode.EVIDENCE_UNLOCK_AUTH);
         }
         return Result.success(userDao.deleteById(user.getId()));
+    }
+
+    @Override
+    public Result<Object> updateSystemPassword(SystemPasswordDTO user, HttpServletRequest request) {
+        String token = request.getHeader(Constant.TOKEN);
+        AuthKey authKey = (AuthKey) request.getSession().getAttribute(token);
+        SysUserEntity entity=new SysUserEntity();
+        entity.setId(authKey.getUserId());
+        entity.setPassword(Md5Util.getMD5(user.getPassword()));
+        List<SysUserEntity> list= userDao.selectByEntity(entity);
+        if(ListUtil.isEmpty(list)){
+            return Result.fail(ErrorCode.SYS_USER_OR_PWD_ERROR_ERR,"密码错误");
+        }
+        entity.setPassword(Md5Util.getMD5(user.getNewPassword()));
+        return Result.success(userDao.updateById(entity));
     }
 
 

@@ -16,6 +16,7 @@ public enum  ErrorCode {
     SYS_UNKNOWN_ERR(202,"系统未知异常"),
     SYS_CUSTOM_ERR(202,"系统异常，自定义提示异常"),
     SYS_NO_AUTHORITY(203,"没有权限"),
+    SYS_Code_ERRO(203,"验证码错误"),
     SYS_AUTHORITY_INVALID_ERR(204,"鉴权失败"),
     SYS_ACCOUNT_HAS_EXPIRED_ERR(205,"账号过期"),
     SYS_ACCOUNT_HAS_BANED_ERR(205,"账号被禁用"),

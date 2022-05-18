@@ -14,20 +14,9 @@ public interface IUserService {
 
     Result<Object> login(LoginDTO user, HttpServletRequest request);
 
-
     Result<Object> logout(HttpServletRequest request);
 
-    Result<PageInfo<GeneralUserVO>> queryGeneral(GeneralUserDTO user, HttpServletRequest request);
+    Result<Object> getCode(HttpServletRequest request, String phone);
 
-    Result<Object> updateGeneral(UpdateUserDTO user, HttpServletRequest key);
-
-    Result<Object> deleteGeneral(UpdateUserDTO user, HttpServletRequest key);
-
-    Result<Object> addSystem(SystemUserDTO user, HttpServletRequest key);
-
-    Result<PageInfo<SystemUserVO>> querySystem(GeneralUserDTO user, HttpServletRequest key);
-
-    Result<Object> updateSystem(SystemUserDTO user, HttpServletRequest key);
-
-    Result<Object> deleteSystem(UserIdDTO user, HttpServletRequest key);
+    Result<Object> findPassword(HttpServletRequest request, FindPasswordDTO dto);
 }

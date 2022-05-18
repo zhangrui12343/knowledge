@@ -10,12 +10,9 @@ import javax.validation.constraints.NotNull;
 @Data
 public class GeneralUserDTO extends PageTDO{
 
-    @ApiModelProperty(value = "状态", example = "1")
-    @NotNull(message="状态不能为空")
-    private Integer status;
-
-
     @ApiModelProperty(value = "手机号", example = "1")
     private String phone;
+    @ApiModelProperty(value = "手机号", example = "1")
+    private Integer status;
 }
 

@@ -4,21 +4,26 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 @Data
 public class UserDTO {
-    @ApiModelProperty(value = "昵称", example = "asasas")
-    @NotBlank(message="昵称")
+    @ApiModelProperty(value = "是否是学生", example = "1:学生，2：普通用户")
+    @NotNull(message="用户类型不能为空")
+    private Integer student;
+
+    @ApiModelProperty(value = "名字", example = "asasas")
+    @NotBlank(message="名字不能为空")
     private String name;
+
     @ApiModelProperty(value = "手机号", example = "1213")
-    @NotBlank(message="手机号码不能为空")
     private String phone;
-    @ApiModelProperty(value = "用户名", example = "qwwqqw")
-    @NotBlank(message="用户名不能为空")
-    private String username;
     @ApiModelProperty(value = "密码", example = "saasasdaszxwer")
-    @NotBlank(message="密码不能为空")
     private String password;
 
+    @ApiModelProperty(value = "学校", example = "清华大学")
+    private String school;
 
+    @ApiModelProperty(value = "学籍号", example = "123456")
+    private String studentNo;
 }

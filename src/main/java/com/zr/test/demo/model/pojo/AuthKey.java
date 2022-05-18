@@ -15,9 +15,14 @@ public class AuthKey {
 
      /** 角色id */
      private Integer roleId;
-
      /** 用户id */
      private Integer userId;
+     /** 是否是学生 */
+     private Integer student;
+     /** 是否是内网 */
+     private Integer intranet;
+     /** 是否是系统用户 */
+     private Integer system;
 
      private String time;
 

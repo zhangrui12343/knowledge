@@ -45,47 +45,14 @@ public class UserController {
     public Result<Object> logout(HttpServletRequest request) {
         return userService.logout(request);
     }
-
-    @PostMapping("/generalQuery")
-    @ApiOperation("1.0.4 查询普通用户")
-    public Result<PageInfo<GeneralUserVO>> queryGeneral(HttpServletRequest request, @RequestBody GeneralUserDTO user) {
-        return userService.queryGeneral(user, request);
+    @PostMapping("/findPassword")
+    @ApiOperation("1.0.4 findPassword")
+    public Result<Object> findPassword(HttpServletRequest request,FindPasswordDTO dto) {
+        return userService.findPassword(request,dto);
     }
-
-    @PostMapping("/generalUpdate")
-    @ApiOperation("1.0.5 修改用户")
-    public Result<Object> updateGeneral(HttpServletRequest request, @RequestBody UpdateUserDTO user) {
-        return userService.updateGeneral(user,request);
+    @PostMapping("/getCode")
+    @ApiOperation("1.0.5 获取验证码")
+    public Result<Object> getCode(HttpServletRequest request,@RequestParam(name = "phone") String phone) {
+        return userService.getCode(request,phone);
     }
-
-    @PostMapping("/generalDelete")
-    @ApiOperation("1.0.6 删除用户")
-    public Result<Object> deleteGeneral(HttpServletRequest request, @RequestBody UpdateUserDTO user) {
-        return userService.deleteGeneral(user,request);
-    }
-
-    @PostMapping("/systemAdd")
-    @ApiOperation("1.0.7 新增系统用户")
-    public Result<Object> addSystem(HttpServletRequest request, @RequestBody SystemUserDTO user) {
-        return userService.addSystem(user,request);
-    }
-
-    @PostMapping("/systemQuery")
-    @ApiOperation("1.0.8 查询系统用户")
-    public Result<PageInfo<SystemUserVO>> querySystem(HttpServletRequest request, @RequestBody GeneralUserDTO user) {
-        return userService.querySystem(user,request);
-    }
-
-    @PostMapping("/systemUpdate")
-    @ApiOperation("1.0.9 修改系统用户")
-    public Result<Object> updateSystem(HttpServletRequest request, @RequestBody SystemUserDTO user) {
-        return userService.updateSystem(user,request);
-    }
-
-    @PostMapping("/systemDelete")
-    @ApiOperation("1.1.0 删除系统用户")
-    public Result<Object> deleteSystem(HttpServletRequest request, @RequestBody UserIdDTO user) {
-        return userService.deleteSystem(user,request);
-    }
-
 }

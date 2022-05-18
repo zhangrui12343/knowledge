@@ -19,5 +19,12 @@ public class UpdateUserDTO {
     private String password;
     @ApiModelProperty(value = "状态", example = "1")
     private Integer status;
-
+    @ApiModelProperty(value = "是否是学生", example = "1")
+    private Integer student;
+    @ApiModelProperty(value = "学校", example = "西华大学")
+    private String school;
+    @ApiModelProperty(value = "学籍号", example = "西华大学")
+    private String studentNo;
+    @ApiModelProperty(value = "是否内网", example = "1")
+    private Integer intranet;
 }

@@ -4,34 +4,20 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
-@TableName(value = "user")
-public class UserEntity {
+@TableName(value = "sysuser")
+public class SysUserEntity {
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
     private String name;
-
-    private String phone;
-
-    private String register;
-    @TableField(value = "lastlogin")
-    private String lastLogin;
+    private String username;
 
     private Integer status;
 
     private String password;
 
-    private int student;
-
-    private String school;
-
-    private String studentNo;
-
-    private int intranet;
-
-
+    private Integer role;
 }

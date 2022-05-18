@@ -84,7 +84,6 @@ public class BaseAspect {
                 throw new CustomException(ErrorCode.SYS_NO_AUTHORITY, "鉴权失败！");
             }
             //查询该用户是否存在，或者是否被禁用
-
             //延长sesion时间
             session.setMaxInactiveInterval(30*60);
         }
