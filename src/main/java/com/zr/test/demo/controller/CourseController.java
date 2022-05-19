@@ -5,6 +5,7 @@ import com.zr.test.demo.common.PageInfo;
 import com.zr.test.demo.common.Result;
 import com.zr.test.demo.model.dto.CourseDTO;
 import com.zr.test.demo.model.dto.CourseQueryDTO;
+import com.zr.test.demo.model.vo.CourseOneVO;
 import com.zr.test.demo.model.vo.CourseVO;
 import com.zr.test.demo.service.ICourseService;
 import io.swagger.annotations.ApiOperation;
@@ -30,15 +31,24 @@ public class CourseController {
 
     @PostMapping("/add")
     @ApiOperation("5.0.1 新增课程")
-    public Result<Object> add(CourseDTO dto, @RequestPart(name = "img",required = false) MultipartFile img,@RequestPart(name = "pdf",required =false ) MultipartFile[] pdf,
-                              @RequestPart(name = "video",required = false) MultipartFile video, HttpServletRequest request) {
-        return service.add(dto,img,pdf,video,request);
+    public Result<Object> add(CourseDTO dto,
+                              @RequestPart(name = "img") MultipartFile img,
+                              @RequestPart(name = "video",required =false ) MultipartFile video,
+                              @RequestPart(name = "learningTask",required = false) MultipartFile learningTask,
+                              @RequestPart(name = "homework",required = false) MultipartFile homework,
+                              HttpServletRequest request) {
+        return service.add(dto,img,learningTask,homework,video,request);
     }
 
     @PostMapping("/query")
     @ApiOperation("5.0.2 查询课程")
     public Result<PageInfo<CourseVO>> query(@RequestBody CourseQueryDTO dto, HttpServletRequest request) {
         return service.query(dto,request);
+    }
+    @PostMapping("/query/{id}")
+    @ApiOperation("5.0.2 查询课程")
+    public Result<CourseOneVO> query(@PathVariable Long id, HttpServletRequest request) {
+        return service.queryOne(id,request);
     }
 
     @PostMapping("/update")

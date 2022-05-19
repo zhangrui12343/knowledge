@@ -16,13 +16,11 @@ public interface ISysUserService {
 
     Result<PageInfo<GeneralUserVO>> queryGeneral(GeneralUserDTO user, HttpServletRequest request);
 
-    Result<Object> updateGeneral(UpdateUserDTO user, HttpServletRequest key);
-
-    Result<Object> deleteGeneral(UpdateUserDTO user, HttpServletRequest key);
+    Result<Object> deleteGeneral(UpdateStudentDTO user, HttpServletRequest key);
 
     Result<Object> addSystem(SystemUserDTO user, HttpServletRequest key);
 
-    Result<PageInfo<SystemUserVO>> querySystem(GeneralUserDTO user, HttpServletRequest key);
+    Result<PageInfo<SystemUserVO>> querySystem(GeneralUserDTO status, HttpServletRequest key);
 
     Result<Object> updateSystem(SystemUserDTO user, HttpServletRequest key);
 
@@ -31,4 +29,6 @@ public interface ISysUserService {
     Result<Object> updateSystemPassword(SystemPasswordDTO user, HttpServletRequest request);
 
     Result<PageInfo<StudentVO>> queryStudent(StudentDTO user, HttpServletRequest request);
+
+    Result<Object> updateStudent(UpdateStudentDTO user, HttpServletRequest request);
 }

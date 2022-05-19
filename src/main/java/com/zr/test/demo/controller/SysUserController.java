@@ -8,7 +8,6 @@ import com.zr.test.demo.model.vo.GeneralUserVO;
 import com.zr.test.demo.model.vo.StudentVO;
 import com.zr.test.demo.model.vo.SystemUserVO;
 import com.zr.test.demo.service.ISysUserService;
-import com.zr.test.demo.service.IUserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,15 +46,15 @@ public class SysUserController {
     public Result<PageInfo<GeneralUserVO>> queryGeneral(HttpServletRequest request, @RequestBody GeneralUserDTO user) {
         return userService.queryGeneral(user, request);
     }
-    @PostMapping("/generalUpdate")
+    @PostMapping("/udate/general")
     @ApiOperation("1.0.5 修改用户")
-    public Result<Object> updateGeneral(HttpServletRequest request, @RequestBody UpdateUserDTO user) {
-        return userService.updateGeneral(user,request);
+    public Result<Object> updateStudent(HttpServletRequest request, @RequestBody UpdateStudentDTO user) {
+        return userService.updateStudent(user,request);
     }
 
     @PostMapping("/generalDelete")
     @ApiOperation("1.0.6 删除用户")
-    public Result<Object> deleteGeneral(HttpServletRequest request, @RequestBody UpdateUserDTO user) {
+    public Result<Object> deleteGeneral(HttpServletRequest request, @RequestBody UpdateStudentDTO user) {
         return userService.deleteGeneral(user,request);
     }
 

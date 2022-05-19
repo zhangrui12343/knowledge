@@ -3,6 +3,7 @@ package com.zr.test.demo.repository;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.zr.test.demo.common.Constant;
 import com.zr.test.demo.dao.ISysUserDao;
 import com.zr.test.demo.dao.IUserDao;
 import com.zr.test.demo.model.entity.SysUserEntity;
@@ -33,14 +34,13 @@ public class SysUserDaoImpl {
         return userDao.deleteById(id);
     }
 
-//    public IPage<UserEntity> querySystem(Integer status, Integer userId,int page, int size) {
-//        QueryWrapper<UserEntity> queryWrapper = new QueryWrapper<>();
-//        queryWrapper.eq("status",status);
-//        queryWrapper.ne("id",userId);
-//        queryWrapper.lt("role",2);
-//        queryWrapper.orderByDesc("id");
-//        return userDao.selectPage(new Page<>(page,size),queryWrapper);
-//    }
+    public IPage<SysUserEntity> querySystem(Integer status, Integer userId,int page, int size) {
+        QueryWrapper<SysUserEntity> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("status",status);
+        queryWrapper.ne("id",userId);
+        queryWrapper.orderByDesc("id");
+        return userDao.selectPage(new Page<>(page,size),queryWrapper);
+    }
 //
 //    public IPage<UserEntity> selectByPage(UserEntity entity, int page, int size,boolean desc,String column){
 //        QueryWrapper<UserEntity> queryWrapper = new QueryWrapper<>();

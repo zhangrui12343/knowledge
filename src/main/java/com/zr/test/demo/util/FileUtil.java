@@ -5,6 +5,7 @@ import com.zr.test.demo.config.enums.ErrorCode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.Base64Utils;
 import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
@@ -41,7 +42,9 @@ public class FileUtil {
      }
 
 
-
+     public static boolean isEmpty(MultipartFile file){
+          return file==null||file.isEmpty();
+     }
 
      /**
       * base64字符串转换成 (对字节数组字符串进行Base64解码并生成)

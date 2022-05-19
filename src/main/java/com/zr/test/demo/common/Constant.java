@@ -1,7 +1,6 @@
 package com.zr.test.demo.common;
 
 public class Constant {
-
     public static final int ROLE_SUPPER_ADMIN_USER =0;
     public static final int ROLE_SUPPER_ADMIN_RESOURCE =1;
     public static final int ROLE_GENERAL_ADMIN =2;

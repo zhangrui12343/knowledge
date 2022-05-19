@@ -20,7 +20,6 @@ import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import java.net.URLEncoder;
-import java.security.SecureRandom;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -155,7 +154,7 @@ public class UserServiceImpl implements IUserService {
         try {
             token = URLEncoder.encode(token, "utf-8");
         } catch (Exception e) {
-            log.error("key des ulrencode error ：" + e.getMessage(), e);
+            log.error("key des urlencode error ：" + e.getMessage(), e);
             throw new CustomException(ErrorCode.SYS_PARAM_INNER_ERR, "key urlencode error");
         }
         AuthKey authKey = new AuthKey();
@@ -203,148 +202,4 @@ public class UserServiceImpl implements IUserService {
         user.setPassword(Md5Util.getMD5(dto.getPassword()));
         return Result.success(userDao.updateById(user));
     }
-
-    @Override
-    public Result<PageInfo<GeneralUserVO>> queryGeneral(GeneralUserDTO user, HttpServletRequest request) {
-        String token = request.getHeader(Constant.TOKEN);
-        AuthKey authKey = (AuthKey) request.getSession().getAttribute(token);
-        if (authKey.getRoleId() > Constant.ROLE_CUSTOMER_SERVICE) {
-            throw new CustomException(ErrorCode.EVIDENCE_UNLOCK_AUTH);
-        }
-        UserEntity userEntity = new UserEntity();
-        if (!StringUtil.isEmpty(user.getPhone())) {
-            userEntity.setPhone(user.getPhone());
-        }
-        userEntity.setStatus(user.getStatus());
-        IPage<UserEntity> page = userDao.selectByPage(userEntity, user.getPage(), user.getPageSize(), true, "register");
-        List<UserEntity> list = page.getRecords();
-        long total = page.getTotal();
-        list = ListUtil.page(list, user.getPage(), user.getPageSize());
-        List<GeneralUserVO> res = new ArrayList<>(list.size());
-        list.forEach(l -> {
-            GeneralUserVO vo = new GeneralUserVO();
-            vo.setId(l.getId());
-            vo.setLastLogin(l.getLastLogin());
-            vo.setName(l.getName());
-            vo.setPhone(l.getPhone());
-            vo.setRegister(l.getRegister());
-            vo.setStatus(l.getId());
-            res.add(vo);
-        });
-        PageInfo<GeneralUserVO> pageInfo = new PageInfo<>();
-        pageInfo.setTotal(ListUtil.isEmpty(res) ? 0 : total);
-        pageInfo.setList(res);
-        pageInfo.setPage(user.getPage());
-        pageInfo.setPageSize(user.getPageSize());
-        return Result.success(pageInfo);
-    }
-
-    @Override
-    public Result<Object> updateGeneral(UpdateUserDTO user, HttpServletRequest request) {
-        String token = request.getHeader(Constant.TOKEN);
-        AuthKey authKey = (AuthKey) request.getSession().getAttribute(token);
-        if (authKey.getRoleId() > Constant.ROLE_CUSTOMER_SERVICE) {
-            throw new CustomException(ErrorCode.EVIDENCE_UNLOCK_AUTH);
-        }
-        //暂时修改状态
-        UserEntity userEntity = new UserEntity();
-        userEntity.setId(user.getId());
-        userEntity.setStatus(user.getStatus());
-
-        return Result.success(userDao.updateById(userEntity));
-    }
-
-    @Override
-    public Result<Object> deleteGeneral(UpdateUserDTO user, HttpServletRequest request) {
-        String token = request.getHeader(Constant.TOKEN);
-        AuthKey authKey = (AuthKey) request.getSession().getAttribute(token);
-        if (authKey.getRoleId() > Constant.ROLE_CUSTOMER_SERVICE) {
-            throw new CustomException(ErrorCode.EVIDENCE_UNLOCK_AUTH);
-        }
-        return Result.success(userDao.deleteById(user.getId()));
-    }
-
-    @Override
-    public Result<Object> addSystem(SystemUserDTO user, HttpServletRequest request) {
-        String token = request.getHeader(Constant.TOKEN);
-        AuthKey authKey = (AuthKey) request.getSession().getAttribute(token);
-        if (authKey.getRoleId() != Constant.ROLE_SUPPER_ADMIN_USER) {
-            throw new CustomException(ErrorCode.EVIDENCE_UNLOCK_AUTH);
-        }
-        UserEntity userEntity = new UserEntity();
-        userEntity.setName(user.getName());
-        userEntity.setUsername(user.getUsername());
-        userEntity.setPassword(Md5Util.getMD5(user.getPassword()));
-        userEntity.setRole(user.getRole());
-        userEntity.setStatus(1);
-        return Result.success(userDao.insertOne(userEntity));
-    }
-
-    @Override
-    public Result<PageInfo<SystemUserVO>> querySystem(GeneralUserDTO user, HttpServletRequest request) {
-        String token = request.getHeader(Constant.TOKEN);
-        AuthKey authKey = (AuthKey) request.getSession().getAttribute(token);
-        if (authKey.getRoleId() > Constant.ROLE_GENERAL_ADMIN) {
-            throw new CustomException(ErrorCode.EVIDENCE_UNLOCK_AUTH);
-        }
-
-        IPage<UserEntity> page = userDao.querySystem(user.getStatus(), authKey.getUserId(), user.getPage(), user.getPageSize());
-        List<UserEntity> list = page.getRecords();
-        long total = page.getTotal();
-        list = ListUtil.page(list, user.getPage(), user.getPageSize());
-        List<SystemUserVO> res = new ArrayList<>(list.size());
-        list.forEach(l -> {
-            SystemUserVO vo = new SystemUserVO();
-            vo.setId(l.getId());
-            vo.setUsername(l.getUsername());
-            vo.setName(l.getName());
-            vo.setRole(l.getRole());
-            vo.setRoleName("");
-            vo.setStatus(l.getId());
-            res.add(vo);
-        });
-        PageInfo<SystemUserVO> pageInfo = new PageInfo<>();
-        pageInfo.setTotal(ListUtil.isEmpty(res) ? 0 : total);
-        pageInfo.setList(res);
-        pageInfo.setPage(user.getPage());
-        pageInfo.setPageSize(user.getPageSize());
-        return Result.success(pageInfo);
-    }
-
-    @Override
-    public Result<Object> updateSystem(SystemUserDTO user, HttpServletRequest request) {
-        if (user.getId() == null) {
-            throw new CustomException(ErrorCode.SYS_PARAM_ERR);
-        }
-        String token = request.getHeader(Constant.TOKEN);
-        AuthKey authKey = (AuthKey) request.getSession().getAttribute(token);
-        if (authKey.getRoleId() != Constant.ROLE_SUPPER_ADMIN_USER) {
-            throw new CustomException(ErrorCode.EVIDENCE_UNLOCK_AUTH);
-        }
-        UserEntity userEntity = new UserEntity();
-        userEntity.setId(user.getId());
-        if (user.getStatus() != null) {
-            userEntity.setStatus(user.getStatus());
-        } else {
-            userEntity.setName(user.getName());
-            userEntity.setUsername(user.getUsername());
-            if (!StringUtil.isEmpty(user.getPassword())) {
-                userEntity.setPassword(Md5Util.getMD5(user.getPassword()));
-            }
-            userEntity.setRole(user.getRole());
-        }
-        return Result.success(userDao.updateById(userEntity));
-    }
-
-    @Override
-    public Result<Object> deleteSystem(UserIdDTO user, HttpServletRequest request) {
-        String token = request.getHeader(Constant.TOKEN);
-        AuthKey authKey = (AuthKey) request.getSession().getAttribute(token);
-        if (authKey.getRoleId() != Constant.ROLE_SUPPER_ADMIN_USER) {
-            throw new CustomException(ErrorCode.EVIDENCE_UNLOCK_AUTH);
-        }
-        return Result.success(userDao.deleteById(user.getId()));
-    }
-
-
 }

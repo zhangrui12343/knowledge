@@ -77,7 +77,7 @@ public class MyTest extends DemoApplicationTests {
           // Step5：策略配置（数据库表配置）
           StrategyConfig strategy = new StrategyConfig();
           // 指定表名（可以同时操作多个表，使用 , 隔开）（需要修改）
-          strategy.setInclude("first_category");
+          strategy.setInclude("course_tag");
           // 配置数据表与实体类名之间映射的策略
           strategy.setNaming(NamingStrategy.underline_to_camel);
           strategy.setEntityBuilderModel(true);

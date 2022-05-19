@@ -51,11 +51,15 @@ public class CourseMapperImpl {
         return dao.deleteBatchIds(id);
     }
 
-    public IPage<CourseEntity> selectPageByTime(CourseEntity entity, String start, String end, Integer page, Integer pageSize) {
+    public IPage<CourseEntity> selectPageByTime(CourseEntity entity, String start, String end,
+                                                String nameOrTeacher, Integer page, Integer pageSize) {
         QueryWrapper<CourseEntity> queryWrapper = new QueryWrapper<>();
         queryWrapper.setEntity(entity);
         if(!StringUtil.isEmpty(start)&&!StringUtil.isEmpty(end)){
-            queryWrapper.gt("time", TimeUtil.getDate(start)).lt("time", TimeUtil.getDate(end));
+            queryWrapper.between("time", TimeUtil.getDate(start), TimeUtil.getDate(end));
+        }
+        if(!StringUtil.isEmpty(nameOrTeacher)){
+            queryWrapper.like("name",nameOrTeacher).or().like("teacher",nameOrTeacher);
         }
         queryWrapper.orderByDesc("time");
         return dao.selectPage(new Page<>(page,pageSize),queryWrapper);

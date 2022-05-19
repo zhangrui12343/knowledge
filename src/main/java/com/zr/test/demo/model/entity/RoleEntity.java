@@ -16,5 +16,4 @@ public class RoleEntity {
 
     private String memo;
 
-
 }

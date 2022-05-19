@@ -29,6 +29,8 @@ public class CourseDTO implements Serializable {
     private Long id;
     @NotBlank
     private String name;
+    @NotBlank
+    private String teacher;
     @NotNull
     private Long xueduan;
     @NotNull
@@ -38,17 +40,15 @@ public class CourseDTO implements Serializable {
     @NotNull
     private Long books;
     @NotNull
-    private Long secondCategoryId;
+    private List<Long> courseTypeIds;
     @NotNull
-    private Long tagId;
+    private List<Long> courseTagIds;
+    @NotNull
+    private List<Long> apps;
     @NotBlank
     private String description;
-    @NotBlank
-    private String detail;
+    @NotNull
+    private Integer excellent;
     @NotNull
     private Integer status;
-
-    private String img;
-    private String video;
-    private String[] pdf;
 }

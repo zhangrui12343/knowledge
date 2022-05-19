@@ -29,17 +29,20 @@ public class CourseEntity implements Serializable {
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
     private String name;
+    private String teacher;
     private String img;
     private Long xueduan;
     private Long grade;
     private Long subject;
     private Long books;
-    private Long secondCategoryId;
-    private Long tagId;
+    private String courseType;
+    private String courseTag;
+    private String app;
     private String description;
-    private String detail;
-    private String pdf;
+    private String learningTask;
+    private String homework;
     private String video;
+    private Integer excellent;
     private Integer status;
     private Date time;
 

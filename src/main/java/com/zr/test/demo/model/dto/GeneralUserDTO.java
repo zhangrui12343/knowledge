@@ -12,7 +12,7 @@ public class GeneralUserDTO extends PageTDO{
 
     @ApiModelProperty(value = "手机号", example = "1")
     private String phone;
-    @ApiModelProperty(value = "手机号", example = "1")
+    @ApiModelProperty(value = "是否禁用", example = "1")
     private Integer status;
 }
 

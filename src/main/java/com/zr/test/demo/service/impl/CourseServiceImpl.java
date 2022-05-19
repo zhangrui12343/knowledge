@@ -9,13 +9,11 @@ import com.zr.test.demo.dao.SecondCategoryMapper;
 import com.zr.test.demo.dao.TagMapper;
 import com.zr.test.demo.model.dto.CourseDTO;
 import com.zr.test.demo.model.dto.CourseQueryDTO;
-import com.zr.test.demo.model.entity.CourseCategoryEntity;
-import com.zr.test.demo.model.entity.CourseEntity;
-import com.zr.test.demo.model.entity.SecondCategory;
-import com.zr.test.demo.model.entity.Tag;
+import com.zr.test.demo.model.entity.*;
 import com.zr.test.demo.model.vo.CourseVO;
 import com.zr.test.demo.repository.CourseCategoryMapperImpl;
 import com.zr.test.demo.repository.CourseMapperImpl;
+import com.zr.test.demo.repository.CourseTypeMapperImpl;
 import com.zr.test.demo.service.ICourseService;
 import com.zr.test.demo.util.FileUtil;
 import com.zr.test.demo.util.ListUtil;
@@ -54,68 +52,73 @@ public class CourseServiceImpl implements ICourseService {
     private final CourseMapperImpl service;
     private final CourseCategoryMapperImpl categoryMapper;
     private final TagMapper tagMapper;
-    private final SecondCategoryMapper secondCategoryMapper;
+    private final CourseTypeMapperImpl courseTypeMapper;
     @Value("${file.save.path}")
     private String fileSavePath;
     private String path = fileSavePath + "course/";
     private String split = "????";
-    private final LocalUtil localUtil;
 
     @Autowired
-    public CourseServiceImpl(CourseMapperImpl service, CourseCategoryMapperImpl categoryMapper, TagMapper tagMapper, SecondCategoryMapper secondCategoryMapper, LocalUtil localUtil) {
+    public CourseServiceImpl(CourseMapperImpl service, CourseCategoryMapperImpl categoryMapper, TagMapper tagMapper,
+                             CourseTypeMapperImpl courseTypeMapper) {
         this.service = service;
         this.categoryMapper = categoryMapper;
         this.tagMapper = tagMapper;
-        this.secondCategoryMapper = secondCategoryMapper;
-        this.localUtil = localUtil;
+        this.courseTypeMapper = courseTypeMapper;
     }
 
     @Override
-    public Result<Object> add(CourseDTO dto, MultipartFile img, MultipartFile[] pdf, MultipartFile video, HttpServletRequest request) {
+    public Result<Object> add(CourseDTO dto, MultipartFile img, MultipartFile learningTask, MultipartFile homework,
+                              MultipartFile video, HttpServletRequest request) {
         CourseEntity entity = new CourseEntity();
         BeanUtils.copyProperties(dto, entity);
         String imgPath = null;
         String videoPath = null;
-        StringBuilder pdfPath = new StringBuilder();
-
+        String learningTaskPath = null;
+        String homeworkPath = null;
         File p = new File(path);
         if (!p.exists()) {
             p.mkdir();
         }
         try {
-            if (img!=null&&!img.isEmpty()) {
+            long now=System.currentTimeMillis();
+            if (!FileUtil.isEmpty(img)) {
                 //获取文件的原始文件名
                 //保存到服务器transferTo()方法
-                imgPath = path + System.currentTimeMillis() + "-" + img.getOriginalFilename();
+                imgPath = path + now + "-" + img.getOriginalFilename();
                 img.transferTo(new File(imgPath));
             }
-            //如果接收过来的数组不为空便遍历出每个文件，然后上传
-            if (pdf!=null&&pdf.length > 0) {
-                for (MultipartFile photo : pdf) {
-                    if(photo!=null&&!photo.isEmpty()){
-                        String originalFilename = photo.getOriginalFilename();
-                        String temp = path + System.currentTimeMillis() + "-" + originalFilename;
-                        photo.transferTo(new File(temp));
-                        pdfPath.append(temp).append(split);
-                    }
-                }
-                pdfPath.substring(0, pdfPath.length() - split.length());
-            }
-            if (video!=null&&!video.isEmpty()) {
-                //获取文件的原始文件名
-                //保存到服务器transferTo()方法
-                videoPath = path + System.currentTimeMillis() + "-" + video.getOriginalFilename();
+            if (!FileUtil.isEmpty(video)) {
+                videoPath = path + now + "-" + video.getOriginalFilename();
                 video.transferTo(new File(videoPath));
+            }
+            if (!FileUtil.isEmpty(learningTask)) {
+                learningTaskPath = path + now + "-" + learningTask.getOriginalFilename();
+                learningTask.transferTo(new File(learningTaskPath));
+            }
+            if (!FileUtil.isEmpty(homework)) {
+                homeworkPath = path + now + "-" + homework.getOriginalFilename();
+                homework.transferTo(new File(homeworkPath));
             }
         } catch (Exception e) {
             log.error("上传文件失败:{}", e.getMessage());
             throw new CustomException(ErrorCode.FILE_UPLOAD_FAIL);
         }
-        entity.setTime(new Date());
+        entity.setApp(getIdsToString(dto.getApps()));
+        entity.setCourseTag(getIdsToString(dto.getCourseTagIds()));
+        entity.setCourseType(getIdsToString(dto.getCourseTypeIds()));
         entity.setImg(imgPath);
         entity.setVideo(videoPath);
-        entity.setPdf(pdfPath.toString());
+        entity.setLearningTask(learningTaskPath);
+        entity.setHomework(homeworkPath);
+        entity.setTime(new Date());
         return Result.success(service.insertOne(entity));
+    }
+
+    private String getIdsToString(List<Long> ids) {
+        StringBuilder sb=new StringBuilder();
+        ids.forEach(item-> sb.append(item).append(","));
+        return sb.deleteCharAt(sb.length()-1).toString();
     }
 
     @Override
@@ -123,61 +126,28 @@ public class CourseServiceImpl implements ICourseService {
         PageInfo<CourseVO> pageInfo = new PageInfo<>();
         CourseEntity entity = new CourseEntity();
         BeanUtils.copyProperties(dto, entity);
-        IPage<CourseEntity> es = service.selectPageByTime(entity, dto.getStartTime(), dto.getEndTime(), dto.getPage(), dto.getPageSize());
+        IPage<CourseEntity> es = service.selectPageByTime(entity, dto.getStartTime(), dto.getEndTime(), dto.getNameOrTeacher(),
+                dto.getPage(), dto.getPageSize());
         if (es.getTotal() == 0) {
             pageInfo.setPage(dto.getPage());
             pageInfo.setPageSize(dto.getPageSize());
             pageInfo.setTotal(es.getTotal());
             return Result.success(pageInfo);
         }
-        //可使用本地缓存
-        Map<Long, String> all;
-        if (localUtil.get("course_category") == null) {
-            all = categoryMapper.selectByEntity(null).stream().collect(Collectors.toMap(CourseCategoryEntity::getId, CourseCategoryEntity::getName));
-            localUtil.set("course_category", all);
-        } else {
-            all = (Map<Long, String>) localUtil.get("course_category");
-        }
-        Map<Long, String> tagAll;
-        if (localUtil.get("tagAll") == null) {
-            tagAll = tagMapper.selectList(null).stream().collect(Collectors.toMap(Tag::getId, Tag::getName));
-            localUtil.set("tagAll", tagAll);
-        } else {
-            tagAll = (Map<Long, String>) localUtil.get("tagAll");
-        }
-        Map<Long, String> categoryAll;
-        if (localUtil.get("categoryAll") == null) {
-            categoryAll = secondCategoryMapper.selectList(null).stream().collect(Collectors.toMap(SecondCategory::getId, SecondCategory::getName));
-            localUtil.set("categoryAll", categoryAll);
-        } else {
-            categoryAll = (Map<Long, String>) localUtil.get("categoryAll");
-        }
+        Map<Long, String> all = categoryMapper.selectByEntity(null).stream().
+                collect(Collectors.toMap(CourseCategoryEntity::getId, CourseCategoryEntity::getName));
         List<CourseVO> vos = new ArrayList<>();
         es.getRecords().forEach(e -> {
             CourseVO v = new CourseVO();
-            v.setSubject(all.get(e.getSubject()));
             v.setTime(TimeUtil.getTime(e.getTime()));
+            v.setSubject(all.get(e.getSubject()));
             v.setBooks(all.get(e.getBooks()));
             v.setStatus(e.getStatus());
             v.setGrade(all.get(e.getGrade()));
             v.setXueduan(all.get(e.getXueduan()));
             v.setName(e.getName());
+            v.setTeacher(e.getTeacher());
             v.setId(e.getId());
-            if (!StringUtil.isEmpty(e.getImg())) {
-                v.setImg(FileUtil.getBase64FilePath(e.getImg()));
-            }
-            if (!StringUtil.isEmpty(e.getPdf())) {
-                String[] arr = e.getPdf().split(split);
-                for (String temp : arr) {
-                    FileUtil.getBase64FilePath(temp);
-                }
-                v.setPdf(arr);
-            }
-            if (!StringUtil.isEmpty(e.getVideo())) {
-                v.setVideo(FileUtil.getBase64FilePath(e.getVideo()));
-            }
-            v.setSecondCategoryName(categoryAll.get(e.getSecondCategoryId()));
-            v.setTagName(tagAll.get(e.getTagId()));
             vos.add(v);
         });
         pageInfo.setPage(dto.getPage());
@@ -200,30 +170,30 @@ public class CourseServiceImpl implements ICourseService {
                 img.transferTo(new File(imgPath));
                 entity.setImg(imgPath);
                 //如果重新上传了文件，需要将旧文件的文件路径放到dto里
-                if(!StringUtil.isEmpty(dto.getImg())){
-                    String oldPath = FileUtil.getFilePath(dto.getImg());
-                    File oldImg = new File(oldPath);
-                    if (oldImg.exists()) {
-                        if(!oldImg.delete()){
-                            log.error("图片文件删除失败,path={}",oldPath);
-                        }
-                    }
-                }
+//                if(!StringUtil.isEmpty(dto.getImg())){
+//                    String oldPath = FileUtil.getFilePath(dto.getImg());
+//                    File oldImg = new File(oldPath);
+//                    if (oldImg.exists()) {
+//                        if(!oldImg.delete()){
+//                            log.error("图片文件删除失败,path={}",oldPath);
+//                        }
+//                    }
+//                }
 
             }
             if (!video.isEmpty()) {
                 String imgPath = path + System.currentTimeMillis() + "-" + video.getOriginalFilename();
                 video.transferTo(new File(imgPath));
                 entity.setVideo(imgPath);
-                if(!StringUtil.isEmpty(dto.getVideo())){
-                    String oldPath = FileUtil.getFilePath(dto.getVideo());
-                    File oldImg = new File(oldPath);
-                    if (oldImg.exists()) {
-                        if(!oldImg.delete()){
-                            log.error("视频文件删除失败,path={}",oldPath);
-                        }
-                    }
-                }
+//                if(!StringUtil.isEmpty(dto.getVideo())){
+//                    String oldPath = FileUtil.getFilePath(dto.getVideo());
+//                    File oldImg = new File(oldPath);
+//                    if (oldImg.exists()) {
+//                        if(!oldImg.delete()){
+//                            log.error("视频文件删除失败,path={}",oldPath);
+//                        }
+//                    }
+//                }
             }
             if (pdf != null && pdf.length > 0) {
                 StringBuilder sb = new StringBuilder();
@@ -231,19 +201,9 @@ public class CourseServiceImpl implements ICourseService {
                     String imgPath = path + System.currentTimeMillis() + "-" + pdf[i].getOriginalFilename();
                     pdf[i].transferTo(new File(imgPath));
                     sb.append(imgPath).append(split);
-                    if(!StringUtil.isEmpty(dto.getPdf()[i])){
-                        String oldPath = FileUtil.getFilePath(dto.getPdf()[i]);
-                        File oldImg = new File(oldPath);
-                        if (oldImg.exists()) {
-                            if(!oldImg.delete()){
-                                log.error("pdf文件删除失败,path={}",oldPath);
-                            }
-                        }
-                    }
 
                 }
                 sb.substring(0, sb.length() - split.length());
-                entity.setPdf(sb.toString());
             }
         } catch (IOException e) {
             log.error("修改课程出错,e:{}",e.getMessage());
@@ -279,16 +239,6 @@ public class CourseServiceImpl implements ICourseService {
             }
         }
 
-        if (!StringUtil.isEmpty(e.getPdf())) {
-            for (String p : e.getPdf().split(split)) {
-                File pd = new File(p);
-                if (pd.exists()) {
-                    if(!pd.delete()){
-                        log.error("pdf文件删除失败,path={}",p);
-                    }
-                }
-            }
-        }
         return Result.success(service.deleteById(id));
     }
 
