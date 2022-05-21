@@ -1,0 +1,22 @@
+package com.zr.test.demo.service;
+
+import com.zr.test.demo.common.Result;
+import com.zr.test.demo.model.entity.FileRouter;
+import com.baomidou.mybatisplus.extension.service.IService;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
+
+/**
+ * <p>
+ *  服务类
+ * </p>
+ *
+ * @author zr
+ * @since 2022-05-21
+ */
+public interface IFileRouterService extends IService<FileRouter> {
+
+    Result<Object> upload(MultipartFile[] file,List<Long> ids);
+
+}
