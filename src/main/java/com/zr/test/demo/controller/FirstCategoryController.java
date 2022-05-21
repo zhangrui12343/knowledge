@@ -5,6 +5,7 @@ import com.zr.test.demo.common.Result;
 import com.zr.test.demo.model.dto.FirstCategoryDTO;
 import com.zr.test.demo.model.entity.FirstCategory;
 import com.zr.test.demo.model.entity.Tag;
+import com.zr.test.demo.model.vo.FirstCategoryVO;
 import com.zr.test.demo.service.IFirstCategoryService;
 import com.zr.test.demo.service.ITagService;
 import io.swagger.annotations.ApiOperation;
@@ -32,20 +33,20 @@ public class FirstCategoryController {
 
     @PostMapping("/add")
     @ApiOperation("6.0.1 新增教育分类")
-    public Result<Object> add(FirstCategoryDTO dto,@RequestParam(name = "img" ,required = false) MultipartFile img) {
-        return service.add(dto,img);
+    public Result<Object> add(@RequestBody FirstCategoryDTO dto) {
+        return service.add(dto);
     }
 
     @PostMapping("/query")
     @ApiOperation("6.0.2 查询教育分类")
-    public Result<List<FirstCategory>> query(@RequestParam(name = "type") @NotNull(message = "类型不能为空") Integer type) {
+    public Result<List<FirstCategoryVO>> query(@RequestParam(name = "type") @NotNull(message = "类型不能为空") Integer type) {
         return service.queryByType(type);
     }
 
     @PostMapping("/update")
     @ApiOperation("6.0.1 新增教育分类")
-    public Result<Object> update(FirstCategoryDTO dto,@RequestParam(name = "img" ,required = false) MultipartFile img) {
-        return service.update(dto,img);
+    public Result<Object> update(@RequestBody FirstCategoryDTO dto) {
+        return service.update(dto);
     }
 
     @PostMapping("/delete/{id}")

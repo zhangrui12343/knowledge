@@ -30,20 +30,23 @@ public class CourseEntity implements Serializable {
     private Long id;
     private String name;
     private String teacher;
-    private String img;
+    private Long img;
+
     private Long xueduan;
     private Long grade;
     private Long subject;
     private Long books;
-    private String courseType;
-    private String courseTag;
+
     private String app;
     private String description;
-    private String learningTask;
-    private String homework;
-    private String video;
+
+    private Long learningTask;
+    private Long homework;
+    private Long video;
+
     private Integer excellent;
     private Integer status;
+
     private Date time;
 
 

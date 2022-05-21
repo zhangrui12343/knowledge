@@ -1,4 +1,4 @@
-package com.zr.test.demo.model.entity;
+package com.zr.test.demo.model.vo;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -15,22 +15,26 @@ import java.io.Serializable;
  * </p>
  *
  * @author zr
- * @since 2022-05-14
+ * @since 2022-05-16
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@ApiModel(value="CourseTag", description="")
-public class CourseTagEntity implements Serializable {
+@ApiModel(value="FirstCategory对象", description="")
+public class FirstCategoryVO implements Serializable {
 
     private static final long serialVersionUID=1L;
 
-    @TableId(value = "id", type = IdType.AUTO)
     private Long id;
-
-    private Long pid;
 
     private String name;
 
+    private String img;
+
+    private Integer order;
+
+    private String category;
+
+    private String tag;
 
 }

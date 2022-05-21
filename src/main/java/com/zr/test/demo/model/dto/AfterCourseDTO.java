@@ -1,7 +1,5 @@
 package com.zr.test.demo.model.dto;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
 import io.swagger.annotations.ApiModel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -10,12 +8,11 @@ import lombok.experimental.Accessors;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
-import java.util.Date;
 import java.util.List;
 
 /**
  * <p>
- * 
+ *
  * </p>
  *
  * @author zr
@@ -24,37 +21,26 @@ import java.util.List;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@ApiModel(value="Course对象", description="")
-public class CourseDTO implements Serializable {
+@ApiModel(value = "课后教育入参", description = "")
+public class AfterCourseDTO implements Serializable {
     private Long id;
     @NotBlank
     private String name;
-    private String teacher;
     @NotNull
-    private Long xueduan;
+    private Long img;
     @NotNull
-    private Long grade;
+    private List<Long> types;
     @NotNull
-    private Long subject;
+    private List<Long> categories;
     @NotNull
-    private Long books;
-    @NotNull
-    private List<Long> courseTypeIds;
-    @NotNull
-    private List<Long> courseTagIds;
-    private List<Long> apps;
+    private List<Long> tags;
+    private List<Long> videos;
+    private List<Long> docs;
     @NotBlank
     private String description;
     @NotNull
     private Integer excellent;
     @NotNull
     private Integer status;
-    @NotNull
-    private Long img;
 
-    private Long video;
-
-    private Long learningTask;
-
-    private Long homework;
 }

@@ -21,13 +21,14 @@ import javax.servlet.http.HttpServletRequest;
  */
 public interface ICourseService {
 
-    Result<Object> add(CourseDTO dto, MultipartFile img, MultipartFile learningTask, MultipartFile homework, MultipartFile video, HttpServletRequest request);
+    Result<Object> add(CourseDTO dto, HttpServletRequest request);
 
     Result<PageInfo<CourseVO>> query(CourseQueryDTO dto, HttpServletRequest request);
 
-    Result<Object> update(CourseDTO dto, MultipartFile img, MultipartFile[] pdf, MultipartFile video, HttpServletRequest request);
 
     Result<Object> delete(Long id, HttpServletRequest request);
 
     Result<CourseOneVO> queryOne(Long id, HttpServletRequest request);
+
+    Result<Object> update(CourseDTO dto, HttpServletRequest request);
 }

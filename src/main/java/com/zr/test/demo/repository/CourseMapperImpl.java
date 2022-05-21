@@ -25,7 +25,9 @@ public class CourseMapperImpl {
     public int insertOne(CourseEntity entity){
         return dao.insert(entity);
     }
-
+    public CourseEntity selectById(Long id){
+        return dao.selectById(id);
+    }
     public List<CourseEntity> selectByEntity(CourseEntity entity){
         if(entity==null){
             return dao.selectList(null);

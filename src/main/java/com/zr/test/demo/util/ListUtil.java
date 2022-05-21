@@ -3,6 +3,7 @@ package com.zr.test.demo.util;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,18 +22,27 @@ public class ListUtil {
       * @return true 空 false 非空
       */
      public static boolean isEmpty(List<?> list) {
-          return list == null || list.size() <= 0;
+          return list == null || list.isEmpty();
      }
 
-     public static String listToString(List<String> tag) {
-          if(ListUtil.isEmpty(tag)){
+     public static String listToString(List<?> tag) {
+          if(isEmpty(tag)){
                return null;
           }
           StringBuilder sb=new StringBuilder();
-          tag.forEach(t->{
-               sb.append(t).append(",");
-          });
+          tag.forEach(t-> sb.append(t).append(","));
           return sb.substring(0,sb.length()-1);
+     }
+     public static List<Long> stringToList(String tag) {
+          if(StringUtil.isEmpty(tag)){
+               return Collections.emptyList();
+          }
+          String[] tags=tag.split(",");
+          List<Long> res=new ArrayList<>(tags.length);
+          for(String t:tags){
+               res.add(Long.parseLong(t));
+          }
+          return res;
      }
      /**
       * 对list进行分组

@@ -30,14 +30,13 @@ public class FirstCategory implements Serializable {
 
     private String name;
 
-    private String img;
+    private Long img;
 
     private Integer order;
 
-    private String category;
+    private Long category;
 
-    private String tag;
-
+    private Long tag;
     private Integer type;
 
 

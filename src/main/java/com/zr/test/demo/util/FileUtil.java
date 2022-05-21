@@ -80,12 +80,13 @@ public class FileUtil {
 
      }
      public static String getBase64FilePath(String filePath) {
+          if(StringUtil.isEmpty(filePath)) {return null;}
           try {
                filePath = URLEncoder.encode(
                        Base64Utils.encodeToString(
                                filePath.getBytes(StandardCharsets.UTF_8)), "utf-8");
           } catch (Exception e) {
-               log.error("导出文件地址base64出错:" + e.getMessage(), e);
+               log.error("文件地址base64出错:" + e.getMessage(), e);
                throw new CustomException(ErrorCode.SYS_KEY_PARAM_ERR);
           }
           return filePath;

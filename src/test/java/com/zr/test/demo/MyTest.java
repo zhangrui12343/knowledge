@@ -29,7 +29,7 @@ public class MyTest extends DemoApplicationTests {
           // Step2：全局配置
           GlobalConfig gc = new GlobalConfig();
           // 填写代码生成的目录(需要修改)
-          String projectPath = "G:\\workspace\\springbootDemo";
+          String projectPath = "E:\\workspace\\knowledge\\";
           // 拼接出代码最终输出的目录
           gc.setOutputDir(projectPath + "/src/main/java");
           // 配置开发者信息（可选）（需要修改）
@@ -57,7 +57,7 @@ public class MyTest extends DemoApplicationTests {
           // 配置数据库连接用户名
           dsc.setUsername("root");
           // 配置数据库连接密码
-          dsc.setPassword("123456");
+          dsc.setPassword("root");
           mpg.setDataSource(dsc);
 
           // Step:4：包配置
@@ -77,7 +77,7 @@ public class MyTest extends DemoApplicationTests {
           // Step5：策略配置（数据库表配置）
           StrategyConfig strategy = new StrategyConfig();
           // 指定表名（可以同时操作多个表，使用 , 隔开）（需要修改）
-          strategy.setInclude("course_tag");
+          strategy.setInclude("course_tag_relation");
           // 配置数据表与实体类名之间映射的策略
           strategy.setNaming(NamingStrategy.underline_to_camel);
           strategy.setEntityBuilderModel(true);

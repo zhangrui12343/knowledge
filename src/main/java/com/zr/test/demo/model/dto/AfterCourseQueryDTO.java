@@ -12,7 +12,7 @@ import java.util.List;
 
 /**
  * <p>
- * 
+ *
  * </p>
  *
  * @author zr
@@ -21,20 +21,10 @@ import java.util.List;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@ApiModel(value="教育分类", description="")
-public class FirstCategoryDTO implements Serializable {
-
-    private static final long serialVersionUID=1L;
-
-    private Long id;
-    @NotBlank(message = "类型名称不能为空")
+@ApiModel(value = "课后教育查询入参", description = "")
+public class AfterCourseQueryDTO implements Serializable {
     private String name;
-    @NotNull(message = "图片不能为空")
-    private Long img;
-    private Integer order;
-    @NotNull(message = "类型不能为空")
+    private Long type;
     private Long category;
-    @NotNull(message = "标签不能为空")
     private Long tag;
-
 }

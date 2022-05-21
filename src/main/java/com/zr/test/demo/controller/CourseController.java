@@ -31,13 +31,9 @@ public class CourseController {
 
     @PostMapping("/add")
     @ApiOperation("5.0.1 新增课程")
-    public Result<Object> add(CourseDTO dto,
-                              @RequestPart(name = "img") MultipartFile img,
-                              @RequestPart(name = "video",required =false ) MultipartFile video,
-                              @RequestPart(name = "learningTask",required = false) MultipartFile learningTask,
-                              @RequestPart(name = "homework",required = false) MultipartFile homework,
+    public Result<Object> add(@RequestBody CourseDTO dto,
                               HttpServletRequest request) {
-        return service.add(dto,img,learningTask,homework,video,request);
+        return service.add(dto,request);
     }
 
     @PostMapping("/query")
@@ -53,9 +49,8 @@ public class CourseController {
 
     @PostMapping("/update")
     @ApiOperation("5.0.3 修改课程")
-    public Result<Object> update(CourseDTO dto, @RequestPart(name = "img",required = false) MultipartFile img,@RequestPart(name = "pdf",required =false ) MultipartFile[] pdf,
-                                 @RequestPart(name = "video",required = false) MultipartFile video,HttpServletRequest request) {
-        return service.update(dto,img,pdf,video,request);
+    public Result<Object> update(@RequestBody CourseDTO dto,HttpServletRequest request) {
+        return service.update(dto,request);
     }
 
     @PostMapping("/delete/{id}")
