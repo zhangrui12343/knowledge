@@ -6,6 +6,7 @@ import com.zr.test.demo.model.dto.AfterCourseDTO;
 import com.zr.test.demo.model.dto.AfterCourseQueryDTO;
 import com.zr.test.demo.model.entity.AfterCourse;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.zr.test.demo.model.vo.AfterCourseVO;
 import com.zr.test.demo.model.vo.CourseVO;
 
 import javax.servlet.http.HttpServletRequest;
@@ -21,5 +22,5 @@ import javax.servlet.http.HttpServletRequest;
 public interface IAfterCourseService extends IService<AfterCourse> {
 
     Result<Object> add(AfterCourseDTO dto, HttpServletRequest request);
-    Result<PageInfo<CourseVO>> query(AfterCourseQueryDTO dto, HttpServletRequest request);
+    Result<PageInfo<AfterCourseVO>> query(AfterCourseQueryDTO dto, HttpServletRequest request);
 }

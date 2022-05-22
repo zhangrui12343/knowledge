@@ -23,22 +23,10 @@ import java.util.stream.Collectors;
  */
 @Service
 public class TagServiceImpl extends ServiceImpl<TagMapper, Tag> implements ITagService {
-    @Autowired
-    private LocalUtil localUtil;
     @Override
     public Result<Object> add(Tag dto) {
-        if(this.save(dto)){
-            Map<Long,String> map;
-            if(localUtil.get("categoryAll")==null){
-                localUtil.set("categoryAll",this.getBaseMapper().selectList(null).stream().collect(Collectors.toMap(Tag::getId,Tag::getName)));
-            }else {
-                map= (Map<Long,String>)localUtil.get("categoryAll");
-                map.put(dto.getId(),dto.getName());
-            }
-        }
-        return Result.success(null);
+        return Result.success(this.baseMapper.insert(dto));
     }
-
     @Override
     public Result<List<Tag>> queryByDto(Tag dto) {
         return Result.success(this.getBaseMapper().selectList(null));
@@ -46,15 +34,11 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, Tag> implements ITagS
 
     @Override
     public Result<Object> delete(Long id) {
-        if(this.baseMapper.deleteById(id)==1){
-            Map<Long,String> map;
-            if(localUtil.get("categoryAll")==null){
-                localUtil.set("categoryAll",this.getBaseMapper().selectList(null).stream().collect(Collectors.toMap(Tag::getId,Tag::getName)));
-            }else {
-                map= (Map<Long,String>)localUtil.get("categoryAll");
-                map.remove(id);
-            }
-        }
-        return Result.success(null);
+        return Result.success(this.baseMapper.deleteById(id));
+    }
+
+    @Override
+    public Result<Object> update(Tag dto) {
+        return Result.success(this.baseMapper.updateById(dto));
     }
 }

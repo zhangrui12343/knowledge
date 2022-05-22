@@ -1,19 +1,13 @@
 package com.zr.test.demo.controller;
 
-import com.zr.test.demo.common.PageInfo;
 import com.zr.test.demo.common.Result;
 import com.zr.test.demo.config.swagger.ApiUser;
 import com.zr.test.demo.model.dto.*;
-import com.zr.test.demo.model.pojo.AuthKey;
-import com.zr.test.demo.model.vo.GeneralUserVO;
-import com.zr.test.demo.model.vo.SystemUserVO;
 import com.zr.test.demo.service.IUserService;
-import com.zr.test.demo.util.ParseToken;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import sun.net.www.ParseUtil;
 
 import javax.servlet.http.HttpServletRequest;
 

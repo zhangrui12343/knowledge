@@ -24,20 +24,14 @@ import java.util.stream.Collectors;
  */
 @Service
 public class SecondCategoryServiceImpl extends ServiceImpl<SecondCategoryMapper, SecondCategory> implements ISecondCategoryService {
-    @Autowired
-    private LocalUtil localUtil;
     @Override
     public Result<Object> add(SecondCategory dto) {
-        if(this.save(dto)){
-            Map<Long,String> map;
-            if(localUtil.get("tagAll")==null){
-                localUtil.set("tagAll",this.getBaseMapper().selectList(null).stream().collect(Collectors.toMap(SecondCategory::getId,SecondCategory::getName)));
-            }else {
-                map= (Map<Long,String>)localUtil.get("tagAll");
-                map.put(dto.getId(),dto.getName());
-            }
-        }
-        return Result.success(null);
+        return Result.success(this.getBaseMapper().insert(dto));
+    }
+
+    @Override
+    public Result<Object> update(SecondCategory dto) {
+        return Result.success(this.getBaseMapper().updateById(dto));
     }
 
     @Override
@@ -47,15 +41,6 @@ public class SecondCategoryServiceImpl extends ServiceImpl<SecondCategoryMapper,
 
     @Override
     public Result<Object> delete(Long id) {
-        if(this.baseMapper.deleteById(id)==1){
-            Map<Long,String> map;
-            if(localUtil.get("tagAll")==null){
-                localUtil.set("tagAll",this.getBaseMapper().selectList(null).stream().collect(Collectors.toMap(SecondCategory::getId,SecondCategory::getName)));
-            }else {
-                map= (Map<Long,String>)localUtil.get("tagAll");
-                map.remove(id);
-            }
-        }
-        return Result.success(null);
+        return Result.success(this.baseMapper.deleteById(id));
     }
 }

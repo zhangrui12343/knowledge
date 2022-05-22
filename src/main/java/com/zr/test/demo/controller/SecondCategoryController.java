@@ -45,5 +45,11 @@ public class SecondCategoryController {
     public Result<Object> delete(@PathVariable Long id) {
         return service.delete(id);
     }
+
+    @PostMapping("/update")
+    @ApiOperation("6.0.1 新增tag")
+    public Result<Object> update(@RequestBody SecondCategory dto) {
+        return service.update(dto);
+    }
 }
 

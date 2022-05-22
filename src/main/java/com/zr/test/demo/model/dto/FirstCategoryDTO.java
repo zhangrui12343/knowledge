@@ -33,8 +33,8 @@ public class FirstCategoryDTO implements Serializable {
     private Long img;
     private Integer order;
     @NotNull(message = "类型不能为空")
-    private Long category;
+    private List<Long> category;
     @NotNull(message = "标签不能为空")
-    private Long tag;
+    private List<Long> tag;
 
 }

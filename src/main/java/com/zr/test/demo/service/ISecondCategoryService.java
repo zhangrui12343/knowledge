@@ -17,6 +17,7 @@ import java.util.List;
 public interface ISecondCategoryService extends IService<SecondCategory> {
 
     Result<Object> add(SecondCategory dto);
+    Result<Object> update(SecondCategory dto);
 
     Result<List<SecondCategory>> queryByDto(SecondCategory dto);
 

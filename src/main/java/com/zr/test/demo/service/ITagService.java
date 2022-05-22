@@ -21,4 +21,6 @@ public interface ITagService extends IService<Tag> {
     Result<List<Tag>> queryByDto(Tag dto);
 
     Result<Object> delete(Long id);
+
+    Result<Object> update(Tag dto);
 }

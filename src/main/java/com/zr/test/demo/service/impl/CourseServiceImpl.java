@@ -95,11 +95,11 @@ public class CourseServiceImpl implements ICourseService {
         es.getRecords().forEach(e -> {
             CourseVO v = new CourseVO();
             v.setTime(TimeUtil.getTime(e.getTime()));
-            v.setSubject(all.get(e.getSubject()));
-            v.setBooks(all.get(e.getBooks()));
+            v.setSubject(Optional.ofNullable(all.get(e.getSubject())).orElse(""));
+            v.setBooks(Optional.ofNullable(all.get(e.getBooks())).orElse(""));
             v.setStatus(e.getStatus());
-            v.setGrade(all.get(e.getGrade()));
-            v.setXueduan(all.get(e.getXueduan()));
+            v.setGrade(Optional.ofNullable(all.get(e.getGrade())).orElse(""));
+            v.setXueduan(Optional.ofNullable(all.get(e.getXueduan())).orElse(""));
             v.setName(e.getName());
             v.setTeacher(e.getTeacher());
             v.setId(e.getId());

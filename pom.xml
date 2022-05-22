@@ -2,6 +2,8 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
+    <packaging>jar</packaging>
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
@@ -15,12 +17,13 @@
     <description>Demo project for Spring Boot</description>
     <properties>
         <java.version>1.8</java.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
     <dependencies>
-<!--        <dependency>-->
-<!--            <groupId>org.springframework.boot</groupId>-->
-<!--            <artifactId>spring-boot-starter-data-mongodb</artifactId>-->
-<!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>org.springframework.boot</groupId>-->
+        <!--            <artifactId>spring-boot-starter-data-mongodb</artifactId>-->
+        <!--        </dependency>-->
         <!--缓存配置-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -30,16 +33,17 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-aop</artifactId>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>org.springframework.boot</groupId>-->
-<!--            <artifactId>spring-boot-starter-security</artifactId>-->
-<!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>org.springframework.boot</groupId>-->
+        <!--            <artifactId>spring-boot-starter-security</artifactId>-->
+        <!--        </dependency>-->
         <!--redis配置-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
-        <dependency> <groupId>org.springframework.boot</groupId>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
         <dependency>
@@ -89,33 +93,57 @@
             <artifactId>druid-spring-boot-starter</artifactId>
             <version>1.2.5</version>
         </dependency>
-<!--        &lt;!&ndash;登录&ndash;&gt;-->
-<!--        <dependency>-->
-<!--            <groupId>com.auth0</groupId>-->
-<!--            <artifactId>java-jwt</artifactId>-->
-<!--            <version>3.18.3</version>-->
-<!--        </dependency>-->
-<!--        &lt;!&ndash; Spring Security和JWT的主要依赖 &ndash;&gt;-->
-<!--        <dependency>-->
-<!--            <groupId>org.springframework.cloud</groupId>-->
-<!--            <artifactId>spring-cloud-starter</artifactId>-->
-<!--            <version>3.1.0</version>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>org.springframework.cloud</groupId>-->
-<!--            <artifactId>spring-cloud-starter-oauth2</artifactId>-->
-<!--            <version>2.2.5.RELEASE</version>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>org.springframework.cloud</groupId>-->
-<!--            <artifactId>spring-cloud-starter-security</artifactId>-->
-<!--            <version>2.2.5.RELEASE</version>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>io.jsonwebtoken</groupId>-->
-<!--            <artifactId>jjwt</artifactId>-->
-<!--            <version>0.9.1</version>-->
-<!--        </dependency>-->
+        <!--log4j2日志依赖-->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.25</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-log4j2</artifactId>
+        </dependency>
+
+
+        <!-- log4j2异步日志需要加载disruptor-3.0.0.jar或者更高的版本 -->
+        <dependency>
+            <groupId>com.lmax</groupId>
+            <artifactId>disruptor</artifactId>
+            <version>3.3.6</version>
+        </dependency>
+        <!-- log4j2解析yaml配置文件 -->
+        <dependency>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
+            <version>1.25</version>
+        </dependency>
+        <!--        &lt;!&ndash;登录&ndash;&gt;-->
+        <!--        <dependency>-->
+        <!--            <groupId>com.auth0</groupId>-->
+        <!--            <artifactId>java-jwt</artifactId>-->
+        <!--            <version>3.18.3</version>-->
+        <!--        </dependency>-->
+        <!--        &lt;!&ndash; Spring Security和JWT的主要依赖 &ndash;&gt;-->
+        <!--        <dependency>-->
+        <!--            <groupId>org.springframework.cloud</groupId>-->
+        <!--            <artifactId>spring-cloud-starter</artifactId>-->
+        <!--            <version>3.1.0</version>-->
+        <!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>org.springframework.cloud</groupId>-->
+        <!--            <artifactId>spring-cloud-starter-oauth2</artifactId>-->
+        <!--            <version>2.2.5.RELEASE</version>-->
+        <!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>org.springframework.cloud</groupId>-->
+        <!--            <artifactId>spring-cloud-starter-security</artifactId>-->
+        <!--            <version>2.2.5.RELEASE</version>-->
+        <!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>io.jsonwebtoken</groupId>-->
+        <!--            <artifactId>jjwt</artifactId>-->
+        <!--            <version>0.9.1</version>-->
+        <!--        </dependency>-->
 
         <dependency>
             <groupId>javax.validation</groupId>
@@ -163,21 +191,95 @@
         </dependency>
     </dependencies>
 
+
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>**/*.yml</include>
+                    <include>**/*.properties</include>
+                    <include>**/*.xml</include>
+                    <include>**/*.txt</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>false</filtering>
+                <excludes>
+                    <exclude>**/*.yml</exclude>
+                    <exclude>**/*.properties</exclude>
+                    <exclude>**/*.xml</exclude>
+                    <exclude>**/*.txt</exclude>
+                </excludes>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.6.0</version>
                 <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                    <encoding>${project.build.sourceEncoding}</encoding>
+                    <!--编译的时候是否强制校验检查对象的转换-->
+                    <!--					<compilerArgument>-Xlint:unchecked</compilerArgument>-->
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.0.2</version>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.0.2</version>
+                <configuration>
+                    <outputDirectory>
+                        ${basedir}/target
+                    </outputDirectory>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <mainClass>com.zr.test.demo.DemoApplication</mainClass>
+                            <classpathPrefix>./../libs/</classpathPrefix>
+                        </manifest>
+                    </archive>
                     <excludes>
-                        <exclude>
-                            <groupId>org.projectlombok</groupId>
-                            <artifactId>lombok</artifactId>
-                        </exclude>
+                        <!--注意这玩意从编译结果目录开始算目录结构 -->
+                        <exclude>/*.properties</exclude>
+                        <exclude>/*.yml</exclude>
+                        <exclude>/assembly.xml</exclude>
+                        <exclude>/*.sh</exclude>
                     </excludes>
                 </configuration>
             </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.6</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <finalName>${project.artifactId}-${project.version}</finalName>
+                            <appendAssemblyId>false</appendAssemblyId>
+                            <descriptors>
+                                <descriptor>src/main/assembly/assembly.xml</descriptor>
+                            </descriptors>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
         </plugins>
     </build>
-
 </project>

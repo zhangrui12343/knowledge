@@ -7,6 +7,7 @@ import com.zr.test.demo.model.dto.AfterCourseDTO;
 import com.zr.test.demo.model.dto.AfterCourseQueryDTO;
 import com.zr.test.demo.model.dto.CourseDTO;
 import com.zr.test.demo.model.dto.CourseQueryDTO;
+import com.zr.test.demo.model.vo.AfterCourseVO;
 import com.zr.test.demo.model.vo.CourseOneVO;
 import com.zr.test.demo.model.vo.CourseVO;
 import com.zr.test.demo.service.IAfterCourseService;
@@ -41,7 +42,7 @@ public class AfterCourseController {
 
     @PostMapping("/query")
     @ApiOperation("5.0.2 查询课程")
-    public Result<PageInfo<CourseVO>> query(@RequestBody AfterCourseQueryDTO dto, HttpServletRequest request) {
+    public Result<PageInfo<AfterCourseVO>> query(@RequestBody AfterCourseQueryDTO dto, HttpServletRequest request) {
         return service.query(dto,request);
     }
 //    @PostMapping("/query/{id}")

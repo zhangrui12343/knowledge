@@ -20,8 +20,6 @@ import java.io.File;
 @Slf4j
 @Component
 public class StartServerListener implements ApplicationListener<ContextRefreshedEvent>, Ordered {
-    @Value("${file.save.path}")
-    private String fileSavePath;
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
         log.info("{} StartServerListener starting", TimeUtil.getTime());

@@ -15,26 +15,25 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author zr
- * @since 2022-05-16
+ * @since 2022-05-22
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@ApiModel(value="FirstCategory对象", description="")
-public class FirstCategory implements Serializable {
+@ApiModel(value="FirstTag对象", description="")
+public class FirstTag implements Serializable {
 
     private static final long serialVersionUID=1L;
 
-    @TableId(value = "id", type = IdType.AUTO)
-    private Long id;
+    private Long firstId;
 
-    private String name;
+    private Long tagId;
 
-    private Long img;
+    public FirstTag() {
+    }
 
-    private Integer order;
-
-    private Integer type;
-
-
+    public FirstTag(Long firstId, Long tagId) {
+        this.firstId = firstId;
+        this.tagId = tagId;
+    }
 }
