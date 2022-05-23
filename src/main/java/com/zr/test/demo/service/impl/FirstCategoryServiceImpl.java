@@ -105,6 +105,7 @@ public class FirstCategoryServiceImpl extends ServiceImpl<FirstCategoryMapper, F
             FirstCategoryVO vo = new FirstCategoryVO();
             BeanUtils.copyProperties(e, vo);
             vo.setImg(FileUtil.getBase64FilePath(fileRouterMapper.getPathById(e.getImg())));
+            vo.setImgId(e.getImg());
             StringBuilder sb0 =secondRelationMap.get(e.getId());
             vo.setCategory(sb0.substring(0, sb0.length()-1));
             StringBuilder sb1 =tagRelationMap.get(e.getId());

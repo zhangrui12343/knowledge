@@ -22,7 +22,7 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @ApiModel(value = "课后教育查询入参", description = "")
-public class AfterCourseQueryDTO implements Serializable {
+public class AfterCourseQueryDTO extends PageTDO implements Serializable {
     private String name;
     private Long type;
     private Long category;

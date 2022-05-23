@@ -1,5 +1,6 @@
 package com.zr.test.demo.service.impl;
 
+import com.sun.org.apache.regexp.internal.RE;
 import com.zr.test.demo.common.Result;
 import com.zr.test.demo.component.exception.CustomException;
 import com.zr.test.demo.config.enums.ErrorCode;
@@ -9,6 +10,7 @@ import com.zr.test.demo.service.IFileRouterService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zr.test.demo.util.FileUtil;
 import com.zr.test.demo.util.ListUtil;
+import com.zr.test.demo.util.StringUtil;
 import com.zr.test.demo.util.TimeUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,6 +25,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -76,7 +79,7 @@ public class FileRouterServiceImpl extends ServiceImpl<FileRouterMapper, FileRou
         return Result.success(ids);
     }
 
-    private void delete( List<Long> ids) {
+    public void delete( List<Long> ids) {
         if(ListUtil.isEmpty(ids)){
             return ;
         }
@@ -94,5 +97,26 @@ public class FileRouterServiceImpl extends ServiceImpl<FileRouterMapper, FileRou
                 }
             }
         }
+    }
+    public void deleteOldFile(Long id) {
+        if (id == null) {
+            return;
+        }
+        FileRouter fileRouter = this.getBaseMapper().selectById(id);
+        if (fileRouter != null) {
+            String path = fileRouter.getFilePath();
+            if (!StringUtil.isEmpty(path)) {
+                File file = new File(path);
+                if (file.exists()) {
+                    if (file.delete()) {
+                        log.info("文件删除成功,删除数据库记录,path={},id={}", path, id);
+                        this.getBaseMapper().deleteById(id);
+                    } else {
+                        log.error("文件删除失败,path={},id={}", path, id);
+                    }
+                }
+            }
+        }
+
     }
 }

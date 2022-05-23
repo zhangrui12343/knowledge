@@ -3,29 +3,31 @@ package com.zr.test.demo.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.zr.test.demo.common.PageInfo;
 import com.zr.test.demo.common.Result;
+import com.zr.test.demo.component.exception.CustomException;
+import com.zr.test.demo.config.enums.ErrorCode;
 import com.zr.test.demo.model.dto.AfterCourseDTO;
 import com.zr.test.demo.model.dto.AfterCourseQueryDTO;
-import com.zr.test.demo.model.entity.AfterCourse;
+import com.zr.test.demo.model.entity.*;
 import com.zr.test.demo.dao.AfterCourseMapper;
-import com.zr.test.demo.model.entity.AfterCourseFirstRelation;
-import com.zr.test.demo.model.entity.FirstCategory;
+import com.zr.test.demo.model.vo.AfterCourseOneVO;
 import com.zr.test.demo.model.vo.AfterCourseVO;
-import com.zr.test.demo.model.vo.CourseVO;
 import com.zr.test.demo.service.IAfterCourseService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.zr.test.demo.util.FileUtil;
 import com.zr.test.demo.util.ListUtil;
 import com.zr.test.demo.util.StringUtil;
+import com.zr.test.demo.util.TimeUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * <p>
- *  服务实现类
+ * 服务实现类
  * </p>
  *
  * @author zr
@@ -34,42 +36,186 @@ import java.util.List;
 @Service
 public class AfterCourseServiceImpl extends ServiceImpl<AfterCourseMapper, AfterCourse> implements IAfterCourseService {
 
-    private final AfterCourseFirstRelationServiceImpl typeService;
 
-    public AfterCourseServiceImpl(AfterCourseFirstRelationServiceImpl typeService) {
-        this.typeService = typeService;
+    private final AfterCourseTagRelationServiceImpl afterCourseTagRelationService;
+    private final AfterCourseCategoryRelationServiceImpl afterCourseCategoryRelationService;
+    private final FirstCategoryServiceImpl firstCategoryService;
+    private final FileRouterServiceImpl fileRouterService;
+
+    public AfterCourseServiceImpl(AfterCourseTagRelationServiceImpl afterCourseTagRelationService,
+                                  AfterCourseCategoryRelationServiceImpl afterCourseCategoryRelationService,
+                                  FirstCategoryServiceImpl firstCategoryService, FileRouterServiceImpl fileRouterService) {
+        this.afterCourseTagRelationService = afterCourseTagRelationService;
+        this.afterCourseCategoryRelationService = afterCourseCategoryRelationService;
+        this.firstCategoryService = firstCategoryService;
+        this.fileRouterService = fileRouterService;
     }
 
     @Override
     public Result<Object> add(AfterCourseDTO dto, HttpServletRequest request) {
-        AfterCourse vo=new AfterCourse();
-        BeanUtils.copyProperties(vo,dto);
+        AfterCourse vo = new AfterCourse();
+        BeanUtils.copyProperties(vo, dto);
         vo.setTime(new Date());
         vo.setVideos(ListUtil.listToString(dto.getVideos()));
         vo.setDocs(ListUtil.listToString(dto.getDocs()));
-        int i=this.baseMapper.insert(vo);
-        if(i==1){
-            dto.getTypes().forEach(id-> typeService.getBaseMapper().insert(new AfterCourseFirstRelation(vo.getId(),id)));
+        int i = this.baseMapper.insert(vo);
+        if (i == 1) {
+            dto.getTags().forEach(id -> afterCourseTagRelationService.getBaseMapper().insert(new AfterCourseTagRelation(vo.getId(), id)));
+            dto.getCategories().forEach(id -> afterCourseCategoryRelationService.getBaseMapper().insert(new AfterCourseCategoryRelation(vo.getId(), id)));
         }
         return Result.success(i);
     }
 
     @Override
     public Result<PageInfo<AfterCourseVO>> query(AfterCourseQueryDTO dto, HttpServletRequest request) {
-
-        List<Long> firstId=new ArrayList<>();
-        if(dto.getType()!=null){
-            QueryWrapper<FirstCategory> queryWrapper=new QueryWrapper<>();
-            QueryWrapper<AfterCourseFirstRelation> queryWrapper2=new QueryWrapper<>();
-            queryWrapper2.eq("first_id",dto.getType());
-            List<AfterCourseFirstRelation> list= typeService.getBaseMapper().selectList(queryWrapper2);
-            if(ListUtil.isEmpty(list)){
-        //        return ;
-            }
-      //      list.
+        QueryWrapper<AfterCourse> queryWrapper = new QueryWrapper<>();
+        if (!StringUtil.isEmpty(dto.getName())) {
+            queryWrapper.like("name", dto.getName());
         }
-    //    this.getBaseMapper().selectByCondition()
-        return null;
+        if (dto.getType() != null) {
+            queryWrapper.eq("type", dto.getType());
+        }
+        queryWrapper.orderByDesc("time");
+        List<AfterCourse> list = this.baseMapper.selectList(queryWrapper);
+        if(ListUtil.isEmpty(list)){
+            PageInfo<AfterCourseVO> pageInfo=new PageInfo<>();
+            pageInfo.setTotal(0);
+            pageInfo.setPage(dto.getPage());
+            pageInfo.setPageSize(dto.getPageSize());
+            return Result.success(pageInfo);
+        }
+        if (dto.getCategory() != null) {
+            QueryWrapper<AfterCourseCategoryRelation> queryWrapper1 = new QueryWrapper<>();
+            queryWrapper1.eq("category_id", dto.getCategory());
+            List<AfterCourseCategoryRelation> categoryRelations = afterCourseCategoryRelationService.getBaseMapper().selectList(queryWrapper1);
+            if (!ListUtil.isEmpty(categoryRelations)) {
+                List<Long> courseIds = categoryRelations.stream().map(AfterCourseCategoryRelation::getAfterCourseId).collect(Collectors.toList());
+                list = list.stream().filter(e -> courseIds.contains(e.getId())).collect(Collectors.toList());
+            }
+        }
+        if (dto.getTag() != null) {
+            QueryWrapper<AfterCourseTagRelation> queryWrapper1 = new QueryWrapper<>();
+            queryWrapper1.eq("tag_id", dto.getTag());
+            List<AfterCourseTagRelation> tagRelations = afterCourseTagRelationService.getBaseMapper().selectList(queryWrapper1);
+            if (!ListUtil.isEmpty(tagRelations)) {
+                List<Long> courseIds = tagRelations.stream().map(AfterCourseTagRelation::getAfterCourseId).collect(Collectors.toList());
+                list = list.stream().filter(e -> courseIds.contains(e.getId())).collect(Collectors.toList());
+            }
+        }
+        int total=list.size();
+        if(total==0){
+            PageInfo<AfterCourseVO> pageInfo=new PageInfo<>();
+            pageInfo.setTotal(0);
+            pageInfo.setPage(dto.getPage());
+            pageInfo.setPageSize(dto.getPageSize());
+            return Result.success(pageInfo);
+        }
+        list=ListUtil.page(list,dto.getPage(),dto.getPageSize());
+        List<AfterCourseVO> res=new ArrayList<>();
+        Map<Long,String> types=firstCategoryService.getBaseMapper().selectList(null).stream().collect(Collectors.toMap(FirstCategory::getId,FirstCategory::getName));
+        list.forEach(e->{
+            AfterCourseVO vo=new AfterCourseVO();
+            vo.setId(e.getId());
+            vo.setName(e.getName());
+            vo.setStatus(e.getStatus());
+            vo.setTime(TimeUtil.getTime(e.getTime()));
+            vo.setType(Optional.ofNullable(types.get(e.getType())).orElse(""));
+            vo.setTag(afterCourseTagRelationService.selectTagNamesByCourseId(e.getId()));
+            vo.setCategory(afterCourseCategoryRelationService.selectCategoryNamesByCourseId(e.getId()));
+        });
+        PageInfo<AfterCourseVO> pageInfo=new PageInfo<>();
+        pageInfo.setList(res);
+        pageInfo.setTotal(total);
+        pageInfo.setPage(dto.getPage());
+        pageInfo.setPageSize(dto.getPageSize());
+        return Result.success(pageInfo);
+    }
+
+    @Override
+    public Result<AfterCourseOneVO> queryOne(Long id, HttpServletRequest request) {
+        AfterCourse course=this.getBaseMapper().selectById(id);
+        AfterCourseOneVO vo=new AfterCourseOneVO();
+        BeanUtils.copyProperties(course,vo);
+
+        vo.setCategories(afterCourseCategoryRelationService.selectCategoryIdByCourseId(course.getId()));
+        vo.setTags(afterCourseTagRelationService.selectTagIdByCourseId(course.getId()));
+        List<String> videos=new ArrayList<>();
+        String[] videoStr=course.getVideos().split(",");
+        List<Long> videoIds=new ArrayList<>();
+        for(String str:videoStr){
+            Long idd=Long.parseLong(str);
+            FileRouter file=fileRouterService.getBaseMapper().selectById(idd);
+            if(file!=null){
+                videos.add(FileUtil.getBase64FilePath(file.getFilePath()));
+                videoIds.add(idd);
+            }
+        }
+        vo.setVideos(videos);
+        vo.setVideoIds(videoIds);
+        String[] docStr=course.getDocs().split(",");
+        List<String> docs=new ArrayList<>();
+        List<Long> docIds=new ArrayList<>();
+        for(String str:docStr){
+            Long idd=Long.parseLong(str);
+            FileRouter file=fileRouterService.getBaseMapper().selectById(idd);
+            if(file!=null){
+                docs.add(FileUtil.getBase64FilePath(file.getFilePath()));
+                docIds.add(idd);
+            }
+        }
+        vo.setDocs(docs);
+        vo.setDocsIds(docIds);
+        return Result.success(vo);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Result<Object> update(AfterCourseDTO dto, HttpServletRequest request) {
+        if (dto.getId() == null) {
+            throw new CustomException(ErrorCode.SYS_PARAM_ERR);
+        }
+        AfterCourse entity=new AfterCourse();
+        BeanUtils.copyProperties(dto,entity);
+        entity.setDocs(ListUtil.listToString(dto.getDocs()));
+        entity.setVideos(ListUtil.listToString(dto.getVideos()));
+        QueryWrapper<AfterCourseCategoryRelation> queryWrapper=new QueryWrapper<>();
+        queryWrapper.eq("course_id",dto.getId());
+        afterCourseCategoryRelationService.getBaseMapper().delete(queryWrapper);
+        dto.getCategories().forEach(c-> afterCourseCategoryRelationService.getBaseMapper().insert(new AfterCourseCategoryRelation(dto.getId(),c)));
+        QueryWrapper<AfterCourseTagRelation> queryWrapper1=new QueryWrapper<>();
+        queryWrapper1.eq("course_id",dto.getId());
+        afterCourseTagRelationService.getBaseMapper().delete(queryWrapper1);
+        dto.getTags().forEach(c-> afterCourseTagRelationService.getBaseMapper().insert(new AfterCourseTagRelation(dto.getId(),c)));
+        return Result.success(this.getBaseMapper().updateById(entity));
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Result<Object> delete(Long id, HttpServletRequest request) {
+        AfterCourse e = this.getBaseMapper().selectById(id);
+        if (e == null) {
+            return Result.success(0);
+        }
+        QueryWrapper<AfterCourseCategoryRelation> queryWrapper=new QueryWrapper<>();
+        queryWrapper.eq("course_id",id);
+        afterCourseCategoryRelationService.getBaseMapper().delete(queryWrapper);
+        QueryWrapper<AfterCourseTagRelation> queryWrapper1=new QueryWrapper<>();
+        queryWrapper1.eq("course_id",id);
+        afterCourseTagRelationService.getBaseMapper().delete(queryWrapper1);
+        fileRouterService.deleteOldFile(e.getImg());
+        if(e.getVideos()!=null&&e.getVideos().length()>0){
+            String[] strs=e.getVideos().split(",");
+            for(String idStr:strs){
+                fileRouterService.deleteOldFile(Long.parseLong(idStr));
+            }
+        }
+        if(e.getDocs()!=null&&e.getDocs().length()>0){
+            String[] strs=e.getDocs().split(",");
+            for(String idStr:strs){
+                fileRouterService.deleteOldFile(Long.parseLong(idStr));
+            }
+        }
+        return Result.success(this.getBaseMapper().deleteById(id));
     }
 
 }

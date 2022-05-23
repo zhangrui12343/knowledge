@@ -29,17 +29,18 @@ public class AfterCourseDTO implements Serializable {
     @NotNull
     private Long img;
     @NotNull
-    private List<Long> types;
+    private Long type;
+
     @NotNull
     private List<Long> categories;
     @NotNull
     private List<Long> tags;
+
     private List<Long> videos;
     private List<Long> docs;
+
     @NotBlank
     private String description;
-    @NotNull
-    private Integer excellent;
     @NotNull
     private Integer status;
 

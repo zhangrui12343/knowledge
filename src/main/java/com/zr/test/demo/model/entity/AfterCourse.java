@@ -33,6 +33,8 @@ public class AfterCourse implements Serializable {
 
     private String name;
 
+    private Long type;
+
     private String description;
 
     private String docs;

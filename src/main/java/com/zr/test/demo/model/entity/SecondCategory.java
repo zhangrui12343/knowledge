@@ -30,5 +30,5 @@ public class SecondCategory implements Serializable {
 
     private String name;
 
-
+    private Integer type;
 }

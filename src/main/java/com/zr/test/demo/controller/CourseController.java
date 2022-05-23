@@ -43,7 +43,7 @@ public class CourseController {
     }
     @PostMapping("/query/{id}")
     @ApiOperation("5.0.2 查询课程")
-    public Result<CourseOneVO> query(@PathVariable Long id, HttpServletRequest request) {
+    public Result<CourseOneVO> queryOne(@PathVariable Long id, HttpServletRequest request) {
         return service.queryOne(id,request);
     }
 

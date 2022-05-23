@@ -16,6 +16,8 @@ public class CourseOneVO {
     private String teacher;
     @ApiModelProperty(value = "图片的地址", example = "1213")
     private String img;
+    @ApiModelProperty(value = "图片文件id", example = "1213")
+    private Long imgId;
     @ApiModelProperty(value = "学段", example = "1213")
     private Long xueduan;
     @ApiModelProperty(value = "年级", example = "1213")
@@ -34,10 +36,16 @@ public class CourseOneVO {
     private String description;
     @ApiModelProperty(value = "学习任务的地址", example = "1213")
     private String learningTask;
+    @ApiModelProperty(value = "学习任务文件id", example = "1213")
+    private Long learningTaskId;
     @ApiModelProperty(value = "课后练习的地址", example = "1213")
     private String homework;
+    @ApiModelProperty(value = "课后练习文件id", example = "1213")
+    private Long homeworkId;
     @ApiModelProperty(value = "视频的地址", example = "1213")
     private String video;
+    @ApiModelProperty(value = "视频文件id", example = "1213")
+    private Long videoId;
     @ApiModelProperty(value = "是否精品课程", example = "1213")
     private Integer excellent;
     @ApiModelProperty(value = "上下架", example = "1213")

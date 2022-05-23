@@ -15,21 +15,23 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author zr
- * @since 2022-05-15
+ * @since 2022-05-23
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@ApiModel(value="Tag对象", description="")
-public class Tag implements Serializable {
+@ApiModel(value="AfterCourseCategoryRelation对象", description="")
+public class AfterCourseCategoryRelation implements Serializable {
 
     private static final long serialVersionUID=1L;
 
-    @TableId(value = "id", type = IdType.AUTO)
-    private Long id;
+    @TableId(value = "after_course_id", type = IdType.AUTO)
+    private Long afterCourseId;
 
-    private String name;
+    private Long categoryId;
 
-    private Integer type;
-
+    public AfterCourseCategoryRelation(Long afterCourseId, Long categoryId) {
+        this.afterCourseId = afterCourseId;
+        this.categoryId = categoryId;
+    }
 }

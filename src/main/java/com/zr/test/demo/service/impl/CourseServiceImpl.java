@@ -172,9 +172,13 @@ public class CourseServiceImpl implements ICourseService {
         CourseOneVO vo = new CourseOneVO();
         BeanUtils.copyProperties(entity, vo);
         vo.setImg(FileUtil.getBase64FilePath(fileRouterMapper.getPathById(entity.getImg())));
+        vo.setImgId(entity.getImg());
         vo.setVideo(FileUtil.getBase64FilePath(fileRouterMapper.getPathById(entity.getVideo())));
+        vo.setVideoId(entity.getVideo());
         vo.setLearningTask(FileUtil.getBase64FilePath(fileRouterMapper.getPathById(entity.getLearningTask())));
+        vo.setLearningTaskId(entity.getLearningTask());
         vo.setHomework(FileUtil.getBase64FilePath(fileRouterMapper.getPathById(entity.getHomework())));
+        vo.setHomeworkId(entity.getHomework());
         vo.setApp(ListUtil.stringToList(entity.getApp()));
         vo.setCourseTag(typeRelationMapper.selectByCourseId(entity.getId()));
         vo.setCourseType(tagRelationMapper.selectByCourseId(entity.getId()));

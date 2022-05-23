@@ -31,6 +31,8 @@ public class FirstCategoryVO implements Serializable {
 
     private String img;
 
+    private Long imgId;
+
     private Integer order;
 
     private String category;
