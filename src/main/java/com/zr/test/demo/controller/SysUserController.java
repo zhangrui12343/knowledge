@@ -2,7 +2,7 @@ package com.zr.test.demo.controller;
 
 import com.zr.test.demo.common.PageInfo;
 import com.zr.test.demo.common.Result;
-import com.zr.test.demo.config.swagger.ApiUser;
+import com.zr.test.demo.config.swagger.annotation.ApiUser;
 import com.zr.test.demo.model.dto.*;
 import com.zr.test.demo.model.vo.GeneralUserVO;
 import com.zr.test.demo.model.vo.StudentVO;

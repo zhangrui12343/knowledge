@@ -1,14 +1,10 @@
 package com.zr.test.demo.controller;
 
 import com.zr.test.demo.common.Result;
-import com.zr.test.demo.config.swagger.ApiUser;
-import com.zr.test.demo.dao.IMenuDao;
+import com.zr.test.demo.config.swagger.annotation.ApiUser;
 import com.zr.test.demo.model.dto.MenuDTO;
-import com.zr.test.demo.model.dto.RoleDTO;
 import com.zr.test.demo.model.vo.MenuVO;
-import com.zr.test.demo.model.vo.RoleVO;
 import com.zr.test.demo.service.IMenuService;
-import com.zr.test.demo.service.IRoleService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;

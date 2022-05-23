@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.6.7</version>
+        <version>2.5.6</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.zr.test</groupId>
@@ -25,6 +25,10 @@
         <!--            <artifactId>spring-boot-starter-data-mongodb</artifactId>-->
         <!--        </dependency>-->
         <!--缓存配置-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-cache</artifactId>
@@ -49,7 +53,7 @@
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <scope>runtime</scope>
+            <version>5.1.39</version>
         </dependency>
         <dependency>
             <groupId>com.baomidou</groupId>
@@ -93,29 +97,10 @@
             <artifactId>druid-spring-boot-starter</artifactId>
             <version>1.2.5</version>
         </dependency>
-        <!--log4j2日志依赖-->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>1.7.25</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-log4j2</artifactId>
-        </dependency>
-
-
-        <!-- log4j2异步日志需要加载disruptor-3.0.0.jar或者更高的版本 -->
-        <dependency>
-            <groupId>com.lmax</groupId>
-            <artifactId>disruptor</artifactId>
-            <version>3.3.6</version>
-        </dependency>
-        <!-- log4j2解析yaml配置文件 -->
-        <dependency>
-            <groupId>org.yaml</groupId>
-            <artifactId>snakeyaml</artifactId>
-            <version>1.25</version>
         </dependency>
         <!--        &lt;!&ndash;登录&ndash;&gt;-->
         <!--        <dependency>-->

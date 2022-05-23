@@ -53,7 +53,7 @@ public class MyTest extends DemoApplicationTests {
           dsc.setUrl("jdbc:mysql://localhost:3306/zr?useUnicode=true&characterEncoding=utf8");
           // dsc.setSchemaName("testMyBatisPlus"); // 可以直接在 url 中指定数据库名
           // 配置数据库驱动
-          dsc.setDriverName("com.mysql.cj.jdbc.Driver");
+          dsc.setDriverName("com.mysql.jdbc.Driver");
           // 配置数据库连接用户名
           dsc.setUsername("root");
           // 配置数据库连接密码

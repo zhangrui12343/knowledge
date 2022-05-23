@@ -355,7 +355,7 @@ public class FileUtil {
      }
 
      /**
-      * C:/Program Files (x86)/CMS Server/TransmitServer/BaseDataServer/dist_lib
+      * C:/Program Files (x86)/CMS Server/TransmitServer/knowledge/dist_lib
       * @return
       */
      @SuppressWarnings({"all"})

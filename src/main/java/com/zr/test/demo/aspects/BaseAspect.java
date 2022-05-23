@@ -7,7 +7,6 @@ import com.zr.test.demo.common.Result;
 import com.zr.test.demo.component.exception.CustomException;
 import com.zr.test.demo.component.log.LogPrint;
 import com.zr.test.demo.config.enums.ErrorCode;
-import com.zr.test.demo.model.pojo.AuthKey;
 import com.zr.test.demo.util.*;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -23,9 +22,6 @@ import org.springframework.util.StringUtils;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.lang.reflect.Method;
-import java.nio.charset.StandardCharsets;
-import java.security.Key;
-import java.util.Date;
 import java.util.UUID;
 
 /**

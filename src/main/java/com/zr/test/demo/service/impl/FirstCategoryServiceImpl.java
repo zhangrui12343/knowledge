@@ -138,6 +138,7 @@ public class FirstCategoryServiceImpl extends ServiceImpl<FirstCategoryMapper, F
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Result<Object> update(FirstCategoryDTO dto) {
         if (dto.getId() == null) {
             throw new CustomException(ErrorCode.SYS_PARAM_INNER_ERR);

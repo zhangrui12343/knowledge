@@ -83,7 +83,7 @@
 			<fileMode>0751</fileMode>
 			<outputDirectory>dist_lib</outputDirectory>
 			<!--打包最后tar包里面的名称-->
-			<destName>BaseDataServer.jar</destName>
+			<destName>knowledge.jar</destName>
 		</file>
 	</files>
 </assembly>

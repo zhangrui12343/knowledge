@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zr.test.demo.component.exception.CustomException;
 import com.zr.test.demo.config.enums.ErrorCode;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
 
 import java.io.IOException;
@@ -18,7 +18,7 @@ import java.util.Collection;
  * @author huang_kangjie
  * @create 2020-03-17 14:28
  **/
-@Log4j2
+@Slf4j
 public class JsonUtils {
 
      private static final ObjectMapper MAPPER = new ObjectMapper();
