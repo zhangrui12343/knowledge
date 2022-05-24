@@ -5,15 +5,19 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zr.test.demo.common.PageInfo;
 import com.zr.test.demo.common.Result;
+import com.zr.test.demo.component.exception.CustomException;
+import com.zr.test.demo.config.enums.ErrorCode;
 import com.zr.test.demo.model.dto.AppDTO;
 import com.zr.test.demo.model.dto.AppQueryDTO;
 import com.zr.test.demo.model.entity.App;
 import com.zr.test.demo.dao.AppMapper;
 import com.zr.test.demo.model.entity.AppCategory;
 import com.zr.test.demo.model.entity.FileRouter;
+import com.zr.test.demo.model.vo.AppOneVO;
 import com.zr.test.demo.model.vo.AppVO;
 import com.zr.test.demo.service.IAppService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.zr.test.demo.util.FileUtil;
 import com.zr.test.demo.util.ListUtil;
 import com.zr.test.demo.util.StringUtil;
 import com.zr.test.demo.util.TimeUtil;
@@ -113,6 +117,33 @@ public class AppServiceImpl extends ServiceImpl<AppMapper, App> implements IAppS
         pageInfo.setTotal(page.getTotal());
         pageInfo.setList(res);
         return Result.success(pageInfo);
+    }
+
+    @Override
+    public Result<AppOneVO> queryOne(Long id, HttpServletRequest request) {
+        App app=this.getBaseMapper().selectById(id);
+        AppOneVO vo=new AppOneVO();
+        BeanUtils.copyProperties(app,vo);
+        vo.setImg(FileUtil.getBase64FilePath(fileRouterService.selectPath(app.getImg())));
+        vo.setLogo(FileUtil.getBase64FilePath(fileRouterService.selectPath(app.getLogo())));
+        vo.setTags(ListUtil.stringToList(app.getTags()));
+        return Result.success(vo);
+    }
+
+    @Override
+    public Result<Object> updateByDto(AppDTO dto, HttpServletRequest request) {
+        if(dto.getId()==null){
+            throw new CustomException(ErrorCode.SYS_PARAM_INNER_ERR);
+        }
+        App app=new App();
+        BeanUtils.copyProperties(dto,app);
+        app.setTags(ListUtil.listToString(dto.getTags()));
+        return Result.success(this.getBaseMapper().updateById(app));
+    }
+
+    @Override
+    public Result<Object> delete(Long id, HttpServletRequest request) {
+        return Result.success(this.getBaseMapper().deleteById(id));
     }
 
 }

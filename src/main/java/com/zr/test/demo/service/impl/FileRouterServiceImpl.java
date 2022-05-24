@@ -26,6 +26,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -93,6 +94,13 @@ public class FileRouterServiceImpl extends ServiceImpl<FileRouterMapper, FileRou
                 }
             }
         }
+    }
+    public String selectPath(Long id) {
+            FileRouter fileRouter = this.getBaseMapper().selectById(id);
+            if (fileRouter != null) {
+                return Optional.ofNullable(fileRouter.getFilePath()).orElse("");
+            }
+            return null;
     }
     public void delete(String idsStr) {
         if (StringUtil.isEmpty(idsStr)) {

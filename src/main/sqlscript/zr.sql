@@ -327,6 +327,21 @@ CREATE TABLE `topic`  (
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
+CREATE TABLE `app_case` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `app_name` varchar(150) DEFAULT NULL,
+  `app_id` bigint(20) DEFAULT NULL,
+  `case_name` varchar(150) DEFAULT NULL,
+  `video` bigint(20) DEFAULT NULL,
+  `app_introduction` text,
+  `feature` text,
+  `status` tinyint(4) DEFAULT NULL,
+  `order` tinyint(4) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+
 -- ----------------------------
 -- Table structure for user
 -- ----------------------------

@@ -43,23 +43,24 @@ public class AppDTO implements Serializable {
 
     @NotNull
     @ApiModelProperty(value = "软件类型", example = "1213")
-    private Integer type;
+    private Long type;
 
     @NotNull
     @ApiModelProperty(value = "软件科目", example = "1213")
-    private Integer subject;
+    private Long subject;
 
     @NotNull
     @ApiModelProperty(value = "软件平台", example = "1213")
-    private Integer platform;
+    private Long platform;
 
     @NotNull
     @ApiModelProperty(value = "软件标签", example = "1213")
-    private List<Integer> tags;
+    private List<Long> tags;
 
     @NotNull
     @ApiModelProperty(value = "上下架", example = "1")
     private Integer status;
+
     @NotNull
     @ApiModelProperty(value = "是否通用", example = "1")
     private Integer universal;

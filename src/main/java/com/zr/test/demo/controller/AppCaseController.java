@@ -4,15 +4,13 @@ package com.zr.test.demo.controller;
 import com.zr.test.demo.common.PageInfo;
 import com.zr.test.demo.common.Result;
 import com.zr.test.demo.config.swagger.annotation.ApiApp;
-import com.zr.test.demo.config.swagger.annotation.ApiAppType;
+import com.zr.test.demo.config.swagger.annotation.ApiAppCase;
+import com.zr.test.demo.model.dto.AppCaseDTO;
 import com.zr.test.demo.model.dto.AppDTO;
 import com.zr.test.demo.model.dto.AppQueryDTO;
-import com.zr.test.demo.model.dto.OtherCourseDTO;
-import com.zr.test.demo.model.dto.OtherCourseQueryDTO;
 import com.zr.test.demo.model.vo.AppOneVO;
 import com.zr.test.demo.model.vo.AppVO;
-import com.zr.test.demo.model.vo.OtherCourseOneVO;
-import com.zr.test.demo.model.vo.OtherCourseVO;
+import com.zr.test.demo.service.IAppCaseService;
 import com.zr.test.demo.service.IAppService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -30,16 +28,16 @@ import javax.servlet.http.HttpServletRequest;
  * @since 2022-05-24
  */
 @RestController
-@RequestMapping("/app")
-@Api(tags = "16-信课融合软件管理 api")
-@ApiApp
-public class AppController {
+@RequestMapping("/app-case")
+@Api(tags = "17-信课融合案例 api")
+@ApiAppCase
+public class AppCaseController {
 
     @Autowired
-    private IAppService service;
+    private IAppCaseService service;
     @PostMapping("/add")
     @ApiOperation("16.0.1 新增信课融合软件")
-    public Result<Object> add(@RequestBody AppDTO dto, HttpServletRequest request) {
+    public Result<Object> add(@RequestBody AppCaseDTO dto, HttpServletRequest request) {
         return service.add(dto,request);
     }
 
@@ -65,7 +63,6 @@ public class AppController {
     public Result<Object> delete(HttpServletRequest request, @PathVariable Long id) {
         return service.delete(id,request);
     }
-
 
 }
 
