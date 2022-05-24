@@ -56,7 +56,6 @@ public class FirstCategoryServiceImpl extends ServiceImpl<FirstCategoryMapper, F
     public Result<Object> add(FirstCategoryDTO dto) {
         FirstCategory entity = new FirstCategory();
         BeanUtils.copyProperties(entity, dto);
-        entity.setType(Constant.AFTER_COURSE);
         int i =this.getBaseMapper().insert(entity);
         if(i==1) {
             dto.getCategory().forEach(id -> firstSecondService.getBaseMapper().insert(new FirstSecond(entity.getId(),id)));
@@ -143,6 +142,10 @@ public class FirstCategoryServiceImpl extends ServiceImpl<FirstCategoryMapper, F
     public Result<Object> update(FirstCategoryDTO dto) {
         if (dto.getId() == null) {
             throw new CustomException(ErrorCode.SYS_PARAM_INNER_ERR);
+        }
+        FirstCategory old=this.getBaseMapper().selectById(dto.getId());
+        if(!old.getImg().equals(dto.getImg())){
+            fileRouterMapper.deleteById(old.getImg());
         }
         FirstCategory entity = new FirstCategory();
         BeanUtils.copyProperties(entity, dto);

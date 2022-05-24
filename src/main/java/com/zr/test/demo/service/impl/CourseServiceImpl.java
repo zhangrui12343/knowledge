@@ -118,6 +118,20 @@ public class CourseServiceImpl implements ICourseService {
         if (dto.getId() == null) {
             throw new CustomException(ErrorCode.SYS_PARAM_ERR);
         }
+        CourseEntity old=service.selectById(dto.getId());
+        if(!old.getImg().equals(dto.getImg())){
+            //删除图片
+            fileRouterMapper.deleteById(old.getImg());
+        }
+        if(!old.getHomework().equals(dto.getHomework())){
+            fileRouterMapper.deleteById(old.getHomework());
+        }
+        if(!old.getLearningTask().equals(dto.getLearningTask())){
+            fileRouterMapper.deleteById(old.getLearningTask());
+        }
+        if(!old.getVideo().equals(dto.getVideo())){
+            fileRouterMapper.deleteById(old.getVideo());
+        }
         CourseEntity entity = new CourseEntity();
         BeanUtils.copyProperties(dto, entity);
         typeRelationMapper.deleteByCourseId(dto.getId());

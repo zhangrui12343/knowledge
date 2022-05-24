@@ -3,6 +3,7 @@ package com.zr.test.demo.model.dto;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -22,17 +23,16 @@ import java.io.Serializable;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@ApiModel(value="CourseCategory对象", description="")
 public class CourseCategoryDTO implements Serializable {
 
     private static final long serialVersionUID=1L;
 
     private Long id;
     @NotNull
+    @ApiModelProperty(value = "父级id", example = "1213")
     private Long pid;
     @NotBlank
+    @ApiModelProperty(value = "分类名称", example = "1213")
     private String name;
-    @NotNull
-    private Integer level;
 
 }

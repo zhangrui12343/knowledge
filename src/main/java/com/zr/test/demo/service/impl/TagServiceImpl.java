@@ -1,17 +1,13 @@
 package com.zr.test.demo.service.impl;
 
 import com.zr.test.demo.common.Result;
-import com.zr.test.demo.config.cache.LocalUtil;
 import com.zr.test.demo.model.entity.Tag;
 import com.zr.test.demo.dao.TagMapper;
 import com.zr.test.demo.service.ITagService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * <p>

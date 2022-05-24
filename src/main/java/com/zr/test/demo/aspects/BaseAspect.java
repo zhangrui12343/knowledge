@@ -4,6 +4,7 @@ package com.zr.test.demo.aspects;
 import com.zr.test.demo.common.Constant;
 import com.zr.test.demo.common.Request;
 import com.zr.test.demo.common.Result;
+import com.zr.test.demo.common.UriWithoutToken;
 import com.zr.test.demo.component.exception.CustomException;
 import com.zr.test.demo.component.log.LogPrint;
 import com.zr.test.demo.config.enums.ErrorCode;
@@ -22,6 +23,9 @@ import org.springframework.util.StringUtils;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.lang.reflect.Method;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -65,11 +69,11 @@ public class BaseAspect {
         Object[] params = point.getArgs();
         Object o = null;
         HttpServletRequest request= ApplicationContextUtil.getHttpServletRequest();
-        if(!request.getRequestURI().equals("/user/login")&&!request.getRequestURI().equals("/user/register")){
+        if(!UriWithoutToken.exist(request.getRequestURI())){
             String token=request.getHeader(Constant.TOKEN);
             if(StringUtil.isEmpty(token)) {
-                logger.error("请求头为空！ key = {}", token);
-                throw new CustomException(ErrorCode.SYS_REQUEST_HEADER_ERR, "请求头 key = token 为空");
+                logger.error("请求头为空！ token " );
+                throw new CustomException(ErrorCode.SYS_REQUEST_HEADER_ERR, "请求头 token 为空");
             }
             HttpSession session=request.getSession(false);
             if(session==null){
@@ -80,6 +84,7 @@ public class BaseAspect {
                 throw new CustomException(ErrorCode.SYS_NO_AUTHORITY, "鉴权失败！");
             }
             //查询该用户是否存在，或者是否被禁用
+
             //延长sesion时间
             session.setMaxInactiveInterval(30*60);
         }

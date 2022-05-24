@@ -23,19 +23,18 @@ public class UserController {
     private IUserService userService;
 
     @PostMapping("/login")
-    @ApiOperation("1.0.1 user login")
+    @ApiOperation("1.0.1 普通用户登录")
     public Result<Object> login(@RequestBody LoginDTO username,HttpServletRequest request) {
         return this.userService.login(username,request);
     }
-
     @PostMapping("/register")
-    @ApiOperation("1.0.2 user register")
+    @ApiOperation("1.0.2 普通用户注册")
     public Result<Object> register(@RequestBody UserDTO user){
         return userService.register(user);
     }
 
     @PostMapping("/logout")
-    @ApiOperation("1.0.3 user logout")
+    @ApiOperation("1.0.3 普通用户登出")
     public Result<Object> logout(HttpServletRequest request) {
         return userService.logout(request);
     }

@@ -3,6 +3,7 @@ package com.zr.test.demo.service;
 import com.zr.test.demo.common.Result;
 import com.zr.test.demo.model.entity.FileRouter;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.zr.test.demo.model.vo.FileVO;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -17,6 +18,6 @@ import java.util.List;
  */
 public interface IFileRouterService extends IService<FileRouter> {
 
-    Result<Object> upload(MultipartFile[] file,List<Long> ids);
+    Result<FileVO> upload(MultipartFile file);
 
 }

@@ -1,6 +1,7 @@
 package com.zr.test.demo.model.dto;
 
 import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -23,8 +24,11 @@ import java.io.Serializable;
 @ApiModel(value="CourseType对象", description="")
 public class CourseTypeDTO implements Serializable {
     private static final long serialVersionUID=1L;
+    @ApiModelProperty(value = "id", example = "1213")
     private Long id;
+    @ApiModelProperty(value = "父id", example = "1213")
     private Long pid;
+    @ApiModelProperty(value = "名称", example = "1213")
     private String name;
 
 }

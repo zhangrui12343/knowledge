@@ -23,7 +23,7 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @ApiModel(value = "课后教育", description = "")
-public class AfterCourseOneVO implements Serializable {
+public class OtherCourseOneVO implements Serializable {
     @ApiModelProperty(value = "id", example = "1213")
     private Long id;
     @ApiModelProperty(value = "课后教育服务名称", example = "1213")

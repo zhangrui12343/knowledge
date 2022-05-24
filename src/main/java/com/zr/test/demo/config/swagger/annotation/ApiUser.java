@@ -7,5 +7,5 @@ import java.lang.annotation.*;
 @Inherited
 @SwaggerApiGroup(value = "userApi")
 public @interface ApiUser {
-
+    String value() default "userApi";
 }

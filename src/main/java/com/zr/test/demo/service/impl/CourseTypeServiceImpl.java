@@ -2,18 +2,11 @@ package com.zr.test.demo.service.impl;
 
 import com.zr.test.demo.common.Result;
 import com.zr.test.demo.component.exception.CustomException;
-import com.zr.test.demo.config.cache.LocalUtil;
 import com.zr.test.demo.config.enums.ErrorCode;
-import com.zr.test.demo.dao.CourseTypeMapper;
-import com.zr.test.demo.model.dto.CourseCategoryDTO;
 import com.zr.test.demo.model.dto.CourseTypeDTO;
-import com.zr.test.demo.model.entity.CourseCategoryEntity;
 import com.zr.test.demo.model.entity.CourseTypeEntity;
-import com.zr.test.demo.model.vo.CourseCategoryVO;
 import com.zr.test.demo.model.vo.CourseTypeVO;
-import com.zr.test.demo.repository.CourseCategoryMapperImpl;
 import com.zr.test.demo.repository.CourseTypeMapperImpl;
-import com.zr.test.demo.service.ICourseCategoryService;
 import com.zr.test.demo.service.ICourseTypeService;
 import com.zr.test.demo.util.ListUtil;
 import com.zr.test.demo.util.StringUtil;
@@ -27,8 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * <p>

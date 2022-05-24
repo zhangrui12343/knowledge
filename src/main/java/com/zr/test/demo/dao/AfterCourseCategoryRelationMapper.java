@@ -21,6 +21,6 @@ import java.util.List;
 @Repository
 @Mapper
 public interface AfterCourseCategoryRelationMapper extends BaseMapper<AfterCourseCategoryRelation> {
-    @Select("select a.id,a.name from second_category as a left join after_course_category_relation b where a.id=b.category_id and b.after_course_id =#{courseId}")
+    @Select("select a.id,a.name from second_category as a left join after_course_category_relation b on a.id=b.category_id where b.after_course_id =#{courseId}")
     List<SecondCategory> selectTagByCourseId(@Param("courseId") Long courseId);
 }

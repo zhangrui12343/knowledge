@@ -9,7 +9,6 @@ import com.zr.test.demo.model.vo.CourseCategoryVO;
 import com.zr.test.demo.repository.CourseCategoryMapperImpl;
 import com.zr.test.demo.service.ICourseCategoryService;
 import com.zr.test.demo.util.ListUtil;
-import com.zr.test.demo.config.cache.LocalUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,29 +35,17 @@ import java.util.stream.Collectors;
 public class CourseCategoryServiceImpl implements ICourseCategoryService {
 
     private final CourseCategoryMapperImpl service;
-    private final LocalUtil localUtil;
+
     @Autowired
-    public CourseCategoryServiceImpl(CourseCategoryMapperImpl service, LocalUtil localUtil) {
+    public CourseCategoryServiceImpl(CourseCategoryMapperImpl service) {
         this.service = service;
-        this.localUtil = localUtil;
     }
 
     @Override
     public Result<Object> add(CourseCategoryDTO dto) {
         CourseCategoryEntity entity = new CourseCategoryEntity();
         BeanUtils.copyProperties(dto, entity);
-        int i=service.insertOne(entity);
-        Map<Long,String> all;
-        if(i==0){
-            return Result.success(i);
-        }
-        if(localUtil.get("course_category")==null){
-            all=service.selectByEntity(null).stream().collect(Collectors.toMap(CourseCategoryEntity::getId,CourseCategoryEntity::getName));
-            localUtil.set("course_category",all);
-        }else {
-            all= (Map<Long, String>) localUtil.get("course_category");
-            all.put(entity.getId(),entity.getName());
-        }
+        int i = service.insertOne(entity);
         return Result.success(i);
     }
 
@@ -82,18 +69,7 @@ public class CourseCategoryServiceImpl implements ICourseCategoryService {
         CourseCategoryEntity entity = new CourseCategoryEntity();
         entity.setId(dto.getId());
         entity.setName(dto.getName());
-        int i=service.updateById(entity);
-        Map<Long,String> all;
-        if(i==0){
-            return Result.success(i);
-        }
-        if(localUtil.get("course_category")==null){
-            all=service.selectByEntity(null).stream().collect(Collectors.toMap(CourseCategoryEntity::getId,CourseCategoryEntity::getName));
-            localUtil.set("course_category",all);
-        }else {
-            all= (Map<Long, String>) localUtil.get("course_category");
-            all.put(entity.getId(),entity.getName());
-        }
+        int i = service.updateById(entity);
         return Result.success(i);
     }
 
@@ -104,18 +80,7 @@ public class CourseCategoryServiceImpl implements ICourseCategoryService {
         pids.add(id);
         List<Long> ids = selectChildren(new ArrayList<>(), pids);
         log.info("一共需要删除 {} 条", ids.size());
-        int i=service.deleteByIds(ids);
-        Map<Long,String> all;
-        if(i==0){
-            return Result.success(i);
-        }
-        if(localUtil.get("course_category")==null){
-            all=service.selectByEntity(null).stream().collect(Collectors.toMap(CourseCategoryEntity::getId,CourseCategoryEntity::getName));
-            localUtil.set("course_category",all);
-        }else {
-            all= (Map<Long, String>) localUtil.get("course_category");
-            ids.forEach(all::remove);
-        }
+        int i = service.deleteByIds(ids);
         return Result.success(i);
     }
 

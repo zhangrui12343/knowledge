@@ -3,11 +3,13 @@ package com.zr.test.demo.controller;
 
 import com.zr.test.demo.common.PageInfo;
 import com.zr.test.demo.common.Result;
+import com.zr.test.demo.config.swagger.annotation.ApiCourse;
 import com.zr.test.demo.model.dto.CourseDTO;
 import com.zr.test.demo.model.dto.CourseQueryDTO;
 import com.zr.test.demo.model.vo.CourseOneVO;
 import com.zr.test.demo.model.vo.CourseVO;
 import com.zr.test.demo.service.ICourseService;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -25,6 +27,8 @@ import javax.servlet.http.HttpServletRequest;
  */
 @RestController
 @RequestMapping("/course")
+@ApiCourse
+@Api(tags = "5-课程管理")
 public class CourseController {
     @Autowired
     private ICourseService service;
@@ -42,19 +46,19 @@ public class CourseController {
         return service.query(dto,request);
     }
     @PostMapping("/query/{id}")
-    @ApiOperation("5.0.2 查询课程")
+    @ApiOperation("5.0.3 查询课程")
     public Result<CourseOneVO> queryOne(@PathVariable Long id, HttpServletRequest request) {
         return service.queryOne(id,request);
     }
 
     @PostMapping("/update")
-    @ApiOperation("5.0.3 修改课程")
+    @ApiOperation("5.0.4 修改课程")
     public Result<Object> update(@RequestBody CourseDTO dto,HttpServletRequest request) {
         return service.update(dto,request);
     }
 
     @PostMapping("/delete/{id}")
-    @ApiOperation("5.0.4 删除课程")
+    @ApiOperation("5.0.5 删除课程")
     public Result<Object> delete(HttpServletRequest request, @PathVariable Long id) {
         return service.delete(id,request);
     }

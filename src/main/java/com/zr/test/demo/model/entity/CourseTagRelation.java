@@ -25,7 +25,6 @@ public class CourseTagRelation implements Serializable {
 
     private static final long serialVersionUID=1L;
 
-    @TableId(value = "course_id", type = IdType.AUTO)
     private Long courseId;
 
     private Long typeId;

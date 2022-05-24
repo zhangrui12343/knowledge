@@ -28,6 +28,5 @@ public class CourseCategoryVO implements Serializable {
     private Long id;
     private Long pid;
     private String name;
-    private Integer level;
 
 }

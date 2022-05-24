@@ -6,6 +6,7 @@ import com.zr.test.demo.component.exception.CustomException;
 import com.zr.test.demo.config.enums.ErrorCode;
 import com.zr.test.demo.model.entity.FileRouter;
 import com.zr.test.demo.dao.FileRouterMapper;
+import com.zr.test.demo.model.vo.FileVO;
 import com.zr.test.demo.service.IFileRouterService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zr.test.demo.util.FileUtil;
@@ -44,55 +45,71 @@ public class FileRouterServiceImpl extends ServiceImpl<FileRouterMapper, FileRou
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public Result<Object> upload(MultipartFile[] files,List<Long> old) {
-        delete(old);
-        if (files.length == 0) {
-            throw new CustomException(ErrorCode.SYS_PARAM_ERR);
+    public Result<FileVO> upload(MultipartFile file) {
+        if (FileUtil.isEmpty(file)) {
+            throw new CustomException(ErrorCode.FILE_UPLOAD_FAIL,"文件不能为空");
         }
-        List<Long> ids = new ArrayList<>();
         File p = new File(path);
         if (!p.exists()) {
             p.mkdir();
         }
-        for (MultipartFile file : files) {
-            if (FileUtil.isEmpty(file)) {
-                continue;
-            }
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
-            Date n = new Date();
-            String now = sdf.format(n);
-            String filePath;
-            try {
-                filePath = path + now + "-" + file.getOriginalFilename();
-                file.transferTo(new File(filePath));
-            } catch (IOException e) {
-                log.info("上传文件失败 filename={}  time={}", file.getOriginalFilename(), now);
-                log.error("{}", e.getMessage(), e);
-                throw new CustomException(ErrorCode.FILE_UPLOAD_FAIL);
-            }
-            FileRouter fileRouter = new FileRouter();
-            fileRouter.setFilePath(filePath);
-            fileRouter.setCreateTime(n);
-            this.getBaseMapper().insert(fileRouter);
-            ids.add(fileRouter.getId());
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+        Date n = new Date();
+        String now = sdf.format(n);
+        String filePath;
+        try {
+            filePath = path + now + "-" + file.getOriginalFilename();
+            file.transferTo(new File(filePath));
+        } catch (IOException e) {
+            log.info("上传文件失败 filename={}  time={}", file.getOriginalFilename(), now);
+            log.error("{}", e.getMessage(), e);
+            throw new CustomException(ErrorCode.FILE_UPLOAD_FAIL);
         }
-        return Result.success(ids);
+        FileRouter fileRouter = new FileRouter();
+        fileRouter.setFilePath(filePath);
+        fileRouter.setCreateTime(n);
+        this.getBaseMapper().insert(fileRouter);
+        FileVO vo=new FileVO();
+        vo.setId(fileRouter.getId());
+        vo.setPath(FileUtil.getBase64FilePath(filePath));
+        return Result.success(vo);
     }
 
-    public void delete( List<Long> ids) {
-        if(ListUtil.isEmpty(ids)){
-            return ;
+    public void delete(List<Long> ids) {
+        if (ListUtil.isEmpty(ids)) {
+            return;
         }
         for (Long id : ids) {
             FileRouter fileRouter = this.getBaseMapper().selectById(id);
             if (fileRouter != null) {
                 File file = new File(fileRouter.getFilePath());
-                if (file.exists() ) {
-                    if(file.delete()){
-                        log.info("文件删除成功,删除数据库记录,path={},id={}",fileRouter.getFilePath(),id);
+                if (file.exists()) {
+                    if (file.delete()) {
+                        log.info("文件删除成功,删除数据库记录,path={},id={}", fileRouter.getFilePath(), id);
                         this.getBaseMapper().deleteById(id);
-                    }else{
-                        log.error("文件删除失败,path={},id={}",fileRouter.getFilePath(),id);
+                    } else {
+                        log.error("文件删除失败,path={},id={}", fileRouter.getFilePath(), id);
+                    }
+                }
+            }
+        }
+    }
+    public void delete(String idsStr) {
+        if (StringUtil.isEmpty(idsStr)) {
+            return;
+        }
+        String[] ids=idsStr.split(",");
+        for (String idss : ids) {
+            Long id=Long.parseLong(idss);
+            FileRouter fileRouter = this.getBaseMapper().selectById(id);
+            if (fileRouter != null) {
+                File file = new File(fileRouter.getFilePath());
+                if (file.exists()) {
+                    if (file.delete()) {
+                        log.info("文件删除成功,删除数据库记录,path={},id={}", fileRouter.getFilePath(), id);
+                        this.getBaseMapper().deleteById(id);
+                    } else {
+                        log.error("文件删除失败,path={},id={}", fileRouter.getFilePath(), id);
                     }
                 }
             }

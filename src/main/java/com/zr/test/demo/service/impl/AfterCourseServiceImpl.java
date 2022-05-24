@@ -5,12 +5,12 @@ import com.zr.test.demo.common.PageInfo;
 import com.zr.test.demo.common.Result;
 import com.zr.test.demo.component.exception.CustomException;
 import com.zr.test.demo.config.enums.ErrorCode;
-import com.zr.test.demo.model.dto.AfterCourseDTO;
-import com.zr.test.demo.model.dto.AfterCourseQueryDTO;
+import com.zr.test.demo.model.dto.OtherCourseDTO;
+import com.zr.test.demo.model.dto.OtherCourseQueryDTO;
 import com.zr.test.demo.model.entity.*;
 import com.zr.test.demo.dao.AfterCourseMapper;
-import com.zr.test.demo.model.vo.AfterCourseOneVO;
-import com.zr.test.demo.model.vo.AfterCourseVO;
+import com.zr.test.demo.model.vo.OtherCourseOneVO;
+import com.zr.test.demo.model.vo.OtherCourseVO;
 import com.zr.test.demo.service.IAfterCourseService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zr.test.demo.util.FileUtil;
@@ -52,7 +52,7 @@ public class AfterCourseServiceImpl extends ServiceImpl<AfterCourseMapper, After
     }
 
     @Override
-    public Result<Object> add(AfterCourseDTO dto, HttpServletRequest request) {
+    public Result<Object> add(OtherCourseDTO dto, HttpServletRequest request) {
         AfterCourse vo = new AfterCourse();
         BeanUtils.copyProperties(vo, dto);
         vo.setTime(new Date());
@@ -67,7 +67,7 @@ public class AfterCourseServiceImpl extends ServiceImpl<AfterCourseMapper, After
     }
 
     @Override
-    public Result<PageInfo<AfterCourseVO>> query(AfterCourseQueryDTO dto, HttpServletRequest request) {
+    public Result<PageInfo<OtherCourseVO>> query(OtherCourseQueryDTO dto, HttpServletRequest request) {
         QueryWrapper<AfterCourse> queryWrapper = new QueryWrapper<>();
         if (!StringUtil.isEmpty(dto.getName())) {
             queryWrapper.like("name", dto.getName());
@@ -78,7 +78,7 @@ public class AfterCourseServiceImpl extends ServiceImpl<AfterCourseMapper, After
         queryWrapper.orderByDesc("time");
         List<AfterCourse> list = this.baseMapper.selectList(queryWrapper);
         if(ListUtil.isEmpty(list)){
-            PageInfo<AfterCourseVO> pageInfo=new PageInfo<>();
+            PageInfo<OtherCourseVO> pageInfo=new PageInfo<>();
             pageInfo.setTotal(0);
             pageInfo.setPage(dto.getPage());
             pageInfo.setPageSize(dto.getPageSize());
@@ -104,26 +104,27 @@ public class AfterCourseServiceImpl extends ServiceImpl<AfterCourseMapper, After
         }
         int total=list.size();
         if(total==0){
-            PageInfo<AfterCourseVO> pageInfo=new PageInfo<>();
+            PageInfo<OtherCourseVO> pageInfo=new PageInfo<>();
             pageInfo.setTotal(0);
             pageInfo.setPage(dto.getPage());
             pageInfo.setPageSize(dto.getPageSize());
             return Result.success(pageInfo);
         }
         list=ListUtil.page(list,dto.getPage(),dto.getPageSize());
-        List<AfterCourseVO> res=new ArrayList<>();
-        Map<Long,String> types=firstCategoryService.getBaseMapper().selectList(null).stream().collect(Collectors.toMap(FirstCategory::getId,FirstCategory::getName));
+        List<OtherCourseVO> res=new ArrayList<>();
+        Map<String,String> types=firstCategoryService.getBaseMapper().selectList(null).stream().collect(Collectors.toMap(e->""+e.getId(),FirstCategory::getName));
         list.forEach(e->{
-            AfterCourseVO vo=new AfterCourseVO();
+            OtherCourseVO vo=new OtherCourseVO();
             vo.setId(e.getId());
             vo.setName(e.getName());
             vo.setStatus(e.getStatus());
             vo.setTime(TimeUtil.getTime(e.getTime()));
-            vo.setType(Optional.ofNullable(types.get(e.getType())).orElse(""));
+            vo.setType(Optional.ofNullable(types.get(""+e.getType())).orElse(""));
             vo.setTag(afterCourseTagRelationService.selectTagNamesByCourseId(e.getId()));
             vo.setCategory(afterCourseCategoryRelationService.selectCategoryNamesByCourseId(e.getId()));
+            res.add(vo);
         });
-        PageInfo<AfterCourseVO> pageInfo=new PageInfo<>();
+        PageInfo<OtherCourseVO> pageInfo=new PageInfo<>();
         pageInfo.setList(res);
         pageInfo.setTotal(total);
         pageInfo.setPage(dto.getPage());
@@ -132,9 +133,9 @@ public class AfterCourseServiceImpl extends ServiceImpl<AfterCourseMapper, After
     }
 
     @Override
-    public Result<AfterCourseOneVO> queryOne(Long id, HttpServletRequest request) {
+    public Result<OtherCourseOneVO> queryOne(Long id, HttpServletRequest request) {
         AfterCourse course=this.getBaseMapper().selectById(id);
-        AfterCourseOneVO vo=new AfterCourseOneVO();
+        OtherCourseOneVO vo=new OtherCourseOneVO();
         BeanUtils.copyProperties(course,vo);
 
         vo.setCategories(afterCourseCategoryRelationService.selectCategoryIdByCourseId(course.getId()));
@@ -170,14 +171,29 @@ public class AfterCourseServiceImpl extends ServiceImpl<AfterCourseMapper, After
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Result<Object> update(AfterCourseDTO dto, HttpServletRequest request) {
+    public Result<Object> update(OtherCourseDTO dto, HttpServletRequest request) {
         if (dto.getId() == null) {
             throw new CustomException(ErrorCode.SYS_PARAM_ERR);
         }
+        AfterCourse old=this.baseMapper.selectById(dto.getId());
+        if(!old.getImg().equals(dto.getImg())){
+            //需要删除图片文件
+            fileRouterService.deleteOldFile(old.getImg());
+        }
+        String docs=ListUtil.listToString(dto.getDocs());
+        if(!old.getDocs().equals(docs)){
+            //需要删除文档文件
+            fileRouterService.delete(old.getDocs());
+        }
+        String videos=ListUtil.listToString(dto.getVideos());
+        if(!old.getDocs().equals(videos)){
+            //需要删除视频文件
+            fileRouterService.delete(old.getVideos());
+        }
         AfterCourse entity=new AfterCourse();
         BeanUtils.copyProperties(dto,entity);
-        entity.setDocs(ListUtil.listToString(dto.getDocs()));
-        entity.setVideos(ListUtil.listToString(dto.getVideos()));
+        entity.setDocs(docs);
+        entity.setVideos(videos);
         QueryWrapper<AfterCourseCategoryRelation> queryWrapper=new QueryWrapper<>();
         queryWrapper.eq("course_id",dto.getId());
         afterCourseCategoryRelationService.getBaseMapper().delete(queryWrapper);

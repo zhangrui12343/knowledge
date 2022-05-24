@@ -26,10 +26,11 @@ public class CourseTag implements Serializable {
     private static final long serialVersionUID=1L;
 
     @TableId(value = "id", type = IdType.AUTO)
+    @ApiModelProperty(value = "id", example = "1213")
     private Long id;
-
+    @ApiModelProperty(value = "标签名称", example = "1213")
     private String name;
-
+    @ApiModelProperty(value = "父级id", example = "1213")
     private Long pid;
 
 

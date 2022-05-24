@@ -9,6 +9,9 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
 /**
  * <p>
  * 
@@ -26,9 +29,12 @@ public class SecondCategory implements Serializable {
     private static final long serialVersionUID=1L;
 
     @TableId(value = "id", type = IdType.AUTO)
+    @ApiModelProperty(value = "id", example = "1213")
     private Long id;
-
+    @ApiModelProperty(value = "名称", example = "1213")
+    @NotBlank(message = "name必填")
     private String name;
-
+    @ApiModelProperty(value = "分类所属", example = "0:课后教育，1:专题，2:教师研修")
+    @NotNull(message = "type必填")
     private Integer type;
 }

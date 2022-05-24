@@ -135,7 +135,7 @@ public class Swagger2UiConfiguration extends WebMvcConfigurerAdapter {
         List<Parameter> pars = new ArrayList<>();
 
         ParameterBuilder token = new ParameterBuilder();
-        token.name("key").description("用户登陆得到的token，加密信息").modelRef(new ModelRef("string")).parameterType("header").required(false).defaultValue("1zT908g2j9ngT5imODE6v4EECTl4%2FKE9%2B%2B8zxqqNhDWQ%3D");
+        token.name("token").description("用户登陆得到的token，加密信息").modelRef(new ModelRef("string")).parameterType("header").required(false);
         pars.add(token.build());
         return pars;
     }
