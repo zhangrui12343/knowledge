@@ -7,6 +7,7 @@ import com.zr.test.demo.config.swagger.annotation.ApiAfterCourse;
 import com.zr.test.demo.config.swagger.annotation.ApiTopic;
 import com.zr.test.demo.model.dto.OtherCourseDTO;
 import com.zr.test.demo.model.dto.OtherCourseQueryDTO;
+import com.zr.test.demo.model.dto.StatusDTO;
 import com.zr.test.demo.model.vo.OtherCourseOneVO;
 import com.zr.test.demo.model.vo.OtherCourseVO;
 import com.zr.test.demo.service.IAfterCourseService;
@@ -61,6 +62,12 @@ public class TopicController {
     @ApiOperation("10.0.5 删除专题")
     public Result<Object> delete(HttpServletRequest request, @PathVariable Long id) {
         return service.delete(id,request);
+    }
+
+    @PostMapping("/updatestatus")
+    @ApiOperation("10.0.6 修改上下架状态")
+    public Result<Object> updateStatus(@RequestBody StatusDTO dto, HttpServletRequest request) {
+        return service.updateStatus(dto,request);
     }
 }
 

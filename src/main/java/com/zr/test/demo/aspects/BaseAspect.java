@@ -4,10 +4,12 @@ package com.zr.test.demo.aspects;
 import com.zr.test.demo.common.Constant;
 import com.zr.test.demo.common.Request;
 import com.zr.test.demo.common.Result;
-import com.zr.test.demo.common.UriWithoutToken;
+import com.zr.test.demo.config.enums.GUserUri;
+import com.zr.test.demo.config.enums.UriWithoutToken;
 import com.zr.test.demo.component.exception.CustomException;
 import com.zr.test.demo.component.log.LogPrint;
 import com.zr.test.demo.config.enums.ErrorCode;
+import com.zr.test.demo.model.pojo.AuthKey;
 import com.zr.test.demo.util.*;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -23,9 +25,6 @@ import org.springframework.util.StringUtils;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.lang.reflect.Method;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -68,47 +67,52 @@ public class BaseAspect {
         boolean print = logPrint == null || logPrint.print();
         Object[] params = point.getArgs();
         Object o = null;
-        HttpServletRequest request= ApplicationContextUtil.getHttpServletRequest();
-        if(!UriWithoutToken.exist(request.getRequestURI())){
-            String token=request.getHeader(Constant.TOKEN);
-            if(StringUtil.isEmpty(token)) {
-                logger.error("请求头为空！ token " );
+        HttpServletRequest request = ApplicationContextUtil.getHttpServletRequest();
+        if (!UriWithoutToken.exist(request.getRequestURI())) {
+            String token = request.getHeader(Constant.TOKEN);
+            if (StringUtil.isEmpty(token)) {
+                logger.error("请求头为空！ token ");
                 throw new CustomException(ErrorCode.SYS_REQUEST_HEADER_ERR, "请求头 token 为空");
             }
-            HttpSession session=request.getSession(false);
-            if(session==null){
+            HttpSession session = request.getSession(false);
+            if (session == null) {
                 throw new CustomException(ErrorCode.SYS_NO_AUTHORITY, "请登录！");
             }
-            if(session.getAttribute(token)==null){
+            AuthKey authKey = (AuthKey) session.getAttribute(token);
+            if (authKey == null) {
                 logger.error("无效token！");
                 throw new CustomException(ErrorCode.SYS_NO_AUTHORITY, "鉴权失败！");
+            }
+            //普通用户不能访问增删改的接口
+            if (authKey.getRoleId() == -1 && !GUserUri.startWith(request.getRequestURI())) {
+                throw new CustomException(ErrorCode.SYS_NO_AUTHORITY);
             }
             //查询该用户是否存在，或者是否被禁用
 
             //延长sesion时间
-            session.setMaxInactiveInterval(30*60);
+            session.setMaxInactiveInterval(30 * 60);
         }
         try {
-           o = request.getAttribute("_sid");
-        } catch (Exception ignore){
+            o = request.getAttribute("_sid");
+        } catch (Exception ignore) {
 
         }
         String sid;
-        if(o != null) {
+        if (o != null) {
             sid = o.toString();
         } else {
-           sid = UUID.randomUUID().toString();
+            sid = UUID.randomUUID().toString();
         }
 
         //校验参数的合法性
         if (params != null && params.length > 0 && params[0] != null) {
             //Object param = params[0];
-            for(Object param : params) {
+            for (Object param : params) {
                 if (param instanceof Request) {
                     ValidatorUtil.check(((Request) param).getData());
                     String requestSid = ((Request) param).getSid();
-                    sid = StringUtils.isEmpty(requestSid) ?  sid : requestSid;
-                }else {
+                    sid = StringUtils.isEmpty(requestSid) ? sid : requestSid;
+                } else {
                     ValidatorUtil.check(param);
                 }
             }
@@ -126,10 +130,10 @@ public class BaseAspect {
         result.setSid(sid);
         long endTime = System.currentTimeMillis();
         result.setTime(endTime - startTime);
-        if(print) {
+        if (print) {
             logger.info(simpleName + "." + methodName + "-" + "resultJson==>sid[" + sid + "];time[" + (endTime - startTime) + "] => 接口返回：{}", JsonUtils.toJson(result));
-        }else {
-            if(logger.isDebugEnabled()){
+        } else {
+            if (logger.isDebugEnabled()) {
                 logger.debug(simpleName + "." + methodName + "-" + "resultJson==>sid[" + sid + "];time[" + (endTime - startTime) + "] => 接口返回：{}", JsonUtils.toJson(result));
             }
         }

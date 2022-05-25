@@ -185,7 +185,7 @@ public class UserServiceImpl implements IUserService {
     @Override
     public Result<Object> findPassword(HttpServletRequest request, FindPasswordDTO dto) {
         if(!"123456".equals(dto.getCode())){
-            return Result.fail(ErrorCode.SYS_Code_ERRO);
+            return Result.fail(ErrorCode.SYS_CODE_ERRO);
         }
         UserEntity userEntity=new UserEntity();
         //判断手机号是否存在

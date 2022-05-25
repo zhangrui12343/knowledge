@@ -30,7 +30,7 @@ public class SysUserDaoImpl {
         return userDao.updateById(user);
     }
 
-    public int deleteById(Integer id){
+    public int deleteById(Long id){
         return userDao.deleteById(id);
     }
 

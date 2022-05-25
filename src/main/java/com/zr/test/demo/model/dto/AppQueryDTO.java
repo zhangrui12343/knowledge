@@ -22,7 +22,7 @@ import java.util.List;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@ApiModel(value = "信课融合软件查询入参", description = "")
+@ApiModel(value = "信课融合查询入参", description = "")
 public class AppQueryDTO extends PageTDO implements Serializable {
     @ApiModelProperty(value = "软件名称", example = "1213")
     private String name;

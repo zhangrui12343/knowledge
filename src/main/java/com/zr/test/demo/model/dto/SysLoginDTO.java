@@ -7,10 +7,10 @@ import javax.validation.constraints.NotBlank;
 
 @Data
 public class SysLoginDTO {
-    @ApiModelProperty(value = "密码", example = "saasasdaszxwer")
+    @ApiModelProperty(value = "密码", example = "Aa111111")
     @NotBlank(message = "密码不能为空")
     private String password;
-    @ApiModelProperty(value = "用户名", example = "张三")
+    @ApiModelProperty(value = "用户名", example = "useradmin")
     @NotBlank(message = "用户名不能为空")
     private String username;
 

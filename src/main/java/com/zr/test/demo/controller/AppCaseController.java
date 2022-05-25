@@ -8,6 +8,9 @@ import com.zr.test.demo.config.swagger.annotation.ApiAppCase;
 import com.zr.test.demo.model.dto.AppCaseDTO;
 import com.zr.test.demo.model.dto.AppDTO;
 import com.zr.test.demo.model.dto.AppQueryDTO;
+import com.zr.test.demo.model.dto.StatusDTO;
+import com.zr.test.demo.model.vo.AppCaseOneVO;
+import com.zr.test.demo.model.vo.AppCaseVO;
 import com.zr.test.demo.model.vo.AppOneVO;
 import com.zr.test.demo.model.vo.AppVO;
 import com.zr.test.demo.service.IAppCaseService;
@@ -36,33 +39,37 @@ public class AppCaseController {
     @Autowired
     private IAppCaseService service;
     @PostMapping("/add")
-    @ApiOperation("16.0.1 新增信课融合软件")
+    @ApiOperation("17.0.1 新增信课融合案例")
     public Result<Object> add(@RequestBody AppCaseDTO dto, HttpServletRequest request) {
         return service.add(dto,request);
     }
 
     @PostMapping("/query")
-    @ApiOperation("16.0.2 查询信课融合软件")
-    public Result<PageInfo<AppVO>> query(@RequestBody AppQueryDTO dto, HttpServletRequest request) {
+    @ApiOperation("17.0.2 查询信课融合案例")
+    public Result<PageInfo<AppCaseVO>> query(@RequestBody AppQueryDTO dto, HttpServletRequest request) {
         return service.queryByDto(dto,request);
     }
     @PostMapping("/query/{id}")
-    @ApiOperation("16.0.2 查询信课融合软件")
-    public Result<AppOneVO> queryOne(@PathVariable Long id, HttpServletRequest request) {
+    @ApiOperation("17.0.3 查询信课融合案例")
+    public Result<AppCaseOneVO> queryOne(@PathVariable Long id, HttpServletRequest request) {
         return service.queryOne(id,request);
     }
 
     @PostMapping("/update")
-    @ApiOperation("16.0.3 修改信课融合软件")
-    public Result<Object> update(AppDTO dto, HttpServletRequest request) {
+    @ApiOperation("17.0.4 修改信课融合案例")
+    public Result<Object> update(AppCaseDTO dto, HttpServletRequest request) {
         return service.updateByDto(dto,request);
     }
 
     @PostMapping("/delete/{id}")
-    @ApiOperation("16.0.4 删除信课融合软件")
+    @ApiOperation("17.0.5 删除信课融合案例")
     public Result<Object> delete(HttpServletRequest request, @PathVariable Long id) {
         return service.delete(id,request);
     }
-
+    @PostMapping("/updatestatus")
+    @ApiOperation("17.0.6 修改上下架状态")
+    public Result<Object> updateStatus(@RequestBody StatusDTO dto, HttpServletRequest request) {
+        return service.updateStatus(dto,request);
+    }
 }
 

@@ -7,12 +7,14 @@ import com.zr.test.demo.config.swagger.annotation.ApiUser;
 import com.zr.test.demo.model.dto.*;
 import com.zr.test.demo.model.vo.GeneralUserVO;
 import com.zr.test.demo.model.vo.StudentVO;
+import com.zr.test.demo.model.vo.SysLoginVO;
 import com.zr.test.demo.model.vo.SystemUserVO;
 import com.zr.test.demo.service.ISysUserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -29,7 +31,7 @@ public class SysUserController {
 
     @PostMapping("/login")
     @ApiOperation("2.0.1 系统用户")
-    public Result<Object> login(@RequestBody SysLoginDTO username,HttpServletRequest request) {
+    public Result<SysLoginVO> login(@RequestBody SysLoginDTO username, HttpServletRequest request) {
         return this.userService.login(username,request);
     }
     @PostMapping("/update/password")
@@ -47,8 +49,8 @@ public class SysUserController {
     public Result<PageInfo<GeneralUserVO>> queryGeneral(HttpServletRequest request, @RequestBody GeneralUserDTO user) {
         return userService.queryGeneral(user, request);
     }
-    @PostMapping("/udate/general")
-    @ApiOperation("2.0.5 修改普通用户")
+    @PostMapping("/update/general")
+    @ApiOperation("2.0.5 修改学生用户")
     public Result<Object> updateStudent(HttpServletRequest request, @RequestBody UpdateStudentDTO user) {
         return userService.updateStudent(user,request);
     }
@@ -82,10 +84,9 @@ public class SysUserController {
     public Result<Object> deleteSystem(HttpServletRequest request, @RequestBody UserIdDTO user) {
         return userService.deleteSystem(user,request);
     }
-
-//    @PostMapping("/student/import")
-//    @ApiOperation("2.1.1 导入学生用户")
-//    public Result<Object> importStudent(HttpServletRequest request, @RequestBody UserIdDTO user) {
-//        return userService.deleteSystem(user,request);
-//    }
+    @PostMapping("/student/import")
+    @ApiOperation("2.1.1 导入学生用户")
+    public Result<Object> importStudent(HttpServletRequest request, @RequestParam(name = "file") MultipartFile file) {
+        return userService.importStudent(file,request);
+    }
 }

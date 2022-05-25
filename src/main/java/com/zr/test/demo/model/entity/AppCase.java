@@ -3,6 +3,8 @@ package com.zr.test.demo.model.entity;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.io.Serializable;
+import java.util.Date;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -39,6 +41,12 @@ public class AppCase implements Serializable {
     private String appIntroduction;
 
     private String feature;
+
+    private Integer order;
+
+    private Integer status;
+
+    private Date time;
 
 
 }

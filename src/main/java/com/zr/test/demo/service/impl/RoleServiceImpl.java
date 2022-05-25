@@ -41,11 +41,6 @@ public class RoleServiceImpl implements IRoleService {
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public Result<Object> add(RoleDTO dto, HttpServletRequest request) {
-        String token = request.getHeader(Constant.TOKEN);
-        AuthKey authKey = (AuthKey) request.getSession().getAttribute(token);
-        if (authKey.getRoleId() > Constant.ROLE_GENERAL_ADMIN) {
-            throw new CustomException(ErrorCode.EVIDENCE_UNLOCK_AUTH);
-        }
         RoleEntity entity = new RoleEntity();
         entity.setName(dto.getName());
         entity.setMemo(dto.getMemo());
@@ -55,20 +50,15 @@ public class RoleServiceImpl implements IRoleService {
 
     @Override
     public Result<List<RoleVO>> query(HttpServletRequest request) {
-        String token = request.getHeader(Constant.TOKEN);
-        AuthKey authKey = (AuthKey) request.getSession().getAttribute(token);
-        if (authKey.getRoleId() > Constant.ROLE_GENERAL_ADMIN) {
-            throw new CustomException(ErrorCode.EVIDENCE_UNLOCK_AUTH);
-        }
         List<RoleMenuEntity> all = roleMenuDao.selectByEntity(null);
-        Map<Integer, List<Integer>> map = new HashMap<>();
+        Map<String, List<Integer>> map = new HashMap<>();
         all.forEach(e -> {
-            if (map.containsKey(e.getRoleId())) {
-                map.get(e.getRoleId()).add(e.getMenuId());
+            if (map.containsKey(e.getRoleId().toString())) {
+                map.get(e.getRoleId().toString()).add(e.getMenuId());
             } else {
                 List<Integer> l = new ArrayList<>();
                 l.add(e.getMenuId());
-                map.put(e.getRoleId(), l);
+                map.put(e.getRoleId().toString(), l);
             }
         });
         List<RoleVO> list = new ArrayList<>();
@@ -77,7 +67,7 @@ public class RoleServiceImpl implements IRoleService {
             v.setId(e.getId());
             v.setName(e.getName());
             v.setMemo(e.getMemo());
-            v.setMenu((Integer[]) map.get(e.getId()).toArray());
+            v.setMenu(map.get(e.getId().toString()));
             list.add(v);
         });
         return Result.success(list);
@@ -88,11 +78,6 @@ public class RoleServiceImpl implements IRoleService {
     public Result<Object> update(RoleDTO dto, HttpServletRequest request) {
         if(dto.getId()==null){
             throw new CustomException(ErrorCode.SYS_PARAM_ERR);
-        }
-        String token = request.getHeader(Constant.TOKEN);
-        AuthKey authKey = (AuthKey) request.getSession().getAttribute(token);
-        if (authKey.getRoleId() > Constant.ROLE_GENERAL_ADMIN) {
-            throw new CustomException(ErrorCode.EVIDENCE_UNLOCK_AUTH);
         }
         RoleEntity entity = new RoleEntity();
         entity.setId(dto.getId());
@@ -111,11 +96,6 @@ public class RoleServiceImpl implements IRoleService {
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public Result<Object> delete(Integer id, HttpServletRequest request) {
-        String token = request.getHeader(Constant.TOKEN);
-        AuthKey authKey = (AuthKey) request.getSession().getAttribute(token);
-        if (authKey.getRoleId() > Constant.ROLE_GENERAL_ADMIN) {
-            throw new CustomException(ErrorCode.EVIDENCE_UNLOCK_AUTH);
-        }
         int i=roleDao.deleteById(id);
         if(i>=0){
             RoleMenuEntity roleMenuEntity=new RoleMenuEntity();

@@ -10,6 +10,7 @@ import com.zr.test.demo.dao.CourseTagRelationMapper;
 import com.zr.test.demo.dao.CourseTypeRelationMapper;
 import com.zr.test.demo.model.dto.CourseDTO;
 import com.zr.test.demo.model.dto.CourseQueryDTO;
+import com.zr.test.demo.model.dto.StatusDTO;
 import com.zr.test.demo.model.entity.*;
 import com.zr.test.demo.model.vo.CourseOneVO;
 import com.zr.test.demo.model.vo.CourseVO;
@@ -141,6 +142,14 @@ public class CourseServiceImpl implements ICourseService {
         entity.setApp(dto.getApps() == null ? "" : ListUtil.listToString(dto.getApps()));
         entity.setTime(new Date());
         return Result.success(service.updateById(entity));
+    }
+
+    @Override
+    public Result<Object> updateStatus(StatusDTO dto, HttpServletRequest request) {
+        CourseEntity course=new CourseEntity();
+        course.setId(dto.getId());
+        course.setStatus(dto.getStatus());
+        return Result.success(this.service.updateById(course));
     }
 
     @Override

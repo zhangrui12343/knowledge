@@ -7,6 +7,7 @@ import com.zr.test.demo.component.exception.CustomException;
 import com.zr.test.demo.config.enums.ErrorCode;
 import com.zr.test.demo.model.dto.OtherCourseDTO;
 import com.zr.test.demo.model.dto.OtherCourseQueryDTO;
+import com.zr.test.demo.model.dto.StatusDTO;
 import com.zr.test.demo.model.entity.*;
 import com.zr.test.demo.dao.TeacherTrainingMapper;
 import com.zr.test.demo.model.vo.OtherCourseOneVO;
@@ -231,6 +232,14 @@ public class TeacherTrainingServiceImpl extends ServiceImpl<TeacherTrainingMappe
             }
         }
         return Result.success(this.getBaseMapper().deleteById(id));
+    }
+
+    @Override
+    public Result<Object> updateStatus(StatusDTO dto, HttpServletRequest request) {
+        TeacherTraining course=new TeacherTraining();
+        course.setId(dto.getId());
+        course.setStatus(dto.getStatus());
+        return Result.success(this.baseMapper.updateById(course));
     }
 
 }

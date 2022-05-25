@@ -3,6 +3,7 @@ package com.zr.test.demo.common;
 
 import com.zr.test.demo.component.exception.CustomException;
 import com.zr.test.demo.config.enums.ErrorCode;
+import com.zr.test.demo.util.StringUtil;
 
 
 /**
@@ -85,7 +86,21 @@ public class Result<T> extends BaseResult {
         result.setData(data);
         return result;
     }
-
+    /**
+     * 成功失败
+     * @param errorCode 有错误码的返回
+     * @param data 泛型参数
+     * @param <T> 泛型参数
+     * @return 泛型返回值
+     */
+    public static<T> Result<T> fail(ErrorCode errorCode,String message, T data) {
+        Result<T> result = Result.create();
+        result.setSuccess(true);
+        result.setCode(errorCode.getCode());
+        result.setMessage(StringUtil.isEmpty(message)?errorCode.getMessage():message);
+        result.setData(data);
+        return result;
+    }
 
     /**
      * 获取数据

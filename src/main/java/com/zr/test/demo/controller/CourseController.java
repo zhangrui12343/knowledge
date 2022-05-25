@@ -6,6 +6,7 @@ import com.zr.test.demo.common.Result;
 import com.zr.test.demo.config.swagger.annotation.ApiCourse;
 import com.zr.test.demo.model.dto.CourseDTO;
 import com.zr.test.demo.model.dto.CourseQueryDTO;
+import com.zr.test.demo.model.dto.StatusDTO;
 import com.zr.test.demo.model.vo.CourseOneVO;
 import com.zr.test.demo.model.vo.CourseVO;
 import com.zr.test.demo.service.ICourseService;
@@ -61,6 +62,12 @@ public class CourseController {
     @ApiOperation("5.0.5 删除课程")
     public Result<Object> delete(HttpServletRequest request, @PathVariable Long id) {
         return service.delete(id,request);
+    }
+
+    @PostMapping("/updatestatus")
+    @ApiOperation("5.0.6 修改上下架状态")
+    public Result<Object> updateStatus(@RequestBody StatusDTO dto, HttpServletRequest request) {
+        return service.updateStatus(dto,request);
     }
 }
 

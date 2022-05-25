@@ -32,7 +32,7 @@ public class AppVO {
     @ApiModelProperty(value = "上下架", example = "1213")
     private Integer status;
 
-    @ApiModelProperty(value = "上下架", example = "1213")
+    @ApiModelProperty(value = "是否通用", example = "1213")
     private Integer universal;
 
 

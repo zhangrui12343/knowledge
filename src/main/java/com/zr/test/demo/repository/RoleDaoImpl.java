@@ -30,6 +30,8 @@ public class RoleDaoImpl {
     public int deleteById(Integer id){
         return userDao.deleteById(id);
     }
-
+    public RoleEntity selectById(Integer id){
+        return userDao.selectById(id);
+    }
 
 }

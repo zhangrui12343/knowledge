@@ -10,6 +10,6 @@ public class UserIdDTO {
 
     @ApiModelProperty(value = "id", example = "1")
     @NotNull(message="id不能为空")
-    private Integer id;
+    private Long id;
 
 }

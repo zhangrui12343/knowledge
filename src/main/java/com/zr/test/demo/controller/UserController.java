@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/user")
-@Api(tags = "1-user")
+@Api(tags = "1-普通用户登录")
 @ApiUser
 @CrossOrigin(origins = "*", maxAge = 3600)
 public class UserController {

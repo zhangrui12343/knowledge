@@ -42,7 +42,6 @@ import java.util.stream.Collectors;
 public class FileRouterServiceImpl extends ServiceImpl<FileRouterMapper, FileRouter> implements IFileRouterService {
     @Value("${file.save.path}")
     private String fileSavePath;
-    private String path = fileSavePath + "files/";
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
@@ -50,7 +49,7 @@ public class FileRouterServiceImpl extends ServiceImpl<FileRouterMapper, FileRou
         if (FileUtil.isEmpty(file)) {
             throw new CustomException(ErrorCode.FILE_UPLOAD_FAIL,"文件不能为空");
         }
-        File p = new File(path);
+        File p = new File(fileSavePath);
         if (!p.exists()) {
             p.mkdir();
         }
@@ -59,7 +58,7 @@ public class FileRouterServiceImpl extends ServiceImpl<FileRouterMapper, FileRou
         String now = sdf.format(n);
         String filePath;
         try {
-            filePath = path + now + "-" + file.getOriginalFilename();
+            filePath = fileSavePath + now + "-" + file.getOriginalFilename();
             file.transferTo(new File(filePath));
         } catch (IOException e) {
             log.info("上传文件失败 filename={}  time={}", file.getOriginalFilename(), now);

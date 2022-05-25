@@ -17,7 +17,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/role")
-@Api(tags = "3-role")
+@Api(tags = "3-权限角色")
 @ApiRole
 @CrossOrigin(origins = "*", maxAge = 3600)
 public class RoleController {

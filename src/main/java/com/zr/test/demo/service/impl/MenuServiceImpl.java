@@ -45,11 +45,6 @@ public class MenuServiceImpl implements IMenuService {
 
     @Override
     public Result<Object> add(MenuDTO dto, HttpServletRequest request) {
-        String token = request.getHeader(Constant.TOKEN);
-        AuthKey authKey = (AuthKey) request.getSession().getAttribute(token);
-        if (authKey.getRoleId() > Constant.ROLE_GENERAL_ADMIN) {
-            throw new CustomException(ErrorCode.EVIDENCE_UNLOCK_AUTH);
-        }
         MenuEntity entity=new MenuEntity();
         BeanUtils.copyProperties(dto, entity);
         return Result.success(menuDao.insertOne(entity));
@@ -57,11 +52,6 @@ public class MenuServiceImpl implements IMenuService {
 
     @Override
     public Result<List<MenuVO>> query(HttpServletRequest request) {
-        String token = request.getHeader(Constant.TOKEN);
-        AuthKey authKey = (AuthKey) request.getSession().getAttribute(token);
-        if (authKey.getRoleId() > Constant.ROLE_GENERAL_ADMIN) {
-            throw new CustomException(ErrorCode.EVIDENCE_UNLOCK_AUTH);
-        }
         List<MenuVO> vos=new ArrayList<>();
         menuDao.selectByEntity(null).forEach(o->{
             MenuVO vo=new MenuVO();
@@ -76,11 +66,6 @@ public class MenuServiceImpl implements IMenuService {
         if(dto.getId()==null){
             throw new CustomException(ErrorCode.SYS_PARAM_ERR);
         }
-        String token = request.getHeader(Constant.TOKEN);
-        AuthKey authKey = (AuthKey) request.getSession().getAttribute(token);
-        if (authKey.getRoleId() > Constant.ROLE_GENERAL_ADMIN) {
-            throw new CustomException(ErrorCode.EVIDENCE_UNLOCK_AUTH);
-        }
         MenuEntity entity=new MenuEntity();
         BeanUtils.copyProperties(dto, entity);
         return Result.success(menuDao.updateById(entity));
@@ -88,11 +73,6 @@ public class MenuServiceImpl implements IMenuService {
 
     @Override
     public Result<Object> delete(Integer id, HttpServletRequest request) {
-        String token = request.getHeader(Constant.TOKEN);
-        AuthKey authKey = (AuthKey) request.getSession().getAttribute(token);
-        if (authKey.getRoleId() > Constant.ROLE_GENERAL_ADMIN) {
-            throw new CustomException(ErrorCode.EVIDENCE_UNLOCK_AUTH);
-        }
         int i=menuDao.deleteById(id);
         if(i>=0){
             RoleMenuEntity roleMenuEntity=new RoleMenuEntity();

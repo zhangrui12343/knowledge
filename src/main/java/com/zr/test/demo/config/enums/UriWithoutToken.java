@@ -1,4 +1,4 @@
-package com.zr.test.demo.common;
+package com.zr.test.demo.config.enums;
 
 /**
  * 不用权限校验的接口

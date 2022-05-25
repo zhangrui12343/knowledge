@@ -16,9 +16,12 @@ public class AppOneVO {
 
     @ApiModelProperty(value = "log的地址", example = "1213")
     private String logo;
-
+    @ApiModelProperty(value = "log文件id", example = "1213")
+    private Long logoId;
     @ApiModelProperty(value = "图片地址", example = "1213")
     private String img;
+    @ApiModelProperty(value = "图片文件id", example = "1213")
+    private Long imgId;
 
     @ApiModelProperty(value = "简介", example = "1213")
     private String introduction;

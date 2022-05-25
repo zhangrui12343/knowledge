@@ -17,7 +17,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/menu")
-@Api(tags = "4-menu")
+@Api(tags = "4-菜单")
 @ApiMenu
 @CrossOrigin(origins = "*", maxAge = 3600)
 public class MenuController {

@@ -4,6 +4,7 @@ import com.zr.test.demo.common.PageInfo;
 import com.zr.test.demo.common.Result;
 import com.zr.test.demo.model.dto.OtherCourseDTO;
 import com.zr.test.demo.model.dto.OtherCourseQueryDTO;
+import com.zr.test.demo.model.dto.StatusDTO;
 import com.zr.test.demo.model.entity.Topic;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.zr.test.demo.model.vo.OtherCourseOneVO;
@@ -27,4 +28,6 @@ public interface ITopicService extends IService<Topic> {
     Result<Object> update(OtherCourseDTO dto, HttpServletRequest request);
 
     Result<Object> delete(Long id, HttpServletRequest request);
+
+    Result<Object> updateStatus(StatusDTO dto, HttpServletRequest request);
 }

@@ -1,5 +1,7 @@
 package com.zr.test.demo.service.impl;
 
+import cn.afterturn.easypoi.excel.ExcelImportUtil;
+import cn.afterturn.easypoi.excel.entity.ImportParams;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.zr.test.demo.common.Constant;
 import com.zr.test.demo.common.PageInfo;
@@ -13,8 +15,10 @@ import com.zr.test.demo.model.entity.UserEntity;
 import com.zr.test.demo.model.pojo.AuthKey;
 import com.zr.test.demo.model.vo.GeneralUserVO;
 import com.zr.test.demo.model.vo.StudentVO;
+import com.zr.test.demo.model.vo.SysLoginVO;
 import com.zr.test.demo.model.vo.SystemUserVO;
 import com.zr.test.demo.repository.RoleDaoImpl;
+import com.zr.test.demo.repository.RoleMenuDaoImpl;
 import com.zr.test.demo.repository.SysUserDaoImpl;
 import com.zr.test.demo.repository.UserDaoImpl;
 import com.zr.test.demo.service.ISysUserService;
@@ -23,6 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import java.net.URLEncoder;
@@ -39,34 +44,39 @@ public class SysUserServiceImpl implements ISysUserService {
     private final SysUserDaoImpl userDao;
     private final UserDaoImpl gUserDao;
     private final RoleDaoImpl roleDao;
+    private final RoleMenuDaoImpl roleMenuDao;
 
     @Autowired
-    public SysUserServiceImpl(SysUserDaoImpl userDao, UserDaoImpl gUserDao, RoleDaoImpl roleDao) {
+    public SysUserServiceImpl(SysUserDaoImpl userDao, UserDaoImpl gUserDao,
+                              RoleDaoImpl roleDao, RoleMenuDaoImpl roleMenuDao) {
         this.userDao = userDao;
         this.gUserDao = gUserDao;
         this.roleDao = roleDao;
+        this.roleMenuDao = roleMenuDao;
     }
 
 
     @Override
-    public Result<Object> login(SysLoginDTO loginDTO, HttpServletRequest request) {
+    public Result<SysLoginVO> login(SysLoginDTO loginDTO, HttpServletRequest request) {
         SysUserEntity userEntity = new SysUserEntity();
         SysUserEntity user;
         //校验参数
         userEntity.setUsername(loginDTO.getUsername());
         List<SysUserEntity> list = userDao.selectByEntity(userEntity);
+        SysLoginVO vo=new SysLoginVO();
+
         if (ListUtil.isEmpty(list)) {
-            return Result.fail(ErrorCode.SYS_USERNAME_EXIST_ERROR_ERR, "用户名不存在");
+            return Result.fail(ErrorCode.SYS_USERNAME_EXIST_ERROR_ERR, "用户名不存在",vo);
         }
         if (list.size() > 1) {
             throw new CustomException(ErrorCode.SEARCH_TERREC_FAIL, "查询错误，请联系管理员");
         }
         user = list.get(0);
         if (!user.getPassword().equals(Md5Util.getMD5(loginDTO.getPassword()))) {
-            return Result.fail(ErrorCode.SYS_USER_OR_PWD_ERROR_ERR, "密码错误");
+            return Result.fail(ErrorCode.SYS_USER_OR_PWD_ERROR_ERR, "密码错误",vo);
         }
         if (user.getStatus() == 0) {
-            return Result.fail(ErrorCode.SYS_ACCOUNT_HAS_BANED_ERR);
+            return Result.fail(ErrorCode.SYS_ACCOUNT_HAS_BANED_ERR,vo);
         }
         //登录成功后的操作
         String token;
@@ -94,16 +104,13 @@ public class SysUserServiceImpl implements ISysUserService {
         authKey.setUserId(user.getId());
         authKey.setTime(TimeUtil.getTime());
         request.getSession().setAttribute(token, authKey);
-        return Result.success(token);
+        vo.setToken(token);
+        vo.setMenu(roleMenuDao.selectMenusByRoleId(user.getRole()));
+        return Result.success(vo);
     }
 
     @Override
     public Result<PageInfo<StudentVO>> queryStudent(StudentDTO user, HttpServletRequest request) {
-        String token = request.getHeader(Constant.TOKEN);
-        AuthKey authKey = (AuthKey) request.getSession().getAttribute(token);
-        if (authKey.getRoleId() == Constant.ROLE_SUPPER_ADMIN_USER && authKey.getRoleId() == Constant.ROLE_GENERAL_ADMIN) {
-            throw new CustomException(ErrorCode.EVIDENCE_UNLOCK_AUTH);
-        }
         IPage<UserEntity> page = gUserDao.selectByPage(user);
         List<UserEntity> list = page.getRecords();
         long total = page.getTotal();
@@ -130,11 +137,6 @@ public class SysUserServiceImpl implements ISysUserService {
 
     @Override
     public Result<PageInfo<GeneralUserVO>> queryGeneral(GeneralUserDTO user, HttpServletRequest request) {
-        String token = request.getHeader(Constant.TOKEN);
-        AuthKey authKey = (AuthKey) request.getSession().getAttribute(token);
-        if (authKey.getRoleId() == Constant.ROLE_SUPPER_ADMIN_USER && authKey.getRoleId() == Constant.ROLE_GENERAL_ADMIN) {
-            throw new CustomException(ErrorCode.EVIDENCE_UNLOCK_AUTH);
-        }
         UserEntity userEntity = new UserEntity();
         if (!StringUtil.isEmpty(user.getPhone())) {
             userEntity.setPhone(user.getPhone());
@@ -161,33 +163,48 @@ public class SysUserServiceImpl implements ISysUserService {
 
     @Override
     public Result<Object> updateStudent(UpdateStudentDTO user, HttpServletRequest request) {
-        String token = request.getHeader(Constant.TOKEN);
-        AuthKey authKey = (AuthKey) request.getSession().getAttribute(token);
-        if (authKey.getRoleId() == Constant.ROLE_SUPPER_ADMIN_USER && authKey.getRoleId() == Constant.ROLE_GENERAL_ADMIN) {
-            throw new CustomException(ErrorCode.EVIDENCE_UNLOCK_AUTH);
-        }
         UserEntity userEntity = new UserEntity();
         BeanUtils.copyProperties(user, userEntity);
         return Result.success(gUserDao.updateById(userEntity));
     }
 
     @Override
+    public Result<Object> importStudent(MultipartFile file, HttpServletRequest request) {
+        ImportParams params = new ImportParams();
+        //去掉标题行
+        params.setTitleRows(1);
+//
+//        try {
+//            List<Employee> list = ExcelImportUtil.importExcel(file.getInputStream(), student.class, params);
+//            list.forEach(employee -> {
+//                //民族id  new Nation(employee.getNation().getName()))  这是重写了equals和hashcode方法
+//                employee.setNationId(nationList.get(nationList.indexOf(new Nation(employee.getNation().getName()))).getId());
+//                //政治面貌id
+//                employee.setPoliticId(politicsStatusList.get(politicsStatusList.indexOf(new PoliticsStatus(employee.getPoliticsStatus().getName()))).getId());
+//                //部门id
+//                employee.setDepartmentId(departmentList.get(departmentList.indexOf(new Department(employee.getDepartment().getName()))).getId());
+//                //职称id
+//                employee.setJobLevelId(joblevelList.get(joblevelList.indexOf(new Joblevel(employee.getJoblevel().getName()))).getId());
+//                //职位id
+//                employee.setPosId(positionList.get(positionList.indexOf(new Position(employee.getPosition().getName()))).getId());
+//            });
+//            if (employeeService.saveBatch(list)){
+//                return RespBean.success("导入成功!");
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+        return null;
+
+    }
+
+    @Override
     public Result<Object> deleteGeneral(UpdateStudentDTO user, HttpServletRequest request) {
-        String token = request.getHeader(Constant.TOKEN);
-        AuthKey authKey = (AuthKey) request.getSession().getAttribute(token);
-        if (authKey.getRoleId() == Constant.ROLE_SUPPER_ADMIN_USER && authKey.getRoleId() == Constant.ROLE_GENERAL_ADMIN) {
-            throw new CustomException(ErrorCode.EVIDENCE_UNLOCK_AUTH);
-        }
-        return Result.success(userDao.deleteById(user.getId()));
+        return Result.success(gUserDao.deleteById(user.getId()));
     }
 
     @Override
     public Result<Object> addSystem(SystemUserDTO user, HttpServletRequest request) {
-        String token = request.getHeader(Constant.TOKEN);
-        AuthKey authKey = (AuthKey) request.getSession().getAttribute(token);
-        if (authKey.getRoleId() == Constant.ROLE_SUPPER_ADMIN_USER && authKey.getRoleId() == Constant.ROLE_GENERAL_ADMIN) {
-            throw new CustomException(ErrorCode.EVIDENCE_UNLOCK_AUTH);
-        }
         SysUserEntity userEntity = new SysUserEntity();
         if (StringUtil.isEmpty(user.getName())||StringUtil.isEmpty(user.getUsername())||
                 StringUtil.isEmpty(user.getPassword())||user.getRole()==null) {
@@ -205,10 +222,6 @@ public class SysUserServiceImpl implements ISysUserService {
     public Result<PageInfo<SystemUserVO>> querySystem(GeneralUserDTO user, HttpServletRequest request) {
         String token = request.getHeader(Constant.TOKEN);
         AuthKey authKey = (AuthKey) request.getSession().getAttribute(token);
-        if (authKey.getRoleId() == Constant.ROLE_SUPPER_ADMIN_USER && authKey.getRoleId() == Constant.ROLE_GENERAL_ADMIN) {
-            throw new CustomException(ErrorCode.EVIDENCE_UNLOCK_AUTH);
-        }
-
         IPage<SysUserEntity> page = userDao.querySystem(user.getStatus(), authKey.getUserId(), user.getPage(), user.getPageSize());
         List<SysUserEntity> list = page.getRecords();
         long total = page.getTotal();
@@ -217,14 +230,14 @@ public class SysUserServiceImpl implements ISysUserService {
         if (ListUtil.isEmpty(roles)) {
             throw new CustomException(ErrorCode.SYS_CUSTOM_ERR, "角色表为空");
         }
-        Map<Integer, String> map = roles.stream().collect(Collectors.toMap(RoleEntity::getId, RoleEntity::getName));
+        Map<String, String> map = roles.stream().collect(Collectors.toMap(e->e.getId().toString(), RoleEntity::getName));
         list.forEach(l -> {
             SystemUserVO vo = new SystemUserVO();
             vo.setId(l.getId());
             vo.setUsername(l.getUsername());
             vo.setName(l.getName());
             vo.setRole(l.getRole());
-            vo.setRoleName(Optional.ofNullable(map.get(l.getRole())).orElse(""));
+            vo.setRoleName(Optional.ofNullable(map.get(l.getRole().toString())).orElse(""));
             vo.setStatus(l.getId());
             res.add(vo);
         });
@@ -242,11 +255,6 @@ public class SysUserServiceImpl implements ISysUserService {
             throw new CustomException(ErrorCode.SYS_PARAM_ERR);
         }
 
-        String token = request.getHeader(Constant.TOKEN);
-        AuthKey authKey = (AuthKey) request.getSession().getAttribute(token);
-        if (authKey.getRoleId() != Constant.ROLE_SUPPER_ADMIN_USER) {
-            throw new CustomException(ErrorCode.EVIDENCE_UNLOCK_AUTH);
-        }
         SysUserEntity userEntity = new SysUserEntity();
         userEntity.setId(user.getId());
         if (user.getStatus() != null) {
@@ -267,11 +275,6 @@ public class SysUserServiceImpl implements ISysUserService {
 
     @Override
     public Result<Object> deleteSystem(UserIdDTO user, HttpServletRequest request) {
-        String token = request.getHeader(Constant.TOKEN);
-        AuthKey authKey = (AuthKey) request.getSession().getAttribute(token);
-        if (authKey.getRoleId() != Constant.ROLE_SUPPER_ADMIN_USER) {
-            throw new CustomException(ErrorCode.EVIDENCE_UNLOCK_AUTH);
-        }
         return Result.success(userDao.deleteById(user.getId()));
     }
 
