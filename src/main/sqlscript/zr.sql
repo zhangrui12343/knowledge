@@ -11,7 +11,7 @@
  Target Server Version : 50726
  File Encoding         : 65001
 
- Date: 24/05/2022 20:31:14
+ Date: 25/05/2022 18:23:19
 */
 
 SET NAMES utf8mb4;
@@ -82,6 +82,24 @@ CREATE TABLE `app`  (
   `universal` tinyint(4) NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = MyISAM AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Table structure for app_case
+-- ----------------------------
+DROP TABLE IF EXISTS `app_case`;
+CREATE TABLE `app_case`  (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `app_name` varchar(150) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `app_id` bigint(20) NULL DEFAULT NULL,
+  `case_name` varchar(150) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `video` bigint(20) NULL DEFAULT NULL,
+  `app_introduction` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL,
+  `feature` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL,
+  `status` tinyint(4) NULL DEFAULT NULL,
+  `order` tinyint(4) NULL DEFAULT NULL,
+  `time` datetime(0) NULL DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for app_category
@@ -181,7 +199,12 @@ CREATE TABLE `file_router`  (
   `filePath` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '不加密的文件路径',
   `create_time` datetime(0) NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = MyISAM AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = MyISAM AUTO_INCREMENT = 2 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of file_router
+-- ----------------------------
+INSERT INTO `file_router` VALUES (1, 'E:/file/20220525120654-1302 方案.docx', '2022-05-25 12:06:54');
 
 -- ----------------------------
 -- Table structure for first_category
@@ -229,7 +252,13 @@ CREATE TABLE `menu`  (
   `icon` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `pid` int(11) NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of menu
+-- ----------------------------
+INSERT INTO `menu` VALUES (1, '1', NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `menu` VALUES (2, '2', NULL, NULL, NULL, NULL, NULL);
 
 -- ----------------------------
 -- Table structure for role
@@ -238,9 +267,16 @@ DROP TABLE IF EXISTS `role`;
 CREATE TABLE `role`  (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `roleName` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
-  `level` int(10) NULL DEFAULT NULL,
+  `memo` varchar(200) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = MyISAM AUTO_INCREMENT = 4 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of role
+-- ----------------------------
+INSERT INTO `role` VALUES (1, '超级管理员1', '0');
+INSERT INTO `role` VALUES (2, '超级管理员2', '1');
+INSERT INTO `role` VALUES (3, '普通用户', '2');
 
 -- ----------------------------
 -- Table structure for role_menu
@@ -276,7 +312,12 @@ CREATE TABLE `sysuser`  (
   `role` tinyint(4) NULL DEFAULT NULL,
   `status` tinyint(4) NULL DEFAULT NULL COMMENT '启用禁用',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = MyISAM AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = MyISAM AUTO_INCREMENT = 2 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of sysuser
+-- ----------------------------
+INSERT INTO `sysuser` VALUES (1, '超级管理员', 'admin', '68cf63c62bc68d71fc41c028375e2f6e', 1, 1);
 
 -- ----------------------------
 -- Table structure for tag
@@ -309,6 +350,25 @@ CREATE TABLE `teacher_training`  (
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
+-- Table structure for tool
+-- ----------------------------
+DROP TABLE IF EXISTS `tool`;
+CREATE TABLE `tool`  (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `name` varchar(200) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = MyISAM AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Table structure for tool_app_relation
+-- ----------------------------
+DROP TABLE IF EXISTS `tool_app_relation`;
+CREATE TABLE `tool_app_relation`  (
+  `tool_id` bigint(20) NOT NULL,
+  `app_id` bigint(20) NULL DEFAULT NULL
+) ENGINE = MyISAM CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Fixed;
+
+-- ----------------------------
 -- Table structure for topic
 -- ----------------------------
 DROP TABLE IF EXISTS `topic`;
@@ -327,27 +387,12 @@ CREATE TABLE `topic`  (
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
-CREATE TABLE `app_case` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `app_name` varchar(150) DEFAULT NULL,
-  `app_id` bigint(20) DEFAULT NULL,
-  `case_name` varchar(150) DEFAULT NULL,
-  `video` bigint(20) DEFAULT NULL,
-  `app_introduction` text,
-  `feature` text,
-  `status` tinyint(4) DEFAULT NULL,
-  `order` tinyint(4) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-
-
 -- ----------------------------
 -- Table structure for user
 -- ----------------------------
 DROP TABLE IF EXISTS `user`;
 CREATE TABLE `user`  (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `name` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
   `phone` varchar(15) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
   `register` datetime(0) NULL DEFAULT NULL,
@@ -360,5 +405,13 @@ CREATE TABLE `user`  (
   `student_no` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = MyISAM AUTO_INCREMENT = 14 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of user
+-- ----------------------------
+INSERT INTO `user` VALUES (10, '张三9', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `user` VALUES (11, '李四1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `user` VALUES (12, '张三9', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `user` VALUES (13, '李四6', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
 SET FOREIGN_KEY_CHECKS = 1;
