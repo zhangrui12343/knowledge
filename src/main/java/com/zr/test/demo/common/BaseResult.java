@@ -44,5 +44,30 @@ public class BaseResult implements Serializable {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     protected String sid;
 
+    /**
+     * 分页时候的总数据条数
+     */
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    protected Long total;
+
+    /**
+     * 分页时候当前页码
+     */
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    protected Integer page;
+
+    /**
+     * 分页时候的每页条数
+     */
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @JsonProperty("pagesize")
+    protected Integer pageSize;
+
+    /**
+     * 分页的总页数
+     */
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    protected Integer pages;
+
 
 }

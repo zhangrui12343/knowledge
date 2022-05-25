@@ -49,29 +49,29 @@ public class FileRouterServiceImpl extends ServiceImpl<FileRouterMapper, FileRou
         if (FileUtil.isEmpty(file)) {
             throw new CustomException(ErrorCode.FILE_UPLOAD_FAIL,"文件不能为空");
         }
-        File p = new File(fileSavePath);
-        if (!p.exists()) {
-            p.mkdir();
-        }
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
         Date n = new Date();
-        String now = sdf.format(n);
-        String filePath;
+        String now =sdf.format(n);
+        String fileName = file.getOriginalFilename();
+        File dest = new File(new File(fileSavePath).getAbsolutePath()+ "/" + now + "-" +fileName);
+        if (!dest.getParentFile().exists()) {
+            dest.getParentFile().mkdirs();
+        }
+
         try {
-            filePath = fileSavePath + now + "-" + file.getOriginalFilename();
-            file.transferTo(new File(filePath));
+            file.transferTo(dest);
         } catch (IOException e) {
             log.info("上传文件失败 filename={}  time={}", file.getOriginalFilename(), now);
             log.error("{}", e.getMessage(), e);
             throw new CustomException(ErrorCode.FILE_UPLOAD_FAIL);
         }
         FileRouter fileRouter = new FileRouter();
-        fileRouter.setFilePath(filePath);
+        fileRouter.setFilePath(dest.getAbsolutePath());
         fileRouter.setCreateTime(n);
         this.getBaseMapper().insert(fileRouter);
         FileVO vo=new FileVO();
         vo.setId(fileRouter.getId());
-        vo.setPath(FileUtil.getBase64FilePath(filePath));
+        vo.setPath(FileUtil.getBase64FilePath(dest.getAbsolutePath()));
         return Result.success(vo);
     }
 

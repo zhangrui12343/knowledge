@@ -36,7 +36,9 @@ public class SysUserDaoImpl {
 
     public IPage<SysUserEntity> querySystem(Integer status, Integer userId,int page, int size) {
         QueryWrapper<SysUserEntity> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("status",status);
+        if(status!=null){
+            queryWrapper.eq("status",status);
+        }
         queryWrapper.ne("id",userId);
         queryWrapper.orderByDesc("id");
         return userDao.selectPage(new Page<>(page,size),queryWrapper);

@@ -49,11 +49,7 @@ public class UserDaoImpl {
     }
 
     public IPage<UserEntity> selectByPage(StudentDTO user) {
-        if (user.getStatus() == null) {
-            throw new CustomException(ErrorCode.SYS_PARAM_ERR);
-        }
         QueryWrapper<UserEntity> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("status", user.getStatus());
         queryWrapper.eq("student", 1);
         if (!StringUtil.isEmpty(user.getName())) {
             queryWrapper.like("name", user.getName()).or().like("student_no", user.getName());

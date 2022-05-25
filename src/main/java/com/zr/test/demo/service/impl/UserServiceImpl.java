@@ -11,6 +11,7 @@ import com.zr.test.demo.model.entity.UserEntity;
 import com.zr.test.demo.model.pojo.AuthKey;
 import com.zr.test.demo.model.vo.GeneralUserVO;
 import com.zr.test.demo.model.vo.SystemUserVO;
+import com.zr.test.demo.model.vo.UserLoginVO;
 import com.zr.test.demo.repository.UserDaoImpl;
 import com.zr.test.demo.service.IUserService;
 import com.zr.test.demo.util.*;
@@ -84,9 +85,10 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public Result<Object> login(LoginDTO loginDTO, HttpServletRequest request) {
+    public Result<UserLoginVO> login(LoginDTO loginDTO, HttpServletRequest request) {
         UserEntity userEntity = new UserEntity();
         UserEntity user;
+        UserLoginVO vo=new UserLoginVO();
         if (loginDTO.getStudent() == 1) {
             //校验参数
             if (StringUtil.isEmpty(loginDTO.getName())) {
@@ -100,14 +102,14 @@ public class UserServiceImpl implements IUserService {
             List<UserEntity> list = userDao.selectByEntity(userEntity);
             if (ListUtil.isEmpty(list)) {
                 //学籍号不存在
-                return Result.fail(ErrorCode.SYS_USERNAME_EXIST_ERROR_ERR, "学籍号不存在");
+                return Result.fail(ErrorCode.SYS_USERNAME_EXIST_ERROR_ERR, "学籍号不存在",vo);
             }
             if (list.size() > 1) {
                 throw new CustomException(ErrorCode.SEARCH_TERREC_FAIL, "查询错误，请联系管理员");
             }
             user = list.get(0);
             if (!user.getName().equals(loginDTO.getName())) {
-                return Result.fail(ErrorCode.SYS_USER_OR_PWD_ERROR_ERR, "姓名错误");
+                return Result.fail(ErrorCode.SYS_USER_OR_PWD_ERROR_ERR, "姓名错误",vo);
             }
         } else if (loginDTO.getStudent() == 0) {
             //校验参数
@@ -122,20 +124,20 @@ public class UserServiceImpl implements IUserService {
             List<UserEntity> list = userDao.selectByEntity(userEntity);
             if (ListUtil.isEmpty(list)) {
                 //手机号不存在
-                return Result.fail(ErrorCode.SYS_USERNAME_EXIST_ERROR_ERR, "手机号不存在");
+                return Result.fail(ErrorCode.SYS_USERNAME_EXIST_ERROR_ERR, "手机号不存在",vo);
             }
             if (list.size() > 1) {
                 throw new CustomException(ErrorCode.SEARCH_TERREC_FAIL, "查询错误，请联系管理员");
             }
             user = list.get(0);
             if (!user.getPassword().equals(Md5Util.getMD5(loginDTO.getPassword()))) {
-                return Result.fail(ErrorCode.SYS_USER_OR_PWD_ERROR_ERR);
+                return Result.fail(ErrorCode.SYS_USER_OR_PWD_ERROR_ERR,vo);
             }
         } else {
             throw new CustomException(ErrorCode.SYS_PARAM_ERR);
         }
         if (user.getStatus() == 0) {
-            return Result.fail(ErrorCode.SYS_ACCOUNT_HAS_BANED_ERR);
+            return Result.fail(ErrorCode.SYS_ACCOUNT_HAS_BANED_ERR,vo);
         }
         //登录成功后的操作
         user.setLastLogin(TimeUtil.getTime());
@@ -165,7 +167,9 @@ public class UserServiceImpl implements IUserService {
         authKey.setUserId(user.getId());
         authKey.setTime(TimeUtil.getTime());
         request.getSession().setAttribute(token, authKey);
-        return Result.success(token);
+        vo.setToken(token);
+        vo.setUsername(user.getName());
+        return Result.success(vo);
 
     }
 

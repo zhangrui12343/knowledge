@@ -6,13 +6,11 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class SysLoginVO {
+public class UserLoginVO {
 
     @ApiModelProperty(value = "token", example = "1213")
     private String token;
-    @ApiModelProperty(value = "用户名", example = "1213")
+    @ApiModelProperty(value = "姓名", example = "1213")
     private String username;
-    @ApiModelProperty(value = "所属权限", example = "1,2,3")
-    private List<Integer> menu;
 
 }

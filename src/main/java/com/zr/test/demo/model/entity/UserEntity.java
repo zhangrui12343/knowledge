@@ -25,13 +25,13 @@ public class UserEntity {
 
     private String password;
 
-    private int student;
+    private Integer student;
 
     private String school;
 
     private String studentNo;
 
-    private int intranet;
+    private Integer intranet;
 
 
 }

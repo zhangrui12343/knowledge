@@ -1,14 +1,11 @@
 package com.zr.test.demo.service.impl;
 
-import com.zr.test.demo.common.Constant;
-import com.zr.test.demo.common.PageInfo;
 import com.zr.test.demo.common.Result;
 import com.zr.test.demo.component.exception.CustomException;
 import com.zr.test.demo.config.enums.ErrorCode;
 import com.zr.test.demo.model.dto.*;
 import com.zr.test.demo.model.entity.RoleEntity;
 import com.zr.test.demo.model.entity.RoleMenuEntity;
-import com.zr.test.demo.model.pojo.AuthKey;
 import com.zr.test.demo.model.vo.RoleVO;
 import com.zr.test.demo.repository.RoleDaoImpl;
 import com.zr.test.demo.repository.RoleMenuDaoImpl;
@@ -110,12 +107,9 @@ public class RoleServiceImpl implements IRoleService {
 
 
     private Result<Object> getObjectResult(RoleDTO dto, RoleEntity entity, int i) {
-        List<RoleMenuEntity> list = new ArrayList<>();
         for (Integer mid : dto.getMenu()) {
-            RoleMenuEntity e = new RoleMenuEntity(entity.getId(), mid);
-            list.add(e);
+            roleMenuDao.insertOne( new RoleMenuEntity(entity.getId(), mid));
         }
-        roleMenuDao.insertBatchIgnore(list);
         return Result.success(i);
     }
 }

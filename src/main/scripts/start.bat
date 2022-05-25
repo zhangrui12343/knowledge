@@ -19,7 +19,7 @@ set JAVA_OPTS=-server -Xms2048m -Xmx2048m -XX:MetaspaceSize=128m -XX:MaxMetaspac
 -XX:+TieredCompilation -XX:+ExplicitGCInvokesConcurrent -XX:AutoBoxCacheMax=20000 ^
 -verbosegc -XX:+PrintGCDateStamps -XX:+PrintGCDetails -Xloggc:../log/gc/%GC_FILE% ^
 -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=../log/dump/%DUMP_FILE% -Dsys.name=knowledge ^
--Dclient.encoding.override=UTF-8 -Dfile.encoding=UTF-8 -Ddb.config.path=./../../config/DBConfig.json ^
+-Dclient.encoding.override=UTF-8 -Dfile.encoding=UTF-8 ^
 -Drun.ev=server -Dspring.config.location=./../config/application.properties ^
 -Dspring.profiles.active=online
 

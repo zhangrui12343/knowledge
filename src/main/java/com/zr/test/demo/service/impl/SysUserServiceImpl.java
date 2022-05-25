@@ -105,6 +105,7 @@ public class SysUserServiceImpl implements ISysUserService {
         authKey.setTime(TimeUtil.getTime());
         request.getSession().setAttribute(token, authKey);
         vo.setToken(token);
+        vo.setUsername(user.getUsername());
         vo.setMenu(roleMenuDao.selectMenusByRoleId(user.getRole()));
         return Result.success(vo);
     }

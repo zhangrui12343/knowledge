@@ -53,6 +53,10 @@ public class Result<T> extends BaseResult {
         if (data instanceof PageInfo) {
             PageInfo<T> temp = (PageInfo<T>) data;
             result.setData((T) temp.getList());
+            result.setPageSize(temp.getPageSize());
+            result.setPage(temp.getPage());
+            result.setTotal(temp.getTotal());
+            result.setData((T) temp.getList());
         }else {
             result.setData(data);
         }

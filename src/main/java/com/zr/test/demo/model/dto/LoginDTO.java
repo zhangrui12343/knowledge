@@ -4,11 +4,12 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 @Data
 public class LoginDTO {
     @ApiModelProperty(value = "是否是学生", example = "1")
-    @NotBlank(message="类型不能为空")
+    @NotNull(message="类型不能为空")
     private Integer student;
     @ApiModelProperty(value = "手机号", example = "13444444444")
     private String phone;
