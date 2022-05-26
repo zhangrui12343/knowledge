@@ -11,7 +11,7 @@
  Target Server Version : 50726
  File Encoding         : 65001
 
- Date: 25/05/2022 18:23:19
+ Date: 26/05/2022 18:30:12
 */
 
 SET NAMES utf8mb4;
@@ -121,12 +121,8 @@ CREATE TABLE `course`  (
   `name` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
   `teacher` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
   `img` bigint(20) NULL DEFAULT NULL,
-  `xueduan` bigint(20) NULL DEFAULT NULL,
-  `grade` bigint(20) NULL DEFAULT NULL,
-  `subject` bigint(20) NULL DEFAULT NULL,
-  `books` bigint(20) NULL DEFAULT NULL,
-  `course_type` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
-  `course_tag` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `category` bigint(20) NULL DEFAULT NULL,
+  `course_type` bigint(20) NULL DEFAULT NULL,
   `app` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
   `video` bigint(20) NULL DEFAULT NULL,
   `learning_task` bigint(20) NULL DEFAULT NULL,
@@ -182,15 +178,6 @@ CREATE TABLE `course_type`  (
 ) ENGINE = MyISAM AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
--- Table structure for course_type_relation
--- ----------------------------
-DROP TABLE IF EXISTS `course_type_relation`;
-CREATE TABLE `course_type_relation`  (
-  `course_id` bigint(20) NOT NULL,
-  `type_id` bigint(20) NULL DEFAULT NULL
-) ENGINE = MyISAM CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Fixed;
-
--- ----------------------------
 -- Table structure for file_router
 -- ----------------------------
 DROP TABLE IF EXISTS `file_router`;
@@ -198,13 +185,14 @@ CREATE TABLE `file_router`  (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `filePath` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '不加密的文件路径',
   `create_time` datetime(0) NULL DEFAULT NULL,
+  `abspath` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '不加密的绝对文件路径',
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = MyISAM AUTO_INCREMENT = 2 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of file_router
 -- ----------------------------
-INSERT INTO `file_router` VALUES (1, 'E:/file/20220525120654-1302 方案.docx', '2022-05-25 12:06:54');
+INSERT INTO `file_router` VALUES (1, 'E:/file/20220525120654-1302 方案.docx', '2022-05-25 12:06:54', NULL);
 
 -- ----------------------------
 -- Table structure for first_category
