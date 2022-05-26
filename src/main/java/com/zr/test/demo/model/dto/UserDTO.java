@@ -8,7 +8,7 @@ import javax.validation.constraints.NotNull;
 
 @Data
 public class UserDTO {
-    @ApiModelProperty(value = "是否是学生", example = "1:学生，2：普通用户")
+    @ApiModelProperty(value = "是否是学生，1:学生，0：普通用户", example = "1")
     @NotNull(message="用户类型不能为空")
     private Integer student;
 

@@ -1,21 +1,15 @@
 package com.zr.test.demo.repository;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.zr.test.demo.dao.CourseCategoryMapper;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import com.zr.test.demo.dao.CourseMapper;
-import com.zr.test.demo.model.dto.CourseQueryDTO;
-import com.zr.test.demo.model.entity.CourseCategoryEntity;
 import com.zr.test.demo.model.entity.CourseEntity;
-import com.zr.test.demo.util.ListUtil;
 import com.zr.test.demo.util.StringUtil;
 import com.zr.test.demo.util.TimeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.validation.constraints.Min;
-import java.util.Date;
 import java.util.List;
 
 @Component
@@ -53,8 +47,8 @@ public class CourseMapperImpl {
         return dao.deleteBatchIds(id);
     }
 
-    public IPage<CourseEntity> selectPageByTime(CourseEntity entity, String start, String end,
-                                                String nameOrTeacher, Integer page, Integer pageSize) {
+    public Page<CourseEntity> selectPageByTime(CourseEntity entity, String start, String end,
+                                               String nameOrTeacher, Integer page, Integer pageSize) {
         QueryWrapper<CourseEntity> queryWrapper = new QueryWrapper<>();
         queryWrapper.setEntity(entity);
         if(!StringUtil.isEmpty(start)&&!StringUtil.isEmpty(end)){
@@ -64,6 +58,6 @@ public class CourseMapperImpl {
             queryWrapper.like("name",nameOrTeacher).or().like("teacher",nameOrTeacher);
         }
         queryWrapper.orderByDesc("time");
-        return dao.selectPage(new Page<>(page,pageSize),queryWrapper);
+        return PageHelper.startPage(page,pageSize).doSelectPage(()->dao.selectList(queryWrapper));
     }
 }

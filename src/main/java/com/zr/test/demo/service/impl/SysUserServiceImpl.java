@@ -2,12 +2,13 @@ package com.zr.test.demo.service.impl;
 
 import cn.afterturn.easypoi.excel.ExcelImportUtil;
 import cn.afterturn.easypoi.excel.entity.ImportParams;
-import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.github.pagehelper.Page;
 import com.zr.test.demo.common.Constant;
 import com.zr.test.demo.common.PageInfo;
 import com.zr.test.demo.common.Result;
 import com.zr.test.demo.component.exception.CustomException;
 import com.zr.test.demo.config.enums.ErrorCode;
+import com.zr.test.demo.model.excelimport.Student;
 import com.zr.test.demo.model.dto.*;
 import com.zr.test.demo.model.entity.RoleEntity;
 import com.zr.test.demo.model.entity.SysUserEntity;
@@ -57,6 +58,32 @@ public class SysUserServiceImpl implements ISysUserService {
 
 
     @Override
+    public Result<PageInfo<StudentVO>> queryStudent(StudentDTO user, HttpServletRequest request) {
+        Page<UserEntity> page = gUserDao.selectByPage(user);
+        List<UserEntity> list = page.getResult();
+        long total = page.getTotal();
+        List<StudentVO> res = new ArrayList<>(list.size());
+        list.forEach(l -> {
+            StudentVO vo = new StudentVO();
+            vo.setId(l.getId());
+            vo.setLastLogin(l.getLastLogin());
+            vo.setName(l.getName());
+            vo.setIntranet(l.getIntranet());
+            vo.setSchool(l.getSchool());
+            vo.setRegister(l.getRegister());
+            vo.setStatus(l.getStatus());
+            vo.setStudentNo(l.getStudentNo());
+            res.add(vo);
+        });
+        PageInfo<StudentVO> pageInfo = new PageInfo<>();
+        pageInfo.setTotal(ListUtil.isEmpty(res) ? 0 : total);
+        pageInfo.setList(res);
+        pageInfo.setPage(user.getPage());
+        pageInfo.setPageSize(user.getPageSize());
+        return Result.success(pageInfo);
+    }
+
+    @Override
     public Result<SysLoginVO> login(SysLoginDTO loginDTO, HttpServletRequest request) {
         SysUserEntity userEntity = new SysUserEntity();
         SysUserEntity user;
@@ -75,6 +102,7 @@ public class SysUserServiceImpl implements ISysUserService {
         if (!user.getPassword().equals(Md5Util.getMD5(loginDTO.getPassword()))) {
             return Result.fail(ErrorCode.SYS_USER_OR_PWD_ERROR_ERR, "密码错误",vo);
         }
+        log.info("用户名={}，密码={}",loginDTO.getUsername(),loginDTO.getPassword());
         if (user.getStatus() == 0) {
             return Result.fail(ErrorCode.SYS_ACCOUNT_HAS_BANED_ERR,vo);
         }
@@ -111,42 +139,9 @@ public class SysUserServiceImpl implements ISysUserService {
     }
 
     @Override
-    public Result<PageInfo<StudentVO>> queryStudent(StudentDTO user, HttpServletRequest request) {
-        IPage<UserEntity> page = gUserDao.selectByPage(user);
-        List<UserEntity> list = page.getRecords();
-        long total = page.getTotal();
-        List<StudentVO> res = new ArrayList<>(list.size());
-        list.forEach(l -> {
-            StudentVO vo = new StudentVO();
-            vo.setId(l.getId());
-            vo.setLastLogin(l.getLastLogin());
-            vo.setName(l.getName());
-            vo.setIntranet(l.getIntranet());
-            vo.setSchool(l.getSchool());
-            vo.setRegister(l.getRegister());
-            vo.setStatus(l.getStatus());
-            vo.setStudentNo(l.getStudentNo());
-            res.add(vo);
-        });
-        PageInfo<StudentVO> pageInfo = new PageInfo<>();
-        pageInfo.setTotal(ListUtil.isEmpty(res) ? 0 : total);
-        pageInfo.setList(res);
-        pageInfo.setPage(user.getPage());
-        pageInfo.setPageSize(user.getPageSize());
-        return Result.success(pageInfo);
-    }
-
-    @Override
     public Result<PageInfo<GeneralUserVO>> queryGeneral(GeneralUserDTO user, HttpServletRequest request) {
-        UserEntity userEntity = new UserEntity();
-        if (!StringUtil.isEmpty(user.getPhone())) {
-            userEntity.setPhone(user.getPhone());
-        }
-        if (user.getStatus() != null) {
-            userEntity.setStatus(user.getStatus());
-        }
-        IPage<UserEntity> page = gUserDao.selectByPage(user);
-        List<UserEntity> list = page.getRecords();
+        Page<UserEntity> page = gUserDao.selectByPage(user);
+        List<UserEntity> list = page.getResult();
         long total = page.getTotal();
         List<GeneralUserVO> res = new ArrayList<>(list.size());
         list.forEach(l -> {
@@ -173,7 +168,13 @@ public class SysUserServiceImpl implements ISysUserService {
     public Result<Object> importStudent(MultipartFile file, HttpServletRequest request) {
         ImportParams params = new ImportParams();
         //去掉标题行
-        params.setTitleRows(1);
+       // params.setTitleRows(1);
+        try {
+           List<Student> list= ExcelImportUtil.importExcel(file.getInputStream(), Student.class, params);
+        log.info("{}",list);
+        }catch (Exception e){
+
+        }
 //
 //        try {
 //            List<Employee> list = ExcelImportUtil.importExcel(file.getInputStream(), student.class, params);
@@ -195,7 +196,7 @@ public class SysUserServiceImpl implements ISysUserService {
 //        } catch (Exception e) {
 //            e.printStackTrace();
 //        }
-        return null;
+        return Result.success(null);
 
     }
 
@@ -223,8 +224,11 @@ public class SysUserServiceImpl implements ISysUserService {
     public Result<PageInfo<SystemUserVO>> querySystem(GeneralUserDTO user, HttpServletRequest request) {
         String token = request.getHeader(Constant.TOKEN);
         AuthKey authKey = (AuthKey) request.getSession().getAttribute(token);
-        IPage<SysUserEntity> page = userDao.querySystem(user.getStatus(), authKey.getUserId(), user.getPage(), user.getPageSize());
-        List<SysUserEntity> list = page.getRecords();
+        if(authKey==null){
+            throw new CustomException(ErrorCode.SYS_NO_AUTHORITY);
+        }
+        Page<SysUserEntity> page = userDao.querySystem(user.getStatus(), authKey.getUserId(), user.getPage(), user.getPageSize());
+        List<SysUserEntity> list = page.getResult();
         long total = page.getTotal();
         List<SystemUserVO> res = new ArrayList<>(list.size());
         List<RoleEntity> roles = roleDao.selectAll();
@@ -290,6 +294,7 @@ public class SysUserServiceImpl implements ISysUserService {
         if (ListUtil.isEmpty(list)) {
             return Result.fail(ErrorCode.SYS_USER_OR_PWD_ERROR_ERR, "密码错误");
         }
+        log.info("修改密码成功: userid={},pwd={}",authKey.getUserId(),user.getNewPassword());
         entity.setPassword(Md5Util.getMD5(user.getNewPassword()));
         return Result.success(userDao.updateById(entity));
     }

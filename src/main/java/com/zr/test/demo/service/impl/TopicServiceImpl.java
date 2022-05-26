@@ -136,6 +136,9 @@ public class TopicServiceImpl extends ServiceImpl<TopicMapper, Topic> implements
     @Override
     public Result<OtherCourseOneVO> queryOne(Long id, HttpServletRequest request) {
         Topic course = this.getBaseMapper().selectById(id);
+        if(course==null){
+            return Result.success(null);
+        }
         OtherCourseOneVO vo = new OtherCourseOneVO();
         BeanUtils.copyProperties(course, vo);
 

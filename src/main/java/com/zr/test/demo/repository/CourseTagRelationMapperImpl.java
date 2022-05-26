@@ -2,10 +2,7 @@ package com.zr.test.demo.repository;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.zr.test.demo.dao.CourseTagRelationMapper;
-import com.zr.test.demo.dao.FileRouterMapper;
 import com.zr.test.demo.model.entity.CourseTagRelation;
-import com.zr.test.demo.model.entity.CourseTypeRelation;
-import com.zr.test.demo.model.entity.FileRouter;
 import com.zr.test.demo.util.ListUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -38,5 +35,10 @@ public class CourseTagRelationMapperImpl {
             return new ArrayList<>();
         }
         return list.stream().map(CourseTagRelation::getTypeId).collect(Collectors.toList());
+    }
+
+    public List<String> selectTagNameByCourseId(Long id){
+
+        return dao.selectTagNameByCourseId(id);
     }
 }

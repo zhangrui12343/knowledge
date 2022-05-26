@@ -1,8 +1,8 @@
 package com.zr.test.demo.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import com.zr.test.demo.common.PageInfo;
 import com.zr.test.demo.common.Result;
 import com.zr.test.demo.component.exception.CustomException;
@@ -10,7 +10,6 @@ import com.zr.test.demo.config.enums.ErrorCode;
 import com.zr.test.demo.model.dto.AppDTO;
 import com.zr.test.demo.model.dto.AppQueryDTO;
 import com.zr.test.demo.model.dto.StatusDTO;
-import com.zr.test.demo.model.entity.AfterCourse;
 import com.zr.test.demo.model.entity.App;
 import com.zr.test.demo.dao.AppMapper;
 import com.zr.test.demo.model.entity.AppCategory;
@@ -80,7 +79,9 @@ public class AppServiceImpl extends ServiceImpl<AppMapper, App> implements IAppS
             queryWrapper.like("name", dto.getName());
         }
         queryWrapper.orderByDesc("time");
-        IPage<App> page = this.getBaseMapper().selectPage(new Page<>(dto.getPage(), dto.getPageSize()), queryWrapper);
+
+        Page<App> page = PageHelper.startPage(dto.getPage(), dto.getPageSize())
+                .doSelectPage(() -> this.getBaseMapper().selectList(queryWrapper));
         if (page.getTotal() == 0) {
             PageInfo<AppVO> pageInfo = new PageInfo<>();
             pageInfo.setPage(dto.getPage());
@@ -91,7 +92,7 @@ public class AppServiceImpl extends ServiceImpl<AppMapper, App> implements IAppS
         List<AppVO> res = new ArrayList<>();
         List<AppCategory> categories = appCategoryService.getBaseMapper().selectList(null);
         Map<String, String> map = categories.stream().collect(Collectors.toMap(e -> e.getId().toString(), AppCategory::getName));
-        page.getRecords().forEach(app -> {
+        page.getResult().forEach(app -> {
             AppVO vo = new AppVO();
             BeanUtils.copyProperties(app, vo);
             FileRouter file = fileRouterService.getBaseMapper().selectById(app.getLogo());
@@ -125,7 +126,11 @@ public class AppServiceImpl extends ServiceImpl<AppMapper, App> implements IAppS
     @Override
     public Result<AppOneVO> queryOne(Long id, HttpServletRequest request) {
         App app = this.getBaseMapper().selectById(id);
+        if(app==null){
+            return Result.success(null);
+        }
         AppOneVO vo = new AppOneVO();
+
         BeanUtils.copyProperties(app, vo);
         vo.setImg(FileUtil.getBase64FilePath(fileRouterService.selectPath(app.getImg())));
         vo.setImgId(app.getImg());

@@ -4,6 +4,7 @@ import com.sun.org.apache.regexp.internal.RE;
 import com.zr.test.demo.common.Result;
 import com.zr.test.demo.component.exception.CustomException;
 import com.zr.test.demo.config.enums.ErrorCode;
+import com.zr.test.demo.config.enums.FileTypeEnums;
 import com.zr.test.demo.model.entity.FileRouter;
 import com.zr.test.demo.dao.FileRouterMapper;
 import com.zr.test.demo.model.vo.FileVO;
@@ -18,9 +19,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -53,7 +57,12 @@ public class FileRouterServiceImpl extends ServiceImpl<FileRouterMapper, FileRou
         Date n = new Date();
         String now =sdf.format(n);
         String fileName = file.getOriginalFilename();
-        File dest = new File(new File(fileSavePath).getAbsolutePath()+ "/" + now + "-" +fileName);
+        if(StringUtil.isEmpty(fileName)){
+            throw new CustomException(ErrorCode.FILE_UPLOAD_FAIL,"文件上传失败，文件名为空");
+        }
+        String type=fileName.substring(fileName.lastIndexOf(".")+1);
+        String temp=type+File.separator+now + "-" +fileName;
+        File dest = new File(new File(fileSavePath).getAbsolutePath()+ File.separator + temp);
         if (!dest.getParentFile().exists()) {
             dest.getParentFile().mkdirs();
         }
@@ -61,18 +70,39 @@ public class FileRouterServiceImpl extends ServiceImpl<FileRouterMapper, FileRou
         try {
             file.transferTo(dest);
         } catch (IOException e) {
-            log.info("上传文件失败 filename={}  time={}", file.getOriginalFilename(), now);
+            log.error("上传文件失败 filename={}  time={}", file.getOriginalFilename(), now);
             log.error("{}", e.getMessage(), e);
             throw new CustomException(ErrorCode.FILE_UPLOAD_FAIL);
         }
         FileRouter fileRouter = new FileRouter();
-        fileRouter.setFilePath(dest.getAbsolutePath());
+        fileRouter.setFilePath(temp);
+        fileRouter.setAbspath(dest.getAbsolutePath());
         fileRouter.setCreateTime(n);
         this.getBaseMapper().insert(fileRouter);
         FileVO vo=new FileVO();
         vo.setId(fileRouter.getId());
-        vo.setPath(FileUtil.getBase64FilePath(dest.getAbsolutePath()));
+        vo.setPath(FileUtil.getBase64FilePath(temp));
         return Result.success(vo);
+    }
+
+    @Override
+    public Result<Object> view(Integer id, HttpServletResponse response) {
+        // 通常上传的文件会有一个数据表来存储，这里返回的id是记录id
+        FileRouter file=this.baseMapper.selectById(id);
+        if(file==null){
+            throw new CustomException(ErrorCode.SEARCH_TERREC_FAIL,"没有文件");
+        }
+
+        File source= new File(file.getFilePath());
+        response.setContentType(FileTypeEnums.endWith(file.getFilePath()));
+
+        try {
+            FileCopyUtils.copy(new FileInputStream(source), response.getOutputStream());
+        } catch (Exception e) {
+            log.error("{}",e.getMessage());
+            throw new CustomException(ErrorCode.SYS_CUSTOM_ERR,"文件流输出失败:"+e.getMessage());
+        }
+        return Result.success(null);
     }
 
     public void delete(List<Long> ids) {

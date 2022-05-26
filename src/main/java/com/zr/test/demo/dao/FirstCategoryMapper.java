@@ -21,6 +21,4 @@ import java.util.Map;
 @Mapper
 public interface FirstCategoryMapper extends BaseMapper<FirstCategory> {
 
-    @Select("select a.* from a left join b on a.id =b.aid left join ")
-    List<Map> select();
 }

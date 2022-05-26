@@ -33,7 +33,9 @@ public class FileRouter implements Serializable {
     @ApiModelProperty(value = "不加密的文件路径")
     @TableField("filePath")
     private String filePath;
-
+    @ApiModelProperty(value = "不加密的绝对文件路径")
+    @TableField("abspath")
+    private String abspath;
     private Date createTime;
 
 

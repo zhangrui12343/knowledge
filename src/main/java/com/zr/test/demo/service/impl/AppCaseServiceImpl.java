@@ -143,6 +143,9 @@ public class AppCaseServiceImpl extends ServiceImpl<AppCaseMapper, AppCase> impl
     @Override
     public Result<AppCaseOneVO> queryOne(Long id, HttpServletRequest request) {
        AppCase appCase= this.baseMapper.selectById(id);
+        if(appCase==null){
+            return Result.success(null);
+        }
         AppCaseOneVO vo=new AppCaseOneVO();
         BeanUtils.copyProperties(appCase,vo);
         vo.setVideoId(appCase.getId());

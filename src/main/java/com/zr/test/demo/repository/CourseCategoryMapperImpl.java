@@ -45,7 +45,4 @@ public class CourseCategoryMapperImpl {
     public List<Long> selectIdsByPIds(List<Long> pids) {
         return dao.selectIdsByPIds(pids);
     }
-    public List<CourseCategoryEntity> selectByPIds(List<Long> pids) {
-        return dao.selectByPIds(pids);
-    }
 }

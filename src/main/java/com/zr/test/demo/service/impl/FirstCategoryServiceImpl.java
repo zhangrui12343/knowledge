@@ -55,7 +55,7 @@ public class FirstCategoryServiceImpl extends ServiceImpl<FirstCategoryMapper, F
     @Transactional(rollbackFor = Exception.class)
     public Result<Object> add(FirstCategoryDTO dto) {
         FirstCategory entity = new FirstCategory();
-        BeanUtils.copyProperties(entity, dto);
+        BeanUtils.copyProperties(dto,entity);
         int i =this.getBaseMapper().insert(entity);
         if(i==1) {
             dto.getCategory().forEach(id -> firstSecondService.getBaseMapper().insert(new FirstSecond(entity.getId(),id)));
@@ -69,7 +69,7 @@ public class FirstCategoryServiceImpl extends ServiceImpl<FirstCategoryMapper, F
     public Result<List<FirstCategoryVO>> queryByType(Integer type) {
         QueryWrapper<FirstCategory> queryWrapper = new QueryWrapper<>(null);
         queryWrapper.eq("type", type);
-        queryWrapper.orderByDesc("order");
+        queryWrapper.orderByDesc("`order`");
         List<FirstCategory> list = this.getBaseMapper().selectList(queryWrapper);
         List<FirstCategoryVO> res = new ArrayList<>();
         List<Tag> tags = tagMapper.selectList(null);
@@ -106,9 +106,13 @@ public class FirstCategoryServiceImpl extends ServiceImpl<FirstCategoryMapper, F
             vo.setImg(FileUtil.getBase64FilePath(fileRouterMapper.getPathById(e.getImg())));
             vo.setImgId(e.getImg());
             StringBuilder sb0 =secondRelationMap.get(e.getId());
-            vo.setCategory(sb0.substring(0, sb0.length()-1));
+            if(sb0!=null){
+                vo.setCategory(sb0.substring(0, sb0.length()-1));
+            }
             StringBuilder sb1 =tagRelationMap.get(e.getId());
-            vo.setTag(sb1.substring(0, sb1.length()-1));
+            if(sb1!=null){
+                vo.setTag(sb1.substring(0, sb1.length()-1));
+            }
             res.add(vo);
         });
         return Result.success(res);

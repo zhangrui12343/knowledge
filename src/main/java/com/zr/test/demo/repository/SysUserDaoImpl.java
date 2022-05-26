@@ -1,8 +1,8 @@
 package com.zr.test.demo.repository;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import com.zr.test.demo.common.Constant;
 import com.zr.test.demo.dao.ISysUserDao;
 import com.zr.test.demo.dao.IUserDao;
@@ -34,14 +34,14 @@ public class SysUserDaoImpl {
         return userDao.deleteById(id);
     }
 
-    public IPage<SysUserEntity> querySystem(Integer status, Integer userId,int page, int size) {
+    public Page<SysUserEntity> querySystem(Integer status, Integer userId, int page, int size) {
         QueryWrapper<SysUserEntity> queryWrapper = new QueryWrapper<>();
         if(status!=null){
             queryWrapper.eq("status",status);
         }
         queryWrapper.ne("id",userId);
         queryWrapper.orderByDesc("id");
-        return userDao.selectPage(new Page<>(page,size),queryWrapper);
+        return PageHelper.startPage(page,size).doSelectPage(()->userDao.selectList(queryWrapper));
     }
 //
 //    public IPage<UserEntity> selectByPage(UserEntity entity, int page, int size,boolean desc,String column){

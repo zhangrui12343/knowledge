@@ -13,6 +13,7 @@ public enum UriWithoutToken {
     USER_REGISTER("/api/v1/user/register"),
     USER_FIND_PWD("/api/v1/user/findPassword"),
     USER_GET_MESSAGE_CODE("/api/v1/user/getCode"),
+    FILE_VIEW("/api/v1/file/view"),
     SYS_USER_LOGIN("/api/v1/sys-user/login");
 
     private String uri;
@@ -26,7 +27,7 @@ public enum UriWithoutToken {
 
     public static boolean exist(String uri){
         for (UriWithoutToken enu:UriWithoutToken.values()){
-            if(uri.equals(enu.getUri())){
+            if(uri.startsWith(enu.getUri())){
                 return true;
             }
         }

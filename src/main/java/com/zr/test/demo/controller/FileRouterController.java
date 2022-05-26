@@ -37,7 +37,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/file")
-@Api(tags = "15-文件上传")
+@Api(tags = "19-文件上传")
 @ApiFile
 @Slf4j
 public class FileRouterController {
@@ -55,22 +55,8 @@ public class FileRouterController {
     @GetMapping(value="/view")
     @ApiOperation("查看文件,图片、mp4、pdf")
     public Result<Object> view(@RequestParam("id") Integer id, HttpServletResponse response){
-        // 通常上传的文件会有一个数据表来存储，这里返回的id是记录id
-        FileRouter file=this.service.getBaseMapper().selectById(id);
-        if(file==null){
-            throw new CustomException(ErrorCode.SEARCH_TERREC_FAIL,"没有文件");
-        }
+        return service.view(id,response);
 
-        File source= new File(file.getFilePath());
-        response.setContentType(FileTypeEnums.endWith(file.getFilePath()));
-
-        try {
-            FileCopyUtils.copy(new FileInputStream(source), response.getOutputStream());
-        } catch (Exception e) {
-            log.error("{}",e.getMessage());
-            throw new CustomException(ErrorCode.SYS_CUSTOM_ERR,"文件流输出失败:"+e.getMessage());
-        }
-        return Result.success(null);
     }
 
 }

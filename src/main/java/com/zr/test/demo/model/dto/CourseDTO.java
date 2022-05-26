@@ -34,20 +34,11 @@ public class CourseDTO implements Serializable {
     @ApiModelProperty(value = "授课老师")
     private String teacher;
     @NotNull
-    @ApiModelProperty(value = "学段id")
-    private Long xueduan;
-    @NotNull
-    @ApiModelProperty(value = "年级id")
-    private Long grade;
-    @NotNull
-    @ApiModelProperty(value = "科目id")
-    private Long subject;
-    @NotNull
-    @ApiModelProperty(value = "上下册id")
-    private Long books;
+    @ApiModelProperty(value = "课程类型id")
+    private Long category;
     @NotNull
     @ApiModelProperty(value = "课程分类id")
-    private List<Long> courseTypeIds;
+    private Long courseTypeId;
     @NotNull
     @ApiModelProperty(value = "课程标签id")
     private List<Long> courseTagIds;

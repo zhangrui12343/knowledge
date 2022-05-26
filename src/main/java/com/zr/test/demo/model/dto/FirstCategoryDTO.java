@@ -32,7 +32,7 @@ public class FirstCategoryDTO implements Serializable {
     @ApiModelProperty(value = "类型名称", example = "1213")
     private String name;
     @NotNull(message = "类型不能为空")
-    @ApiModelProperty(value = "类型不能为空", example = "1:课后教育,2:专题教育,:3:教师研修")
+    @ApiModelProperty(value = "类型不能为空", example = "0:课后教育,1:专题教育,:2:教师研修")
     private Integer type;
     @NotNull(message = "图片不能为空")
     @ApiModelProperty(value = "图片文件id", example = "1213")

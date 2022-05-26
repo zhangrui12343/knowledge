@@ -18,6 +18,7 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -38,7 +39,8 @@ import java.util.UUID;
 @Order(2)
 public class BaseAspect {
     private static Logger logger = LoggerFactory.getLogger(BaseAspect.class);
-
+    @Value("${needToken}")
+    private boolean needToken;
     /**
      * 切点定义
      */
@@ -68,30 +70,33 @@ public class BaseAspect {
         Object[] params = point.getArgs();
         Object o = null;
         HttpServletRequest request = ApplicationContextUtil.getHttpServletRequest();
-        if (!UriWithoutToken.exist(request.getRequestURI())) {
-            String token = request.getHeader(Constant.TOKEN);
-            if (StringUtil.isEmpty(token)) {
-                logger.error("请求头为空！ token ");
-                throw new CustomException(ErrorCode.SYS_REQUEST_HEADER_ERR, "请求头 token 为空");
-            }
-            HttpSession session = request.getSession(false);
-            if (session == null) {
-                throw new CustomException(ErrorCode.SYS_NO_AUTHORITY, "请登录！");
-            }
-            AuthKey authKey = (AuthKey) session.getAttribute(token);
-            if (authKey == null) {
-                logger.error("无效token！");
-                throw new CustomException(ErrorCode.SYS_NO_AUTHORITY, "鉴权失败！");
-            }
-            //普通用户不能访问增删改的接口
-            if (authKey.getRoleId() == -1 && !GUserUri.startWith(request.getRequestURI())) {
-                throw new CustomException(ErrorCode.SYS_NO_AUTHORITY);
-            }
-            //查询该用户是否存在，或者是否被禁用
+        if(needToken){
+            if (!UriWithoutToken.exist(request.getRequestURI())) {
+                String token = request.getHeader(Constant.TOKEN);
+                if (StringUtil.isEmpty(token)) {
+                    logger.error("请求头为空！ token ");
+                    throw new CustomException(ErrorCode.SYS_REQUEST_HEADER_ERR, "请求头 token 为空");
+                }
+                HttpSession session = request.getSession(false);
+                if (session == null) {
+                    throw new CustomException(ErrorCode.SYS_NO_AUTHORITY, "请登录！");
+                }
+                AuthKey authKey = (AuthKey) session.getAttribute(token);
+                if (authKey == null) {
+                    logger.error("无效token！");
+                    throw new CustomException(ErrorCode.SYS_NO_AUTHORITY, "鉴权失败！");
+                }
+                //普通用户不能访问增删改的接口
+                if (authKey.getRoleId() == -1 && !GUserUri.startWith(request.getRequestURI())) {
+                    throw new CustomException(ErrorCode.SYS_NO_AUTHORITY);
+                }
+                //查询该用户是否存在，或者是否被禁用
 
-            //延长sesion时间
-            session.setMaxInactiveInterval(30 * 60);
+                //延长sesion时间
+                session.setMaxInactiveInterval(30 * 60);
+            }
         }
+
         try {
             o = request.getAttribute("_sid");
         } catch (Exception ignore) {

@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import java.util.Date;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.io.Serializable;
+
+import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -22,6 +24,7 @@ import lombok.experimental.Accessors;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @ApiModel(value="Course对象", description="")
+@TableName(value = "course")
 public class CourseEntity implements Serializable {
 
     private static final long serialVersionUID=1L;
@@ -32,10 +35,9 @@ public class CourseEntity implements Serializable {
     private String teacher;
     private Long img;
 
-    private Long xueduan;
-    private Long grade;
-    private Long subject;
-    private Long books;
+    private Long category;
+
+    private Long courseTypeId;
 
     private String app;
     private String description;

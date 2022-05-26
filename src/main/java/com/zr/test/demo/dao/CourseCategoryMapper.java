@@ -34,16 +34,4 @@ public interface CourseCategoryMapper extends BaseMapper<CourseCategoryEntity> {
     )
     List<Long> selectIdsByPIds(@Param(value = "pids") List<Long> pids);
 
-    @Select("<script>" +
-            "select id,level from course_category where 1=1  " +
-            " <if test=\"pids != null and pids.size > 0\"> " +
-            " and pid in (" +
-            " <foreach collection=\"pids\" item=\"item\" index=\"index\" separator=\",\">" +
-            " #{item}" +
-            "  </foreach> " +
-            ")" +
-            " </if>" +
-            "</script>"
-    )
-    List<CourseCategoryEntity> selectByPIds(@Param(value = "pids") List<Long> pids);
 }

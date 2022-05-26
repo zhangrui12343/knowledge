@@ -25,12 +25,6 @@ public class CourseQueryDTO extends PageTDO implements Serializable {
     @ApiModelProperty(value = "课程名称或者授课老师", example = "1213")
     private String nameOrTeacher;
 
-    @ApiModelProperty(value = "学段", example = "1213")
-    private Long xueduan;
-    @ApiModelProperty(value = "年级", example = "1213")
-    private Long grade;
-    @ApiModelProperty(value = "学科", example = "1213")
-    private Long subject;
     @ApiModelProperty(value = "开始时间", example = "1213")
     private String startTime;
     @ApiModelProperty(value = "结束时间", example = "1213")

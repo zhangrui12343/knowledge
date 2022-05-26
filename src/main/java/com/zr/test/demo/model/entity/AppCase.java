@@ -1,6 +1,7 @@
 package com.zr.test.demo.model.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.io.Serializable;
 import java.util.Date;
@@ -41,7 +42,7 @@ public class AppCase implements Serializable {
     private String appIntroduction;
 
     private String feature;
-
+    @TableField(value = "`order`")
     private Integer order;
 
     private Integer status;

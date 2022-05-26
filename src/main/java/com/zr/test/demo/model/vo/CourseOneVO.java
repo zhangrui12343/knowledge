@@ -18,16 +18,10 @@ public class CourseOneVO {
     private String img;
     @ApiModelProperty(value = "图片文件id", example = "1213")
     private Long imgId;
-    @ApiModelProperty(value = "学段", example = "1213")
-    private Long xueduan;
-    @ApiModelProperty(value = "年级", example = "1213")
-    private Long grade;
-    @ApiModelProperty(value = "学科", example = "1213")
-    private Long subject;
-    @ApiModelProperty(value = "册次", example = "1213")
-    private Long books;
     @ApiModelProperty(value = "课程类型", example = "1213")
-    private List<Long> courseType;
+    private Long category;
+    @ApiModelProperty(value = "课程分类", example = "1213")
+    private Long courseTypeId;
     @ApiModelProperty(value = "课程标签", example = "1213")
     private List<Long> courseTag;
     @ApiModelProperty(value = "相关应用", example = "1213")

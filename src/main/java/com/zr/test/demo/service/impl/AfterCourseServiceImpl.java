@@ -136,6 +136,9 @@ public class AfterCourseServiceImpl extends ServiceImpl<AfterCourseMapper, After
     @Override
     public Result<OtherCourseOneVO> queryOne(Long id, HttpServletRequest request) {
         AfterCourse course=this.getBaseMapper().selectById(id);
+        if(course==null){
+            return Result.success(null);
+        }
         OtherCourseOneVO vo=new OtherCourseOneVO();
         BeanUtils.copyProperties(course,vo);
 

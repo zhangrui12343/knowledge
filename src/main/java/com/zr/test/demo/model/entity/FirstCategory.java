@@ -1,6 +1,7 @@
 package com.zr.test.demo.model.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
@@ -31,7 +32,7 @@ public class FirstCategory implements Serializable {
     private String name;
 
     private Long img;
-
+    @TableField(value = "`order`")
     private Integer order;
 
     private Integer type;

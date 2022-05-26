@@ -135,6 +135,9 @@ public class TeacherTrainingServiceImpl extends ServiceImpl<TeacherTrainingMappe
     @Override
     public Result<OtherCourseOneVO> queryOne(Long id, HttpServletRequest request) {
         TeacherTraining course=this.getBaseMapper().selectById(id);
+        if(course==null){
+            return Result.success(null);
+        }
         OtherCourseOneVO vo=new OtherCourseOneVO();
         BeanUtils.copyProperties(course,vo);
 

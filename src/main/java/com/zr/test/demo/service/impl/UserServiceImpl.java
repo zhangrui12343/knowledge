@@ -146,8 +146,9 @@ public class UserServiceImpl implements IUserService {
         try {
             //是否是系统用户|userid|time|是否是学生|是否是内网|权限id
             token = DESUtils.encrypt(DESUtils.KEY_DEFALUT, MessageFormat.format("{0}|{1}|{2}|{3}|{4}|{5}",
-                    0, user.getId(), TimeUtil.getTime(), user.getStudent(), Optional.of(user.getIntranet()).orElse(0),-1));
+                    0, user.getId(), TimeUtil.getTime(), user.getStudent(), Optional.ofNullable(user.getIntranet()).orElse(0),-1));
         } catch (Exception e) {
+            log.error("make token失败{}",e.getMessage(),e);
             throw new CustomException(ErrorCode.SYS_ENCRIPT_ERR, e.getMessage());
         }
         if (token == null) {

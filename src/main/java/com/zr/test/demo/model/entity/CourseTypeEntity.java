@@ -2,6 +2,7 @@ package com.zr.test.demo.model.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.annotations.ApiModel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -21,6 +22,7 @@ import java.io.Serializable;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @ApiModel(value="CourseType对象", description="")
+@TableName(value = "course_type")
 public class CourseTypeEntity implements Serializable {
 
     private static final long serialVersionUID=1L;
