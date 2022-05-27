@@ -5,10 +5,7 @@ import com.zr.test.demo.common.Result;
 import com.zr.test.demo.config.swagger.annotation.ApiSysUser;
 import com.zr.test.demo.config.swagger.annotation.ApiUser;
 import com.zr.test.demo.model.dto.*;
-import com.zr.test.demo.model.vo.GeneralUserVO;
-import com.zr.test.demo.model.vo.StudentVO;
-import com.zr.test.demo.model.vo.SysLoginVO;
-import com.zr.test.demo.model.vo.SystemUserVO;
+import com.zr.test.demo.model.vo.*;
 import com.zr.test.demo.service.ISysUserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -86,7 +83,7 @@ public class SysUserController {
     }
     @PostMapping("/student/import")
     @ApiOperation("2.1.1 导入学生用户")
-    public Result<Object> importStudent(HttpServletRequest request, @RequestParam(name = "file") MultipartFile file) {
+    public Result<ExcelImportVO> importStudent(HttpServletRequest request, @RequestParam(name = "file") MultipartFile file) {
         return userService.importStudent(file,request);
     }
 }

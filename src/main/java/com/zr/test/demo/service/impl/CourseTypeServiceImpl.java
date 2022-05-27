@@ -78,7 +78,8 @@ public class CourseTypeServiceImpl implements ICourseTypeService {
         List<Long> pids = new ArrayList<>();
         pids.add(id);
         List<Long> ids = selectChildren(new ArrayList<>(), pids);
-        log.info("一共需要删除 {} 条", ids.size());
+        ids.add(id);
+         log.info("一共需要删除 {} 条", ids.size());
         return Result.success(service.deleteByIds(ids));
     }
 

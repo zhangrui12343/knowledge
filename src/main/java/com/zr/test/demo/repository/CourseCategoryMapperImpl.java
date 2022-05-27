@@ -40,6 +40,9 @@ public class CourseCategoryMapperImpl {
     }
 
     public int deleteByIds(List<Long> id){
+        if(id.isEmpty()){
+            return 0;
+        }
         return dao.deleteBatchIds(id);
     }
     public List<Long> selectIdsByPIds(List<Long> pids) {

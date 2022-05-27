@@ -93,7 +93,7 @@ public class FileRouterServiceImpl extends ServiceImpl<FileRouterMapper, FileRou
             throw new CustomException(ErrorCode.SEARCH_TERREC_FAIL,"没有文件");
         }
 
-        File source= new File(file.getFilePath());
+        File source= new File(file.getAbspath());
         response.setContentType(FileTypeEnums.endWith(file.getFilePath()));
 
         try {

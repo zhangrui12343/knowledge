@@ -28,6 +28,7 @@ public enum  ErrorCode {
     SYS_NOT_FIND_KEY(209,"key不存在"),
     SYS_KEY_ERROR(210,"key错误"),
     SYS_NO_USAABLE_DATA(212,"没有可用数据"),
+    EXCEL_IMPORT_ERR(213,"导入失败"),
     SYS_FILE_NOT_EXIST(215,"文件资源不存在"),
     SYS_DELETE_FIFLE_ERR(215,"删除文件出错"),
 

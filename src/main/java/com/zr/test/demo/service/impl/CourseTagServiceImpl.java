@@ -65,6 +65,7 @@ public class CourseTagServiceImpl extends ServiceImpl<CourseTagMapper, CourseTag
         List<Long> pids = new ArrayList<>();
         pids.add(id);
         List<Long> ids = selectChildren(new ArrayList<>(), pids);
+        ids.add(id);
         log.info("一共需要删除 {} 条", ids.size());
         return Result.success(this.baseMapper.deleteBatchIds(ids));
     }

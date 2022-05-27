@@ -44,6 +44,9 @@ public class CourseMapperImpl {
     }
 
     public int deleteByIds(List<Long> id){
+        if(id.isEmpty()){
+            return 0;
+        }
         return dao.deleteBatchIds(id);
     }
 

@@ -1,6 +1,7 @@
 package com.zr.test.demo.repository;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.zr.test.demo.common.Result;
 import com.zr.test.demo.dao.CourseCategoryMapper;
 import com.zr.test.demo.dao.CourseTypeMapper;
 import com.zr.test.demo.model.entity.CourseCategoryEntity;
@@ -40,6 +41,9 @@ public class CourseTypeMapperImpl {
     }
 
     public int deleteByIds(List<Long> id){
+        if(id.isEmpty()){
+            return 0;
+        }
         return dao.deleteBatchIds(id);
     }
     public List<Long> selectIdsByPIds(List<Long> pids) {

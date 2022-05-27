@@ -6,6 +6,7 @@ import com.github.pagehelper.Page;
 import com.zr.test.demo.common.Constant;
 import com.zr.test.demo.common.PageInfo;
 import com.zr.test.demo.common.Result;
+import com.zr.test.demo.component.excel.ExcelStudent;
 import com.zr.test.demo.component.exception.CustomException;
 import com.zr.test.demo.config.enums.ErrorCode;
 import com.zr.test.demo.model.excelimport.Student;
@@ -14,10 +15,7 @@ import com.zr.test.demo.model.entity.RoleEntity;
 import com.zr.test.demo.model.entity.SysUserEntity;
 import com.zr.test.demo.model.entity.UserEntity;
 import com.zr.test.demo.model.pojo.AuthKey;
-import com.zr.test.demo.model.vo.GeneralUserVO;
-import com.zr.test.demo.model.vo.StudentVO;
-import com.zr.test.demo.model.vo.SysLoginVO;
-import com.zr.test.demo.model.vo.SystemUserVO;
+import com.zr.test.demo.model.vo.*;
 import com.zr.test.demo.repository.RoleDaoImpl;
 import com.zr.test.demo.repository.RoleMenuDaoImpl;
 import com.zr.test.demo.repository.SysUserDaoImpl;
@@ -28,15 +26,18 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import java.net.URLEncoder;
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @Service
@@ -90,21 +91,21 @@ public class SysUserServiceImpl implements ISysUserService {
         //校验参数
         userEntity.setUsername(loginDTO.getUsername());
         List<SysUserEntity> list = userDao.selectByEntity(userEntity);
-        SysLoginVO vo=new SysLoginVO();
+        SysLoginVO vo = new SysLoginVO();
 
         if (ListUtil.isEmpty(list)) {
-            return Result.fail(ErrorCode.SYS_USERNAME_EXIST_ERROR_ERR, "用户名不存在",vo);
+            return Result.fail(ErrorCode.SYS_USERNAME_EXIST_ERROR_ERR, "用户名不存在", vo);
         }
         if (list.size() > 1) {
             throw new CustomException(ErrorCode.SEARCH_TERREC_FAIL, "查询错误，请联系管理员");
         }
         user = list.get(0);
         if (!user.getPassword().equals(Md5Util.getMD5(loginDTO.getPassword()))) {
-            return Result.fail(ErrorCode.SYS_USER_OR_PWD_ERROR_ERR, "密码错误",vo);
+            return Result.fail(ErrorCode.SYS_USER_OR_PWD_ERROR_ERR, "密码错误", vo);
         }
-        log.info("用户名={}，密码={}",loginDTO.getUsername(),loginDTO.getPassword());
+        log.info("用户名={}，密码={}", loginDTO.getUsername(), loginDTO.getPassword());
         if (user.getStatus() == 0) {
-            return Result.fail(ErrorCode.SYS_ACCOUNT_HAS_BANED_ERR,vo);
+            return Result.fail(ErrorCode.SYS_ACCOUNT_HAS_BANED_ERR, vo);
         }
         //登录成功后的操作
         String token;
@@ -165,39 +166,20 @@ public class SysUserServiceImpl implements ISysUserService {
     }
 
     @Override
-    public Result<Object> importStudent(MultipartFile file, HttpServletRequest request) {
+    public Result<ExcelImportVO> importStudent(MultipartFile file, HttpServletRequest request) {
         ImportParams params = new ImportParams();
         //去掉标题行
-       // params.setTitleRows(1);
+        params.setTitleRows(0);
+        List<Student> list;
         try {
-           List<Student> list= ExcelImportUtil.importExcel(file.getInputStream(), Student.class, params);
-        log.info("{}",list);
-        }catch (Exception e){
-
+            list = ExcelImportUtil.importExcel(file.getInputStream(), Student.class, params);
+            log.info("导入用户数量:{}", list.size());
+        } catch (Exception e) {
+            log.error("导入学生失败,{}", e.getMessage(), e);
+            throw new CustomException(ErrorCode.EXCEL_IMPORT_ERR);
         }
-//
-//        try {
-//            List<Employee> list = ExcelImportUtil.importExcel(file.getInputStream(), student.class, params);
-//            list.forEach(employee -> {
-//                //民族id  new Nation(employee.getNation().getName()))  这是重写了equals和hashcode方法
-//                employee.setNationId(nationList.get(nationList.indexOf(new Nation(employee.getNation().getName()))).getId());
-//                //政治面貌id
-//                employee.setPoliticId(politicsStatusList.get(politicsStatusList.indexOf(new PoliticsStatus(employee.getPoliticsStatus().getName()))).getId());
-//                //部门id
-//                employee.setDepartmentId(departmentList.get(departmentList.indexOf(new Department(employee.getDepartment().getName()))).getId());
-//                //职称id
-//                employee.setJobLevelId(joblevelList.get(joblevelList.indexOf(new Joblevel(employee.getJoblevel().getName()))).getId());
-//                //职位id
-//                employee.setPosId(positionList.get(positionList.indexOf(new Position(employee.getPosition().getName()))).getId());
-//            });
-//            if (employeeService.saveBatch(list)){
-//                return RespBean.success("导入成功!");
-//            }
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-        return Result.success(null);
-
+        ExcelStudent student=new ExcelStudent();
+        return Result.success(student.handleImport(list,gUserDao));
     }
 
     @Override
@@ -208,8 +190,8 @@ public class SysUserServiceImpl implements ISysUserService {
     @Override
     public Result<Object> addSystem(SystemUserDTO user, HttpServletRequest request) {
         SysUserEntity userEntity = new SysUserEntity();
-        if (StringUtil.isEmpty(user.getName())||StringUtil.isEmpty(user.getUsername())||
-                StringUtil.isEmpty(user.getPassword())||user.getRole()==null) {
+        if (StringUtil.isEmpty(user.getName()) || StringUtil.isEmpty(user.getUsername()) ||
+                StringUtil.isEmpty(user.getPassword()) || user.getRole() == null) {
             throw new CustomException(ErrorCode.SYS_PARAM_ERR);
         }
         userEntity.setName(user.getName());
@@ -224,7 +206,7 @@ public class SysUserServiceImpl implements ISysUserService {
     public Result<PageInfo<SystemUserVO>> querySystem(GeneralUserDTO user, HttpServletRequest request) {
         String token = request.getHeader(Constant.TOKEN);
         AuthKey authKey = (AuthKey) request.getSession().getAttribute(token);
-        if(authKey==null){
+        if (authKey == null) {
             throw new CustomException(ErrorCode.SYS_NO_AUTHORITY);
         }
         Page<SysUserEntity> page = userDao.querySystem(user.getStatus(), authKey.getUserId(), user.getPage(), user.getPageSize());
@@ -235,7 +217,7 @@ public class SysUserServiceImpl implements ISysUserService {
         if (ListUtil.isEmpty(roles)) {
             throw new CustomException(ErrorCode.SYS_CUSTOM_ERR, "角色表为空");
         }
-        Map<String, String> map = roles.stream().collect(Collectors.toMap(e->e.getId().toString(), RoleEntity::getName));
+        Map<String, String> map = roles.stream().collect(Collectors.toMap(e -> e.getId().toString(), RoleEntity::getName));
         list.forEach(l -> {
             SystemUserVO vo = new SystemUserVO();
             vo.setId(l.getId());
@@ -265,7 +247,7 @@ public class SysUserServiceImpl implements ISysUserService {
         if (user.getStatus() != null) {
             userEntity.setStatus(user.getStatus());
         } else {
-            if (user.getName() == null||user.getUsername() == null||user.getRole()==null) {
+            if (user.getName() == null || user.getUsername() == null || user.getRole() == null) {
                 throw new CustomException(ErrorCode.SYS_PARAM_ERR);
             }
             userEntity.setName(user.getName());
@@ -294,7 +276,7 @@ public class SysUserServiceImpl implements ISysUserService {
         if (ListUtil.isEmpty(list)) {
             return Result.fail(ErrorCode.SYS_USER_OR_PWD_ERROR_ERR, "密码错误");
         }
-        log.info("修改密码成功: userid={},pwd={}",authKey.getUserId(),user.getNewPassword());
+        log.info("修改密码成功: userid={},pwd={}", authKey.getUserId(), user.getNewPassword());
         entity.setPassword(Md5Util.getMD5(user.getNewPassword()));
         return Result.success(userDao.updateById(entity));
     }

@@ -145,7 +145,7 @@ public class GlobalExceptionIntercept {
         //判断有误错误特定的错误信息
         if (StringUtil.isEmpty(errorMsg)) {
             if (e instanceof NullPointerException) {
-                result = Result.fail(errorCode, e.toString());
+                result = Result.fail(errorCode, "系统异常，空指针异常");
             } else {
                 result = Result.fail(errorCode);
             }
@@ -154,7 +154,7 @@ public class GlobalExceptionIntercept {
             if (errIntCode != null) {
                 result = Result.fail(errIntCode, errorMsg);
             } else {
-                result = Result.fail(errorCode, errorMsg);
+                result = Result.fail(errorCode, errorCode.getMessage());
             }
         }
         if (StringUtils.isEmpty(result.getSid())) {

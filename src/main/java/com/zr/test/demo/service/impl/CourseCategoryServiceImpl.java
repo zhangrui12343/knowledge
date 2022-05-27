@@ -79,6 +79,7 @@ public class CourseCategoryServiceImpl implements ICourseCategoryService {
         List<Long> pids = new ArrayList<>();
         pids.add(id);
         List<Long> ids = selectChildren(new ArrayList<>(), pids);
+        ids.add(id);
         log.info("一共需要删除 {} 条", ids.size());
         int i = service.deleteByIds(ids);
         return Result.success(i);

@@ -28,10 +28,9 @@ public class CourseCategoryDTO implements Serializable {
     private static final long serialVersionUID=1L;
 
     private Long id;
-    @NotNull
     @ApiModelProperty(value = "父级id", example = "1213")
     private Long pid;
-    @NotBlank
+    @NotBlank(message = "name 不能为空")
     @ApiModelProperty(value = "分类名称", example = "1213")
     private String name;
 

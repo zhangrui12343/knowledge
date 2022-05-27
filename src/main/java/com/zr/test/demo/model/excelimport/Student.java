@@ -9,13 +9,12 @@ import lombok.Data;
 @ExcelTarget("Student")
 public class Student {
 
-    @Excel(name = "school")
-    @ExcelEntity(name = "school")
-    private String school;
+    @Excel(name = "学校名称")
+      private String school;
 
-    @Excel(name = "name")
+    @Excel(name = "学生姓名")
     private String name;
 
-    @Excel(name = "studentNo")
+    @Excel(name = "学籍号")
     private String studentNo;
 }
