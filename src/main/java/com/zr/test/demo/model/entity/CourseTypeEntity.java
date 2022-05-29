@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -34,5 +35,6 @@ public class CourseTypeEntity implements Serializable {
 
     private String name;
 
-
+    @ApiModelProperty(value = "课程分类的末级id", example = "1213")
+    private Long categoryId;
 }

@@ -32,9 +32,8 @@ public class Tag implements Serializable {
     @ApiModelProperty(value = "id", example = "1213")
     private Long id;
     @ApiModelProperty(value = "名称", example = "1213")
-    @NotBlank(message = "name必填")
     private String name;
-    @ApiModelProperty(value = "标签所属", example = "0:课后教育，1:专题，2:教师研修")
+    @ApiModelProperty(value = "教育类型id", example = "0:课后教育，1:专题，2:教师研修")
     @NotNull(message = "type必填")
     private Integer type;
 

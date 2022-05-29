@@ -10,11 +10,13 @@ import com.zr.test.demo.dao.TagMapper;
 import com.zr.test.demo.model.dto.FirstCategoryDTO;
 import com.zr.test.demo.model.entity.*;
 import com.zr.test.demo.dao.FirstCategoryMapper;
+import com.zr.test.demo.model.vo.FirstCategoryOneVO;
 import com.zr.test.demo.model.vo.FirstCategoryVO;
 import com.zr.test.demo.repository.FileRouterMapperImpl;
 import com.zr.test.demo.service.IFirstCategoryService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zr.test.demo.util.FileUtil;
+import com.zr.test.demo.util.ListUtil;
 import com.zr.test.demo.util.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -38,15 +40,15 @@ import java.util.stream.Collectors;
 public class FirstCategoryServiceImpl extends ServiceImpl<FirstCategoryMapper, FirstCategory> implements IFirstCategoryService {
     private final FileRouterMapperImpl fileRouterMapper;
     private final TagMapper tagMapper;
-    private final FirstSecondServiceImpl firstSecondService;
+
     private final FirstTagServiceImpl firstTagService;
     private final SecondCategoryMapper secondCategoryMapper;
 
     public FirstCategoryServiceImpl(FileRouterMapperImpl fileRouterMapper, TagMapper tagMapper,
-                                    FirstSecondServiceImpl firstSecondService, FirstTagServiceImpl firstTagService, SecondCategoryMapper secondCategoryMapper) {
+                                  FirstTagServiceImpl firstTagService, SecondCategoryMapper secondCategoryMapper) {
         this.fileRouterMapper = fileRouterMapper;
         this.tagMapper = tagMapper;
-        this.firstSecondService = firstSecondService;
+
         this.firstTagService = firstTagService;
         this.secondCategoryMapper = secondCategoryMapper;
     }
@@ -55,11 +57,10 @@ public class FirstCategoryServiceImpl extends ServiceImpl<FirstCategoryMapper, F
     @Transactional(rollbackFor = Exception.class)
     public Result<Object> add(FirstCategoryDTO dto) {
         FirstCategory entity = new FirstCategory();
-        BeanUtils.copyProperties(dto,entity);
-        int i =this.getBaseMapper().insert(entity);
-        if(i==1) {
-            dto.getCategory().forEach(id -> firstSecondService.getBaseMapper().insert(new FirstSecond(entity.getId(),id)));
-            dto.getTag().forEach(id -> firstTagService.getBaseMapper().insert(new FirstTag(entity.getId(),id)));
+        BeanUtils.copyProperties(dto, entity);
+        int i = this.getBaseMapper().insert(entity);
+        if (i == 1) {
+            dto.getTag().forEach(id -> firstTagService.getBaseMapper().insert(new FirstTag(entity.getId(), id)));
         }
         return Result.success(i);
     }
@@ -76,28 +77,18 @@ public class FirstCategoryServiceImpl extends ServiceImpl<FirstCategoryMapper, F
         Map<Long, String> tagMap = tags.stream().collect(Collectors.toMap(Tag::getId, Tag::getName));
         List<SecondCategory> categories = secondCategoryMapper.selectList(null);
         Map<Long, String> cMap = categories.stream().collect(Collectors.toMap(SecondCategory::getId, SecondCategory::getName));
-        Map<Long,StringBuilder> secondRelationMap=new HashMap<>();
-        firstSecondService.getBaseMapper().selectList(null).forEach(r->{
-            String name=cMap.get(r.getSecondId());
-            if(StringUtil.isEmpty(name)){
+
+
+        Map<Long, StringBuilder> tagRelationMap = new HashMap<>();
+        firstTagService.getBaseMapper().selectList(null).forEach(r -> {
+            String name = tagMap.get(r.getTagId());
+            if (StringUtil.isEmpty(name)) {
                 return;
             }
-            if(secondRelationMap.containsKey(r.getFirstId())){
-                secondRelationMap.get(r.getFirstId()).append(name).append(",");
-            }else {
-                secondRelationMap.put( r.getFirstId(),new StringBuilder(name+","));
-            }
-        });
-        Map<Long,StringBuilder> tagRelationMap=new HashMap<>();
-        firstTagService.getBaseMapper().selectList(null).forEach(r->{
-            String name=tagMap.get(r.getTagId());
-            if(StringUtil.isEmpty(name)){
-                return;
-            }
-            if(tagRelationMap.containsKey(r.getFirstId())){
+            if (tagRelationMap.containsKey(r.getFirstId())) {
                 tagRelationMap.get(r.getFirstId()).append(name).append(",");
-            }else {
-                tagRelationMap.put( r.getFirstId(),new StringBuilder(name+","));
+            } else {
+                tagRelationMap.put(r.getFirstId(), new StringBuilder(name + ","));
             }
         });
         list.forEach(e -> {
@@ -105,13 +96,12 @@ public class FirstCategoryServiceImpl extends ServiceImpl<FirstCategoryMapper, F
             BeanUtils.copyProperties(e, vo);
             vo.setImg(FileUtil.getBase64FilePath(fileRouterMapper.getPathById(e.getImg())));
             vo.setImgId(e.getImg());
-            StringBuilder sb0 =secondRelationMap.get(e.getId());
-            if(sb0!=null){
-                vo.setCategory(sb0.substring(0, sb0.length()-1));
-            }
-            StringBuilder sb1 =tagRelationMap.get(e.getId());
-            if(sb1!=null){
-                vo.setTag(sb1.substring(0, sb1.length()-1));
+
+            vo.setCategory(Optional.ofNullable(cMap.get(e.getCategory())).orElse(""));
+            vo.setCategoryId(e.getCategory());
+            StringBuilder sb1 = tagRelationMap.get(e.getId());
+            if (sb1 != null) {
+                vo.setTag(sb1.substring(0, sb1.length() - 1));
             }
             res.add(vo);
         });
@@ -125,8 +115,7 @@ public class FirstCategoryServiceImpl extends ServiceImpl<FirstCategoryMapper, F
         if (e == null) {
             return Result.success(null);
         }
-        firstSecondService.deleteByFirstId(id);
-        firstTagService.deleteByFirstId(id);
+        firstTagService.getBaseMapper().delete(new QueryWrapper<>(new FirstTag(id, null)));
         String path = fileRouterMapper.getPathById(e.getImg());
         if (!StringUtil.isEmpty(path)) {
             File f = new File(path);
@@ -147,16 +136,33 @@ public class FirstCategoryServiceImpl extends ServiceImpl<FirstCategoryMapper, F
         if (dto.getId() == null) {
             throw new CustomException(ErrorCode.SYS_PARAM_INNER_ERR);
         }
-        FirstCategory old=this.getBaseMapper().selectById(dto.getId());
-        if(!old.getImg().equals(dto.getImg())){
+        FirstCategory old = this.getBaseMapper().selectById(dto.getId());
+        if (!old.getImg().equals(dto.getImg())) {
             fileRouterMapper.deleteById(old.getImg());
         }
         FirstCategory entity = new FirstCategory();
         BeanUtils.copyProperties(entity, dto);
-        firstSecondService.deleteByFirstId(dto.getId());
-        firstTagService.deleteByFirstId(dto.getId());
-        dto.getCategory().forEach(id -> firstSecondService.getBaseMapper().insert(new FirstSecond(dto.getId(),id)));
-        dto.getTag().forEach(id -> firstTagService.getBaseMapper().insert(new FirstTag(dto.getId(),id)));
+        firstTagService.getBaseMapper().delete(new QueryWrapper<>(new FirstTag(dto.getId(), null)));
+        dto.getTag().forEach(id -> firstTagService.getBaseMapper().insert(new FirstTag(dto.getId(), id)));
         return Result.success(this.getBaseMapper().updateById(entity));
+    }
+
+    @Override
+    public Result<FirstCategoryOneVO> queryOne(Long id) {
+        FirstCategory firstCategory=this.baseMapper.selectById(id);
+        if(firstCategory==null){
+            return Result.success(null);
+        }
+        FirstCategoryOneVO vo=new FirstCategoryOneVO();
+        BeanUtils.copyProperties(firstCategory,vo);
+        vo.setImg(fileRouterMapper.getPathById(firstCategory.getImg()));
+        vo.setImgId(firstCategory.getImg());
+        FirstTag tag=new FirstTag();
+        tag.setFirstId(id);
+        List<FirstTag> firstTags= firstTagService.getBaseMapper().selectList(new QueryWrapper<>(tag));
+        if(!ListUtil.isEmpty(firstTags)){
+            vo.setTag(firstTags.stream().map(FirstTag::getTagId).collect(Collectors.toList()));
+        }
+        return Result.success(vo);
     }
 }

@@ -2,10 +2,13 @@ package com.zr.test.demo.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.zr.test.demo.common.Result;
+import com.zr.test.demo.component.exception.CustomException;
+import com.zr.test.demo.config.enums.ErrorCode;
 import com.zr.test.demo.model.entity.AppCategory;
 import com.zr.test.demo.dao.AppCategoryMapper;
 import com.zr.test.demo.service.IAppCategoryService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.zr.test.demo.util.StringUtil;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,6 +26,9 @@ public class AppCategoryServiceImpl extends ServiceImpl<AppCategoryMapper, AppCa
 
     @Override
     public Result<Object> add(AppCategory dto) {
+        if(StringUtil.isEmpty(dto.getName())){
+            throw new CustomException(ErrorCode.SYS_PARAM_ERR,"名字不能为空");
+        }
         return Result.success(this.baseMapper.insert(dto));
     }
 
@@ -38,6 +44,9 @@ public class AppCategoryServiceImpl extends ServiceImpl<AppCategoryMapper, AppCa
 
     @Override
     public Result<Object> updateByDto(AppCategory dto) {
+        if(dto.getId()!=null){
+            throw new CustomException(ErrorCode.SYS_PARAM_ERR,"id不能为空");
+        }
         return Result.success(this.baseMapper.updateById(dto));
     }
 }

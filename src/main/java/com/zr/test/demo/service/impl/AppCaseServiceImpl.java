@@ -16,6 +16,7 @@ import com.zr.test.demo.model.vo.AppCaseOneVO;
 import com.zr.test.demo.model.vo.AppCaseVO;
 import com.zr.test.demo.service.IAppCaseService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.zr.test.demo.support.FileRouterBiz;
 import com.zr.test.demo.util.FileUtil;
 import com.zr.test.demo.util.ListUtil;
 import com.zr.test.demo.util.StringUtil;
@@ -40,11 +41,11 @@ import java.util.stream.Collectors;
 @Service
 public class AppCaseServiceImpl extends ServiceImpl<AppCaseMapper, AppCase> implements IAppCaseService {
     private final AppServiceImpl appService;
-    private final FileRouterServiceImpl fileRouterService;
+    private final FileRouterBiz fileRouterService;
     private final AppCategoryServiceImpl appCategoryService;
 
     @Autowired
-    public AppCaseServiceImpl(AppServiceImpl appService, FileRouterServiceImpl fileRouterService, AppCategoryServiceImpl appCategoryService) {
+    public AppCaseServiceImpl(AppServiceImpl appService, FileRouterBiz fileRouterService, AppCategoryServiceImpl appCategoryService) {
         this.appService = appService;
         this.fileRouterService = fileRouterService;
         this.appCategoryService = appCategoryService;

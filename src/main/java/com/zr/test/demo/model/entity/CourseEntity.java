@@ -35,9 +35,9 @@ public class CourseEntity implements Serializable {
     private String teacher;
     private Long img;
 
-    private Long category;
+    private String category;
 
-    private Long courseTypeId;
+    private String courseTypeId;
 
     private String app;
     private String description;
@@ -51,5 +51,5 @@ public class CourseEntity implements Serializable {
 
     private Date time;
 
-
+    private Integer count;
 }

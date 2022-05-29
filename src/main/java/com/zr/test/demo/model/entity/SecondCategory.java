@@ -32,7 +32,6 @@ public class SecondCategory implements Serializable {
     @ApiModelProperty(value = "id", example = "1213")
     private Long id;
     @ApiModelProperty(value = "名称", example = "1213")
-    @NotBlank(message = "name必填")
     private String name;
     @ApiModelProperty(value = "分类所属", example = "0:课后教育，1:专题，2:教师研修")
     @NotNull(message = "type必填")

@@ -30,6 +30,7 @@ public interface ICourseService {
     Result<Object> delete(Long id, HttpServletRequest request);
 
     Result<CourseOneVO> queryOne(Long id, HttpServletRequest request);
+    Result<Object> addCount(Long id);
 
     Result<Object> update(CourseDTO dto, HttpServletRequest request);
 

@@ -3,6 +3,7 @@ package com.zr.test.demo.dao;
 import com.zr.test.demo.model.entity.CourseEntity;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Select;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
@@ -18,4 +19,6 @@ import org.springframework.stereotype.Service;
 @Mapper
 public interface CourseMapper extends BaseMapper<CourseEntity> {
 
+    @Select("update course set count= count +1 where id =#{id}")
+    int addCount(Long id);
 }

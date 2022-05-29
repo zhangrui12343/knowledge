@@ -70,7 +70,7 @@ public class CourseTagServiceImpl extends ServiceImpl<CourseTagMapper, CourseTag
         return Result.success(this.baseMapper.deleteBatchIds(ids));
     }
 
-    public List<Long> selectChildren(List<Long> ids, List<Long> pids) {
+    private List<Long> selectChildren(List<Long> ids, List<Long> pids) {
         List<Long> list = this.baseMapper.selectIdsByPIds(pids);
         if (ListUtil.isEmpty(list)) {
             return ids;

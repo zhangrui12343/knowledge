@@ -40,7 +40,7 @@ public class UserController {
         return userService.logout(request);
     }
     @PostMapping("/findPassword")
-    @ApiOperation("1.0.4 findPassword")
+    @ApiOperation("1.0.4 找回密码")
     public Result<Object> findPassword(HttpServletRequest request,FindPasswordDTO dto) {
         return userService.findPassword(request,dto);
     }

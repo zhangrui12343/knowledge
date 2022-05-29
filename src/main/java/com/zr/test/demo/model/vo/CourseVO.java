@@ -17,10 +17,10 @@ public class CourseVO {
     private String teacher;
 
     @ApiModelProperty(value = "类型")
-    private String category;
+    private List<String> category;
 
     @ApiModelProperty(value = "分类")
-    private String type;
+    private List<String> type;
 
     @ApiModelProperty(value = "标签")
     private List<String> tags;

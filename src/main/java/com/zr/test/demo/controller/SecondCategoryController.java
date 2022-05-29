@@ -31,28 +31,26 @@ public class SecondCategoryController {
     @Autowired
     private ISecondCategoryService service;
 
-    @PostMapping("/add")
-    @ApiOperation("14.0.1 新增category")
+    @PostMapping("/add}")
+    @ApiOperation("14.0.1 新增分类")
     public Result<Object> add(@RequestBody SecondCategory dto) {
         return service.add(dto);
     }
 
     @PostMapping("/query")
-    @ApiOperation("14.0.2 查询category")
+    @ApiOperation("14.0.2 查询分类")
     public Result<List<SecondCategory>> query(@RequestBody SecondCategory dto) {
         return service.queryByDto(dto);
     }
 
-
-
     @PostMapping("/delete/{id}")
-    @ApiOperation("14.0.3 删除category")
+    @ApiOperation("14.0.3 删除分类")
     public Result<Object> delete(@PathVariable Long id) {
         return service.delete(id);
     }
 
     @PostMapping("/update")
-    @ApiOperation("14.0.1 新增tag")
+    @ApiOperation("14.0.4 修改分类")
     public Result<Object> update(@RequestBody SecondCategory dto) {
         return service.update(dto);
     }

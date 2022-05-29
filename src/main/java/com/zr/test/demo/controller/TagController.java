@@ -39,10 +39,10 @@ public class TagController {
         return service.add(dto);
     }
 
-    @PostMapping("/query")
-    @ApiOperation("13.0.2 查询tag")
-    public Result<List<Tag>> query(@RequestBody Tag dto) {
-        return service.queryByDto(dto);
+    @PostMapping("/query/{id}")
+    @ApiOperation("13.0.2 根据教育类型id查询tag,id为-3 查询所有标签,id=0,-1,-2分别按类型查询")
+    public Result<List<Tag>> query(@PathVariable Long id) {
+        return service.queryByDto(id);
     }
 
     @PostMapping("/delete/{id}")
@@ -52,7 +52,7 @@ public class TagController {
     }
 
     @PostMapping("/update")
-    @ApiOperation("13.0.1 新增tag")
+    @ApiOperation("13.0.4 修改tag")
     public Result<Object> update(@RequestBody Tag dto) {
         return service.update(dto);
     }

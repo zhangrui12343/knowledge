@@ -7,6 +7,7 @@ import com.zr.test.demo.common.PageInfo;
 import com.zr.test.demo.common.Result;
 import com.zr.test.demo.component.exception.CustomException;
 import com.zr.test.demo.config.enums.ErrorCode;
+import com.zr.test.demo.dao.FileRouterMapper;
 import com.zr.test.demo.model.dto.AppDTO;
 import com.zr.test.demo.model.dto.AppQueryDTO;
 import com.zr.test.demo.model.dto.StatusDTO;
@@ -18,6 +19,7 @@ import com.zr.test.demo.model.vo.AppOneVO;
 import com.zr.test.demo.model.vo.AppVO;
 import com.zr.test.demo.service.IAppService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.zr.test.demo.support.FileRouterBiz;
 import com.zr.test.demo.util.FileUtil;
 import com.zr.test.demo.util.ListUtil;
 import com.zr.test.demo.util.StringUtil;
@@ -29,7 +31,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 /**
@@ -42,12 +43,14 @@ import java.util.stream.Collectors;
  */
 @Service
 public class AppServiceImpl extends ServiceImpl<AppMapper, App> implements IAppService {
-    private final FileRouterServiceImpl fileRouterService;
+    private final FileRouterBiz fileRouterService;
+    private final FileRouterMapper fileRouter;
     private final AppCategoryServiceImpl appCategoryService;
 
     @Autowired
-    public AppServiceImpl(FileRouterServiceImpl fileRouterService, AppCategoryServiceImpl appCategoryService) {
+    public AppServiceImpl(FileRouterBiz fileRouterService, FileRouterMapper fileRouter, AppCategoryServiceImpl appCategoryService) {
         this.fileRouterService = fileRouterService;
+        this.fileRouter = fileRouter;
         this.appCategoryService = appCategoryService;
     }
 
@@ -95,7 +98,7 @@ public class AppServiceImpl extends ServiceImpl<AppMapper, App> implements IAppS
         page.getResult().forEach(app -> {
             AppVO vo = new AppVO();
             BeanUtils.copyProperties(app, vo);
-            FileRouter file = fileRouterService.getBaseMapper().selectById(app.getLogo());
+            FileRouter file = fileRouter.selectById(app.getLogo());
             if (file != null) {
                 vo.setLogo(Optional.ofNullable(file.getFilePath()).orElse(""));
             }

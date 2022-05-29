@@ -1,5 +1,6 @@
 package com.zr.test.demo.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.zr.test.demo.common.Result;
 import com.zr.test.demo.component.exception.CustomException;
 import com.zr.test.demo.config.enums.ErrorCode;
@@ -42,7 +43,7 @@ public class CourseTypeServiceImpl implements ICourseTypeService {
 
     @Override
     public Result<Object> add(CourseTypeDTO dto) {
-        if(StringUtil.isEmpty(dto.getName())||dto.getPid()==null){
+        if(StringUtil.isEmpty(dto.getName())||dto.getPid()==null||dto.getCategoryId()==null){
             throw new CustomException(ErrorCode.SYS_PARAM_ERR);
         }
         CourseTypeEntity entity = new CourseTypeEntity();
@@ -51,8 +52,11 @@ public class CourseTypeServiceImpl implements ICourseTypeService {
     }
 
     @Override
-    public Result<List<CourseTypeVO>> query(HttpServletRequest request) {
-        List<CourseTypeEntity> list = service.selectByEntity(null);
+    public Result<List<CourseTypeVO>> query(Long id) {
+
+        CourseTypeEntity entity=new CourseTypeEntity();
+        entity.setCategoryId(id);
+        List<CourseTypeEntity> list = service.selectByEntity(entity);
         List<CourseTypeVO> res = new ArrayList<>();
         list.forEach(l -> {
             CourseTypeVO v = new CourseTypeVO();
@@ -68,7 +72,9 @@ public class CourseTypeServiceImpl implements ICourseTypeService {
             throw new CustomException(ErrorCode.SYS_PARAM_ERR);
         }
         CourseTypeEntity entity = new CourseTypeEntity();
-        BeanUtils.copyProperties(dto, entity);
+        entity.setId(dto.getId());
+        entity.setName(dto.getName());
+
         return Result.success(service.updateById(entity));
     }
 
@@ -83,7 +89,7 @@ public class CourseTypeServiceImpl implements ICourseTypeService {
         return Result.success(service.deleteByIds(ids));
     }
 
-    public List<Long> selectChildren(List<Long> ids, List<Long> pids) {
+    private List<Long> selectChildren(List<Long> ids, List<Long> pids) {
         List<Long> list = service.selectIdsByPIds(pids);
         if (ListUtil.isEmpty(list)) {
             return ids;

@@ -38,7 +38,7 @@ public class OtherCourseDTO implements Serializable {
 
     @NotNull
     @ApiModelProperty(value = "分类id", example = "1213")
-    private List<Long> categories;
+    private Long category;
     @NotNull
     @ApiModelProperty(value = "标签id", example = "1213")
     private List<Long> tags;

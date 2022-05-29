@@ -22,22 +22,5 @@ import java.util.stream.Collectors;
  */
 @Service
 public class AfterCourseTagRelationServiceImpl extends ServiceImpl<AfterCourseTagRelationMapper, AfterCourseTagRelation> implements IAfterCourseTagRelationService {
-    public String selectTagNamesByCourseId(Long courseId){
-        List<Tag> tags=this.getBaseMapper().selectTagByCourseId(courseId);
-        if(ListUtil.isEmpty(tags)){
-            return "";
-        }
-        StringBuilder sb=new StringBuilder();
-        tags.forEach(tag-> sb.append(tag.getName()).append(","));
-        return sb.substring(0,sb.length()-1);
-    }
-    public List<Long> selectTagIdByCourseId(Long courseId){
-        QueryWrapper<AfterCourseTagRelation> queryWrapper=new QueryWrapper<>();
-        queryWrapper.eq("course_id",courseId);
-        List<AfterCourseTagRelation> tags=this.getBaseMapper().selectList(queryWrapper);
-        if(ListUtil.isEmpty(tags)){
-            return null;
-        }
-        return tags.stream().map(AfterCourseTagRelation::getTagId).collect(Collectors.toList());
-    }
+
 }

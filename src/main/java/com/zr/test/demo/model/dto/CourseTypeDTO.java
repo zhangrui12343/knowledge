@@ -30,5 +30,6 @@ public class CourseTypeDTO implements Serializable {
     private Long pid;
     @ApiModelProperty(value = "名称", example = "1213")
     private String name;
-
+    @ApiModelProperty(value = "课程分类末级id", example = "1213")
+    private String categoryId;
 }

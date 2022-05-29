@@ -1,7 +1,5 @@
 package com.zr.test.demo.model.vo;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -9,6 +7,7 @@ import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * <p>
@@ -22,7 +21,7 @@ import java.io.Serializable;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @ApiModel(value="FirstCategory对象", description="")
-public class FirstCategoryVO implements Serializable {
+public class FirstCategoryOneVO implements Serializable {
 
     private static final long serialVersionUID=1L;
     @ApiModelProperty(value = "id", example = "1213")
@@ -35,11 +34,9 @@ public class FirstCategoryVO implements Serializable {
     private Long imgId;
     @ApiModelProperty(value = "权重", example = "1213")
     private Integer order;
-    @ApiModelProperty(value = "分类名称", example = "1213")
-    private String category;
-    @ApiModelProperty(value = "分类id", example = "1213")
-    private Long categoryId;
-    @ApiModelProperty(value = "标签名称", example = "1213")
-    private String tag;
+    @ApiModelProperty(value = "分类", example = "1213")
+    private Long category;
+    @ApiModelProperty(value = "标签", example = "1213")
+    private List<Long> tag;
 
 }

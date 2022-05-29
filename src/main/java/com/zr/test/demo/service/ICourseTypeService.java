@@ -21,7 +21,7 @@ public interface ICourseTypeService {
 
     Result<Object> add(CourseTypeDTO dto);
 
-    Result<List<CourseTypeVO>> query(HttpServletRequest request);
+    Result<List<CourseTypeVO>> query(Long request);
 
     Result<Object> update(CourseTypeDTO dto, HttpServletRequest request);
 

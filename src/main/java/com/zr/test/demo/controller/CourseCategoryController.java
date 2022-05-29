@@ -29,25 +29,25 @@ import java.util.List;
 @RestController
 @RequestMapping("/course-category")
 @ApiCourseCategory
-@Api(tags = "6-课程类型管理")
+@Api(tags = "6-课程分类管理")
 public class CourseCategoryController {
     @Autowired
     private ICourseCategoryService service;
 
     @PostMapping("/add")
-    @ApiOperation("6.0.1 新增课程类型")
+    @ApiOperation("6.0.1 新增分类类型")
     public Result<Object> add(@RequestBody CourseCategoryDTO dto, HttpServletRequest request) {
         return service.add(dto);
     }
 
     @PostMapping("/query")
-    @ApiOperation("6.0.2 查询课程类型")
+    @ApiOperation("6.0.2 查询分类类型")
     public Result<List<CourseCategoryVO>> query(HttpServletRequest request) {
         return service.query(request);
     }
 
     @PostMapping("/update")
-    @ApiOperation("6.0.3 修改课程类型")
+    @ApiOperation("6.0.3 修改分类类型")
     public Result<Object> update(HttpServletRequest request, @RequestBody CourseCategoryDTO dto) {
         return service.update(dto,request);
     }

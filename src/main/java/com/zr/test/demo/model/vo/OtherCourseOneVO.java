@@ -33,7 +33,7 @@ public class OtherCourseOneVO implements Serializable {
     @ApiModelProperty(value = "课后教育类型", example = "1213")
     private Long type;
     @ApiModelProperty(value = "分类", example = "1213")
-    private List<Long> categories;
+    private Long category;
     @ApiModelProperty(value = "标签", example = "1213")
     private List<Long> tags;
     @ApiModelProperty(value = "视频地址", example = "1213")

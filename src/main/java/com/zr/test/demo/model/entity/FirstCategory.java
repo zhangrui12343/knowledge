@@ -28,13 +28,11 @@ public class FirstCategory implements Serializable {
 
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
-
     private String name;
-
     private Long img;
     @TableField(value = "`order`")
     private Integer order;
-
+    private Long category;
     private Integer type;
 
 

@@ -38,7 +38,9 @@ public class CourseMapperImpl {
     public int updateById(CourseEntity role){
         return dao.updateById(role);
     }
-
+    public int addCount(Long id){
+        return dao.addCount(id);
+    }
     public int deleteById(Long id){
         return dao.deleteById(id);
     }

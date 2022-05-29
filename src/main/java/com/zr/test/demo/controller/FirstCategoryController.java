@@ -6,6 +6,7 @@ import com.zr.test.demo.config.swagger.annotation.ApiFirstCategory;
 import com.zr.test.demo.model.dto.FirstCategoryDTO;
 import com.zr.test.demo.model.entity.FirstCategory;
 import com.zr.test.demo.model.entity.Tag;
+import com.zr.test.demo.model.vo.FirstCategoryOneVO;
 import com.zr.test.demo.model.vo.FirstCategoryVO;
 import com.zr.test.demo.service.IFirstCategoryService;
 import com.zr.test.demo.service.ITagService;
@@ -47,14 +48,19 @@ public class FirstCategoryController {
         return service.queryByType(type);
     }
 
+    @PostMapping("/query/{id}")
+    @ApiOperation("12.0.3 查询教育类型详情")
+    public Result<FirstCategoryOneVO> queryOne(@PathVariable(name = "id") Long id) {
+        return service.queryOne(id);
+    }
     @PostMapping("/update")
-    @ApiOperation("12.0.1 新增教育类型")
+    @ApiOperation("12.0.4 修改教育类型")
     public Result<Object> update(@RequestBody FirstCategoryDTO dto) {
         return service.update(dto);
     }
 
     @PostMapping("/delete/{id}")
-    @ApiOperation("12.0.3 删除教育类型")
+    @ApiOperation("12.0.5 删除教育类型")
     public Result<Object> delete(@PathVariable Long id) {
         return service.delete(id);
     }

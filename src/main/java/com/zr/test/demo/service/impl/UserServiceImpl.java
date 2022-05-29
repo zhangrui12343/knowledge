@@ -21,8 +21,10 @@ import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import java.net.URLEncoder;
+import java.security.SecureRandom;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -183,9 +185,67 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public Result<Object> getCode(HttpServletRequest request, String phone) {
-        //通过手机号发送到阿里云短袖服务 获得验证码
-        return null;
+        return Result.success(123456);
+/**
+        //先看redis里面该手机号储存的验证码是否失效
+        String code = template.opsForValue().get(phone);
+        if (!StringUtils.isEmpty(code)){
+            return phone+":"+"验证码尚未过期！";
+        }
+        HashMap<String, Object> mp = new HashMap<>();
+        StringBuilder sb = new StringBuilder();
+        SecureRandom random = new SecureRandom();
+        for(int i=0;i<6;i++){
+            sb.append(random.nextInt(10));
+        }
+
+        //key必须为code
+        mp.put("code",sb);
+        //调用service层的方法 传两个参数：phone，map
+        Boolean flag = send(phone,mp);
+        if (flag){
+            //存入redis，设置失效时间
+            template.opsForValue().set(phone,code,5, TimeUnit.MINUTES);
+            return phone+":"+"验证码"+code+"发送成功！";
+        }
+        return "发送失败";
+
+ **/
     }
+/**
+    private boolean send(String phoneNum, HashMap<String, Object> map) {
+        System.out.println(JSONObject.toJSONString(map));
+        //连接阿里云,第一个参数不用改变，后两个填写自己的accessKeyId和accessSecret
+        DefaultProfile profile = DefaultProfile.getProfile("cn-hangzhou", "<accessKeyId>", "<accessSecret>");
+        IAcsClient client = new DefaultAcsClient(profile);
+
+        //构建请求！
+        CommonRequest request = new CommonRequest();
+
+        request.setSysMethod(MethodType.POST);
+        request.setSysDomain("dysmsapi.aliyuncs.com"); //不要动
+        request.setSysVersion("2017-05-25"); //不要动
+        request.setSysAction("SendSms");
+
+        //自定义参数（手机号，验证码，签名，模板）
+        request.putQueryParameter("RegionId", "cn-hangzhou");
+        request.putQueryParameter("PhoneNumbers", phoneNum);
+        request.putQueryParameter("SignName", "签名");
+        request.putQueryParameter("TemplateCode", "模板（SMS-*****）");
+        //构建一个短信的验证码
+        request.putQueryParameter("TemplateParam", JSONObject.toJSONString(map));
+        try {
+            CommonResponse response = client.getCommonResponse(request);
+            System.out.println(response.getData());
+            return response.getHttpResponse().isSuccess();
+        } catch (ServerException e) {
+            e.printStackTrace();
+        } catch (ClientException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+**/
 
     @Override
     public Result<Object> findPassword(HttpServletRequest request, FindPasswordDTO dto) {
