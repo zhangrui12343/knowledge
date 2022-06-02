@@ -4,6 +4,7 @@ import com.zr.test.demo.common.Result;
 import com.zr.test.demo.model.entity.Tool;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.zr.test.demo.model.entity.ToolAppRelation;
+import com.zr.test.demo.model.vo.ToolAppVO;
 import com.zr.test.demo.model.vo.ToolVO;
 
 import javax.servlet.http.HttpServletRequest;
@@ -30,4 +31,6 @@ public interface IToolService extends IService<Tool> {
     Result<Object> deleteRelation(ToolAppRelation id, HttpServletRequest request);
 
     Result<Object> updateByDto(Tool dto, HttpServletRequest request);
+
+    Result<List<ToolAppVO>> findAll();
 }

@@ -19,7 +19,7 @@ public interface ISecondCategoryService extends IService<SecondCategory> {
     Result<Object> add(SecondCategory dto);
     Result<Object> update(SecondCategory dto);
 
-    Result<List<SecondCategory>> queryByDto(SecondCategory dto);
+    Result<List<SecondCategory>> queryByDto(Long id);
 
     Result<Object> delete(Long id);
 }

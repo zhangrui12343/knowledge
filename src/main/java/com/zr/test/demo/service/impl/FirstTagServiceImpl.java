@@ -4,7 +4,10 @@ import com.zr.test.demo.model.entity.FirstTag;
 import com.zr.test.demo.dao.FirstTagMapper;
 import com.zr.test.demo.service.IFirstTagService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * <p>

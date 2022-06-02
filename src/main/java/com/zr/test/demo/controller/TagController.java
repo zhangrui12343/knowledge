@@ -40,7 +40,7 @@ public class TagController {
     }
 
     @PostMapping("/query/{id}")
-    @ApiOperation("13.0.2 根据教育类型id查询tag,id为-3 查询所有标签,id=0,-1,-2分别按类型查询")
+    @ApiOperation("13.0.2 根据教育类型id查询tag,id为-3 查询所有标签,id=0,-1,-2分别按课后、专题、师研查询")
     public Result<List<Tag>> query(@PathVariable Long id) {
         return service.queryByDto(id);
     }

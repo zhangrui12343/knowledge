@@ -35,7 +35,7 @@ public class FirstCategoryOneVO implements Serializable {
     @ApiModelProperty(value = "权重", example = "1213")
     private Integer order;
     @ApiModelProperty(value = "分类", example = "1213")
-    private Long category;
+    private List<Long> category;
     @ApiModelProperty(value = "标签", example = "1213")
     private List<Long> tag;
 

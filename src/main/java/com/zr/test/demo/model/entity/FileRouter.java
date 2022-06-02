@@ -37,6 +37,7 @@ public class FileRouter implements Serializable {
     @TableField("abspath")
     private String abspath;
     private Date createTime;
-
+    private Long size;
+    private String name;
 
 }

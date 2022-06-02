@@ -16,14 +16,19 @@ import java.util.List;
 public class CourseMapperImpl {
     @Autowired
     private CourseMapper dao;
-    public int insertOne(CourseEntity entity){
+
+    public int insertOne(CourseEntity entity) {
         return dao.insert(entity);
     }
-    public CourseEntity selectById(Long id){
+
+    public CourseEntity selectById(Long id) {
         return dao.selectById(id);
     }
-    public List<CourseEntity> selectByEntity(CourseEntity entity){
-        if(entity==null){
+    public List<CourseEntity> selectList(QueryWrapper<CourseEntity> queryWrapper) {
+        return dao.selectList(queryWrapper);
+    }
+    public List<CourseEntity> selectByEntity(CourseEntity entity) {
+        if (entity == null) {
             return dao.selectList(null);
         }
         QueryWrapper<CourseEntity> queryWrapper = new QueryWrapper<>();
@@ -31,38 +36,53 @@ public class CourseMapperImpl {
         queryWrapper.orderByDesc("time");
         return dao.selectList(queryWrapper);
     }
-    public List<CourseEntity> selectByIds(List<Long> ids){
+
+    public List<CourseEntity> selectByIds(List<Long> ids) {
         return dao.selectBatchIds(ids);
     }
 
-    public int updateById(CourseEntity role){
+    public int updateById(CourseEntity role) {
         return dao.updateById(role);
     }
-    public int addCount(Long id){
-        return dao.addCount(id);
+
+    public void addCount(Long id) {
+        dao.addCount(id);
     }
-    public int deleteById(Long id){
+
+    public int deleteById(Long id) {
         return dao.deleteById(id);
     }
 
-    public int deleteByIds(List<Long> id){
-        if(id.isEmpty()){
+    public int deleteByIds(List<Long> id) {
+        if (id.isEmpty()) {
             return 0;
         }
         return dao.deleteBatchIds(id);
     }
 
-    public Page<CourseEntity> selectPageByTime(CourseEntity entity, String start, String end,
+    public Page<CourseEntity> selectPageByTime(String start, String end,
                                                String nameOrTeacher, Integer page, Integer pageSize) {
         QueryWrapper<CourseEntity> queryWrapper = new QueryWrapper<>();
-        queryWrapper.setEntity(entity);
-        if(!StringUtil.isEmpty(start)&&!StringUtil.isEmpty(end)){
+        if (!StringUtil.isEmpty(start) && !StringUtil.isEmpty(end)) {
             queryWrapper.between("time", TimeUtil.getDate(start), TimeUtil.getDate(end));
         }
-        if(!StringUtil.isEmpty(nameOrTeacher)){
-            queryWrapper.like("name",nameOrTeacher).or().like("teacher",nameOrTeacher);
+        if (!StringUtil.isEmpty(nameOrTeacher)) {
+            queryWrapper.like("name", nameOrTeacher).or().like("teacher", nameOrTeacher);
         }
         queryWrapper.orderByDesc("time");
-        return PageHelper.startPage(page,pageSize).doSelectPage(()->dao.selectList(queryWrapper));
+        return PageHelper.startPage(page, pageSize).doSelectPage(() -> dao.selectList(queryWrapper));
+    }
+
+    public Page<CourseEntity> selectPageByType(String category, String type,
+                                               Integer page, Integer pageSize) {
+        QueryWrapper<CourseEntity> queryWrapper = new QueryWrapper<>();
+        if (!StringUtil.isEmpty(category) ) {
+            queryWrapper.eq("category",category);
+        }
+        if (!StringUtil.isEmpty(type) ) {
+            queryWrapper.eq("course_type_id",type);
+        }
+        queryWrapper.orderByDesc("time");
+        return PageHelper.startPage(page, pageSize).doSelectPage(() -> dao.selectList(queryWrapper));
     }
 }

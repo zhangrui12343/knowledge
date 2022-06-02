@@ -23,4 +23,6 @@ public interface IAppCategoryService extends IService<AppCategory> {
     Result<Object> delete(Long id);
 
     Result<Object> updateByDto(AppCategory dto);
+
+    Result<List<AppCategory>> queryAll();
 }

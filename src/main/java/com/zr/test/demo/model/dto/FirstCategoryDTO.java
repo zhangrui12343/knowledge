@@ -41,7 +41,7 @@ public class FirstCategoryDTO implements Serializable {
     private Integer order;
     @NotNull(message = "分类不能为空")
     @ApiModelProperty(value = "分类", example = "1213")
-    private Long category;
+    private List<Long> category;
     @ApiModelProperty(value = "标签id", example = "1213")
     @NotNull(message = "标签不能为空")
     private List<Long> tag;

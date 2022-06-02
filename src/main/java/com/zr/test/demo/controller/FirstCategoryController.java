@@ -6,6 +6,7 @@ import com.zr.test.demo.config.swagger.annotation.ApiFirstCategory;
 import com.zr.test.demo.model.dto.FirstCategoryDTO;
 import com.zr.test.demo.model.entity.FirstCategory;
 import com.zr.test.demo.model.entity.Tag;
+import com.zr.test.demo.model.vo.FirstCategoryListVO;
 import com.zr.test.demo.model.vo.FirstCategoryOneVO;
 import com.zr.test.demo.model.vo.FirstCategoryVO;
 import com.zr.test.demo.service.IFirstCategoryService;
@@ -63,6 +64,12 @@ public class FirstCategoryController {
     @ApiOperation("12.0.5 删除教育类型")
     public Result<Object> delete(@PathVariable Long id) {
         return service.delete(id);
+    }
+
+    @PostMapping("/list")
+    @ApiOperation("12.0.6 查询教育类型和所属分类、标签")
+    public Result<List<FirstCategoryListVO>> list(@RequestParam(name = "type") @NotNull(message = "类型不能为空") Integer type) {
+        return service.listByType(type);
     }
 }
 

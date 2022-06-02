@@ -31,15 +31,4 @@ public class CourseVO {
     @ApiModelProperty(value = "上下架")
     private Integer status;
 
-    @ApiModelProperty(value = "图片的地址")
-    private String img;
-
-    @ApiModelProperty(value = "学习任务的地址")
-    private String learningTask;
-
-    @ApiModelProperty(value = "课后练习的地址")
-    private String homework;
-
-    @ApiModelProperty(value = "视频的地址")
-    private String video;
 }

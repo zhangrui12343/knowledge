@@ -4,24 +4,27 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.zr.test.demo.common.Result;
 import com.zr.test.demo.component.exception.CustomException;
 import com.zr.test.demo.config.enums.ErrorCode;
+import com.zr.test.demo.model.entity.App;
 import com.zr.test.demo.model.entity.Tool;
 import com.zr.test.demo.dao.ToolMapper;
 import com.zr.test.demo.model.entity.ToolAppRelation;
 import com.zr.test.demo.model.pojo.TeachingTools;
+import com.zr.test.demo.model.pojo.ToolApps;
+import com.zr.test.demo.model.vo.FileVO;
+import com.zr.test.demo.model.vo.ToolAppVO;
 import com.zr.test.demo.model.vo.ToolVO;
 import com.zr.test.demo.service.IToolService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.zr.test.demo.support.FileRouterBiz;
 import com.zr.test.demo.util.FileUtil;
 import com.zr.test.demo.util.ListUtil;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * <p>
@@ -34,10 +37,12 @@ import java.util.Map;
 @Service
 public class ToolServiceImpl extends ServiceImpl<ToolMapper, Tool> implements IToolService {
     private final ToolAppRelationServiceImpl toolAppRelationService;
+    private final FileRouterBiz fileRouterBiz;
 
     @Autowired
-    public ToolServiceImpl(ToolAppRelationServiceImpl toolAppRelationService) {
+    public ToolServiceImpl(ToolAppRelationServiceImpl toolAppRelationService, FileRouterBiz fileRouterBiz) {
         this.toolAppRelationService = toolAppRelationService;
+        this.fileRouterBiz = fileRouterBiz;
     }
 
     @Override
@@ -47,28 +52,36 @@ public class ToolServiceImpl extends ServiceImpl<ToolMapper, Tool> implements IT
 
     @Override
     public Result<List<ToolVO>> queryAll() {
-        List<TeachingTools> list=this.baseMapper.selectAll();
+        List<TeachingTools> list = this.baseMapper.selectAll();
         if (ListUtil.isEmpty(list)) {
             return Result.success(new ArrayList<>());
         }
-        Map<String,List<String>> map=new HashMap<>();
-        List<ToolVO> vos=new ArrayList<>();
-        list.forEach(e->{
-            String key=e.getId().toString()+"~!@#*"+e.getName();
-            if(map.containsKey(key)){
-                map.get(key).add(FileUtil.getBase64FilePath(e.getPath()));
+        LinkedHashMap<String, List<Map<String, String>>> map = new LinkedHashMap<>();
+        List<ToolVO> vos = new ArrayList<>();
+        list.forEach(e -> {
+            String key = e.getId().toString() + "~!@#" + e.getName();
+            if (e.getAppid() != null ) {
+                Map<String, String> vo = new HashMap<>(3);
+                vo.put("appid", e.getAppid().toString());
+                vo.put("logoid", e.getLogo().toString());
+                vo.put("path", FileUtil.getBase64FilePath(fileRouterBiz.selectPath(e.getLogo())));
+                if (map.containsKey(key)) {
+                    map.get(key).add(vo);
+                } else {
+                    List<Map<String, String>> logos = new ArrayList<>();
+                    logos.add(vo);
+                    map.put(key, logos);
+                }
             }else {
-                List<String> logo=new ArrayList<>();
-                logo.add(FileUtil.getBase64FilePath(e.getPath()));
-                map.put(key,logo);
+                map.put(key,new ArrayList<>());
             }
         });
-        map.forEach((k,v)->{
-            String[] str=k.split("~!@#*");
-            ToolVO vo=new ToolVO();
+        map.forEach((k, v) -> {
+            String[] str = k.split("~!@#");
+            ToolVO vo = new ToolVO();
             vo.setId(Long.parseLong(str[0]));
             vo.setName(str[1]);
-            vo.setLogo(v);
+            vo.setLogos(v);
             vos.add(vo);
         });
         return Result.success(vos);
@@ -83,8 +96,8 @@ public class ToolServiceImpl extends ServiceImpl<ToolMapper, Tool> implements IT
     @Transactional(rollbackFor = Exception.class)
     public Result<Object> delete(Long id, HttpServletRequest request) {
         //删除关联表
-        QueryWrapper<ToolAppRelation> queryWrapper=new QueryWrapper<>();
-        queryWrapper.eq("tool_id",id);
+        QueryWrapper<ToolAppRelation> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("tool_id", id);
         toolAppRelationService.getBaseMapper().delete(queryWrapper);
         return Result.success(this.baseMapper.deleteById(id));
     }
@@ -96,9 +109,42 @@ public class ToolServiceImpl extends ServiceImpl<ToolMapper, Tool> implements IT
 
     @Override
     public Result<Object> updateByDto(Tool dto, HttpServletRequest request) {
-        if(dto.getId()==null){
+        if (dto.getId() == null) {
             throw new CustomException(ErrorCode.SYS_PARAM_ERR);
         }
         return Result.success(this.baseMapper.updateById(dto));
+    }
+
+    @Override
+    public Result<List<ToolAppVO>> findAll() {
+        //查询所有矩阵
+        List<ToolApps> list = this.baseMapper.findAll();
+        if (ListUtil.isEmpty(list)) {
+            return Result.success(new ArrayList<>());
+        }
+        Map<String, List<App>> map = new HashMap<>();
+        list.forEach(e -> {
+            if(e.getId()==null){
+                map.put(e.getTool(),new ArrayList<>());
+            }else{
+                App app = new App();
+                BeanUtils.copyProperties(e, app);
+                if (map.containsKey(e.getTool())) {
+                    map.get(e.getTool()).add(app);
+                } else {
+                    List<App> apps = new ArrayList<>();
+                    apps.add(app);
+                    map.put(e.getTool(), apps);
+                }
+            }
+        });
+        List<ToolAppVO> res = new ArrayList<>();
+        map.forEach((k, v) -> {
+            ToolAppVO vo = new ToolAppVO();
+            vo.setName(k);
+            vo.setApps(v);
+            res.add(vo);
+        });
+        return Result.success(res);
     }
 }

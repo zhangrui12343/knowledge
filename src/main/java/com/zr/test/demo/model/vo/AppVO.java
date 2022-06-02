@@ -13,7 +13,8 @@ public class AppVO {
 
     @ApiModelProperty(value = "log的地址", example = "1213")
     private String logo;
-
+    @ApiModelProperty(value = "log的id", example = "1213")
+    private Long logoId;
     @ApiModelProperty(value = "类型", example = "1213")
     private String type;
 

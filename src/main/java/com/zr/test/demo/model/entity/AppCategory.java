@@ -32,9 +32,9 @@ public class AppCategory implements Serializable {
     @ApiModelProperty(value = "id", example = "1213")
     private Long id;
     @ApiModelProperty(value = "名称", example = "1213")
-
     private String name;
     @NotNull(message = "type必填")
+    @ApiModelProperty(value = "0:类型,1:科目,2:平台,3：标签", example = "0")
     private Integer type;
 
 

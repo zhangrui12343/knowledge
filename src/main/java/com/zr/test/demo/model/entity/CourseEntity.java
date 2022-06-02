@@ -51,5 +51,5 @@ public class CourseEntity implements Serializable {
 
     private Date time;
 
-    private Integer count;
+    private Long count;
 }

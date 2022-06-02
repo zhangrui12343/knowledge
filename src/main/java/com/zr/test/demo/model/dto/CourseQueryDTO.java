@@ -6,8 +6,9 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
-import javax.validation.constraints.NotBlank;
+
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * <p>
@@ -29,5 +30,8 @@ public class CourseQueryDTO extends PageTDO implements Serializable {
     private String startTime;
     @ApiModelProperty(value = "结束时间", example = "1213")
     private String endTime;
-
+    @ApiModelProperty(value = "课程分类id 从学段到最末", example = "1213")
+    private List<Long> categories;
+    @ApiModelProperty(value = "课程类型id", example = "1213")
+    private List<Long> types;
 }

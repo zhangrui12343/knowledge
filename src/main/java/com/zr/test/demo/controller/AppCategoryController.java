@@ -31,13 +31,13 @@ public class AppCategoryController {
     private IAppCategoryService service;
 
     @PostMapping("/add")
-    @ApiOperation("15.0.1 新增软件分类")
+    @ApiOperation("15.0.1 新增软件分类 type: 0:类型,1:科目,2:平台,3：标签")
     public Result<Object> add(@RequestBody AppCategory dto) {
         return service.add(dto);
     }
 
     @PostMapping("/query")
-    @ApiOperation("15.0.2 查询软件分类")
+    @ApiOperation("15.0.2 查询软件分类 type:-1:全部 0:类型,1:科目,2:平台,3：标签")
     public Result<List<AppCategory>> query(@RequestBody AppCategory dto) {
         return service.queryByDto(dto);
     }
@@ -49,9 +49,16 @@ public class AppCategoryController {
     }
 
     @PostMapping("/update")
-    @ApiOperation("15.0.1 修改软件分类")
+    @ApiOperation("15.0.4 修改软件分类")
     public Result<Object> update(@RequestBody AppCategory dto) {
         return service.updateByDto(dto);
     }
+
+    @PostMapping("/list")
+    @ApiOperation("15.0.5 前端使用 查询软件分类 ")
+    public Result<List<AppCategory>> list() {
+        return service.queryAll();
+    }
+
 }
 

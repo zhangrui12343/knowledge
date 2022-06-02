@@ -7,8 +7,10 @@ import com.zr.test.demo.config.swagger.annotation.ApiCourse;
 import com.zr.test.demo.model.dto.CourseDTO;
 import com.zr.test.demo.model.dto.CourseQueryDTO;
 import com.zr.test.demo.model.dto.StatusDTO;
+import com.zr.test.demo.model.vo.CourseListVO;
 import com.zr.test.demo.model.vo.CourseOneVO;
 import com.zr.test.demo.model.vo.CourseVO;
+import com.zr.test.demo.model.vo.WebCourseDetailVO;
 import com.zr.test.demo.service.ICourseService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -46,11 +48,6 @@ public class CourseController {
     public Result<PageInfo<CourseVO>> query(@RequestBody CourseQueryDTO dto, HttpServletRequest request) {
         return service.query(dto,request);
     }
-    @PostMapping("/query/{id}")
-    @ApiOperation("5.0.3 查询课程")
-    public Result<CourseOneVO> queryOne(@PathVariable Long id, HttpServletRequest request) {
-        return service.queryOne(id,request);
-    }
 
     @PostMapping("/update")
     @ApiOperation("5.0.4 修改课程")
@@ -68,6 +65,24 @@ public class CourseController {
     @ApiOperation("5.0.6 修改上下架状态")
     public Result<Object> updateStatus(@RequestBody StatusDTO dto, HttpServletRequest request) {
         return service.updateStatus(dto,request);
+    }
+
+    @PostMapping("/query/{id}")
+    @ApiOperation("5.0.3 查询课程")
+    public Result<CourseOneVO> queryOne(@PathVariable Long id, HttpServletRequest request) {
+        return service.queryOne(id,request);
+    }
+
+    @PostMapping("/detail/{id}")
+    @ApiOperation("5.0.7 前端用查询课程详情")
+    public Result<WebCourseDetailVO> detail(@PathVariable Long id) {
+        return service.detail(id);
+    }
+
+    @PostMapping("/list")
+    @ApiOperation("5.0.8 前端用课程列表")
+    public Result<PageInfo<CourseListVO>> list(@RequestBody CourseQueryDTO dto) {
+        return service.list(dto);
     }
 }
 

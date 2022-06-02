@@ -9,6 +9,7 @@ import com.zr.test.demo.config.enums.ErrorCode;
 import com.zr.test.demo.dao.IUserDao;
 import com.zr.test.demo.model.dto.GeneralUserDTO;
 import com.zr.test.demo.model.dto.StudentDTO;
+import com.zr.test.demo.model.entity.SysUserEntity;
 import com.zr.test.demo.model.entity.UserEntity;
 import com.zr.test.demo.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +25,18 @@ public class UserDaoImpl {
     public int insertOne(UserEntity user) {
         return userDao.insert(user);
     }
-
+    public int selectCount() {
+        return userDao.selectCount(new QueryWrapper<>());
+    }
+    public long selectSchoolCount() {
+        QueryWrapper<UserEntity> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().eq(UserEntity::getStudent,1);
+        List<UserEntity> list=userDao.selectList(queryWrapper);
+        if(list.isEmpty()){
+            return 0;
+        }
+        return list.stream().map(UserEntity::getSchool).distinct().count();
+    }
     public List<UserEntity> selectByEntity(UserEntity entity) {
         QueryWrapper<UserEntity> queryWrapper = new QueryWrapper<>();
         queryWrapper.setEntity(entity);
@@ -60,5 +72,10 @@ public class UserDaoImpl {
         queryWrapper.orderByDesc("register");
         return PageHelper.startPage(user.getPage(), user.getPageSize())
                 .doSelectPage( () -> this.userDao.selectList(queryWrapper));
+    }
+
+    public boolean checkUser(Integer userId) {
+        UserEntity userEntity= this.userDao.selectById(userId);
+        return userEntity != null && userEntity.getStatus() != 0;
     }
 }

@@ -6,8 +6,10 @@ import com.zr.test.demo.common.Result;
 import com.zr.test.demo.model.dto.CourseDTO;
 import com.zr.test.demo.model.dto.CourseQueryDTO;
 import com.zr.test.demo.model.dto.StatusDTO;
+import com.zr.test.demo.model.vo.CourseListVO;
 import com.zr.test.demo.model.vo.CourseOneVO;
 import com.zr.test.demo.model.vo.CourseVO;
+import com.zr.test.demo.model.vo.WebCourseDetailVO;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
@@ -30,9 +32,12 @@ public interface ICourseService {
     Result<Object> delete(Long id, HttpServletRequest request);
 
     Result<CourseOneVO> queryOne(Long id, HttpServletRequest request);
-    Result<Object> addCount(Long id);
 
     Result<Object> update(CourseDTO dto, HttpServletRequest request);
 
     Result<Object> updateStatus(StatusDTO dto, HttpServletRequest request);
+
+    Result<WebCourseDetailVO> detail(Long id);
+
+    Result<PageInfo<CourseListVO>> list(CourseQueryDTO dto);
 }

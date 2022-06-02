@@ -2,6 +2,8 @@ package com.zr.test.demo.support;
 
 import com.zr.test.demo.dao.FileRouterMapper;
 import com.zr.test.demo.model.entity.FileRouter;
+import com.zr.test.demo.model.vo.FileVO;
+import com.zr.test.demo.util.FileUtil;
 import com.zr.test.demo.util.ListUtil;
 import com.zr.test.demo.util.StringUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -42,6 +44,21 @@ public class FileRouterBiz {
             return Optional.ofNullable(fileRouter.getFilePath()).orElse("");
         }
         return null;
+    }
+    public FileVO selectFile(Long id) {
+        FileRouter fileRouter = this.fileRouterMapper.selectById(id);
+        FileVO vo=new FileVO();
+        if (fileRouter != null) {
+            String path=fileRouter.getFilePath();
+            if(StringUtil.isEmpty(path)){
+                return vo;
+            }
+            vo.setPath(FileUtil.getBase64FilePath(fileRouter.getFilePath()));
+            vo.setId(fileRouter.getId());
+            vo.setName(fileRouter.getName());
+            return vo;
+        }
+        return vo;
     }
     public void delete(String idsStr) {
         if (StringUtil.isEmpty(idsStr)) {

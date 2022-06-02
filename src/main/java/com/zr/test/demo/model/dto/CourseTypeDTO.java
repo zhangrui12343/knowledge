@@ -31,5 +31,5 @@ public class CourseTypeDTO implements Serializable {
     @ApiModelProperty(value = "名称", example = "1213")
     private String name;
     @ApiModelProperty(value = "课程分类末级id", example = "1213")
-    private String categoryId;
+    private Long categoryId;
 }

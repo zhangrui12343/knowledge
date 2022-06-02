@@ -1,18 +1,17 @@
 package com.zr.test.demo.controller;
 
 
-import com.zr.test.demo.common.PageInfo;
+
 import com.zr.test.demo.common.Result;
-import com.zr.test.demo.config.swagger.annotation.ApiAppCase;
+
 import com.zr.test.demo.config.swagger.annotation.ApiTool;
-import com.zr.test.demo.model.dto.OtherCourseDTO;
-import com.zr.test.demo.model.dto.OtherCourseQueryDTO;
+
 import com.zr.test.demo.model.entity.Tool;
 import com.zr.test.demo.model.entity.ToolAppRelation;
-import com.zr.test.demo.model.vo.OtherCourseOneVO;
-import com.zr.test.demo.model.vo.OtherCourseVO;
+
+import com.zr.test.demo.model.vo.ToolAppVO;
 import com.zr.test.demo.model.vo.ToolVO;
-import com.zr.test.demo.service.ITeacherTrainingService;
+
 import com.zr.test.demo.service.IToolService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -69,5 +68,13 @@ public class ToolController {
     public Result<Object> update(@RequestBody Tool dto, HttpServletRequest request) {
         return service.updateByDto(dto, request);
     }
+
+    @PostMapping("/list")
+    @ApiOperation("18.0.7 web使用，查询所有矩阵和关联的app")
+    public Result<List<ToolAppVO>> list() {
+        return service.findAll();
+    }
+
+
 }
 

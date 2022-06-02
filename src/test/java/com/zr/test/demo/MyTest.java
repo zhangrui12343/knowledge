@@ -57,7 +57,7 @@ public class MyTest extends DemoApplicationTests {
           // 配置数据库连接用户名
           dsc.setUsername("root");
           // 配置数据库连接密码
-          dsc.setPassword("root");
+          dsc.setPassword("123456");
           mpg.setDataSource(dsc);
 
           // Step:4：包配置
@@ -77,7 +77,7 @@ public class MyTest extends DemoApplicationTests {
           // Step5：策略配置（数据库表配置）
           StrategyConfig strategy = new StrategyConfig();
           // 指定表名（可以同时操作多个表，使用 , 隔开）（需要修改）
-          strategy.setInclude("tool_app_relation");
+          strategy.setInclude("leaderboard");
           // 配置数据表与实体类名之间映射的策略
           strategy.setNaming(NamingStrategy.underline_to_camel);
           strategy.setEntityBuilderModel(true);

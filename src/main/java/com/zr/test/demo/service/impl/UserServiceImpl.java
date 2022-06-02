@@ -18,6 +18,8 @@ import com.zr.test.demo.util.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import java.net.URLEncoder;
@@ -170,12 +172,30 @@ public class UserServiceImpl implements IUserService {
         authKey.setUserId(user.getId());
         authKey.setTime(TimeUtil.getTime());
         request.getSession().setAttribute(token, authKey);
+
         vo.setToken(token);
         vo.setUsername(user.getName());
+        vo.setIp(getRemortIP());
         return Result.success(vo);
 
     }
 
+    private String getRemortIP() {
+        try {
+            HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+            String ip = "";
+            if (request.getHeader("x-forwarded-for") == null) {
+                ip = request.getRemoteAddr();
+            }else{
+                ip = request.getHeader("x-forwarded-for");
+            }
+            return ip;
+        }catch (Exception e){
+            log.error("获取ip失败 e：{}",e.getMessage());
+            return "";
+        }
+
+    }
 
     @Override
     public Result<Object> logout(HttpServletRequest request) {

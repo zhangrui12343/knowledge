@@ -3,18 +3,12 @@ package com.zr.test.demo.controller;
 
 import com.zr.test.demo.common.PageInfo;
 import com.zr.test.demo.common.Result;
-import com.zr.test.demo.config.swagger.annotation.ApiApp;
 import com.zr.test.demo.config.swagger.annotation.ApiAppCase;
 import com.zr.test.demo.model.dto.AppCaseDTO;
-import com.zr.test.demo.model.dto.AppDTO;
 import com.zr.test.demo.model.dto.AppQueryDTO;
 import com.zr.test.demo.model.dto.StatusDTO;
-import com.zr.test.demo.model.vo.AppCaseOneVO;
-import com.zr.test.demo.model.vo.AppCaseVO;
-import com.zr.test.demo.model.vo.AppOneVO;
-import com.zr.test.demo.model.vo.AppVO;
+import com.zr.test.demo.model.vo.*;
 import com.zr.test.demo.service.IAppCaseService;
-import com.zr.test.demo.service.IAppService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,7 +51,7 @@ public class AppCaseController {
 
     @PostMapping("/update")
     @ApiOperation("17.0.4 修改信课融合案例")
-    public Result<Object> update(AppCaseDTO dto, HttpServletRequest request) {
+    public Result<Object> update(@RequestBody AppCaseDTO dto, HttpServletRequest request) {
         return service.updateByDto(dto,request);
     }
 
@@ -70,6 +64,12 @@ public class AppCaseController {
     @ApiOperation("17.0.6 修改上下架状态")
     public Result<Object> updateStatus(@RequestBody StatusDTO dto, HttpServletRequest request) {
         return service.updateStatus(dto,request);
+    }
+
+    @PostMapping("/detail/{id}")
+    @ApiOperation("17.0.7  前端web使用  查询信课融合案例")
+    public Result<AppCaseDetailVO> detail(@PathVariable Long id) {
+        return service.detail(id);
     }
 }
 

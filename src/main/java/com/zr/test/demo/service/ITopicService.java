@@ -2,15 +2,13 @@ package com.zr.test.demo.service;
 
 import com.zr.test.demo.common.PageInfo;
 import com.zr.test.demo.common.Result;
-import com.zr.test.demo.model.dto.OtherCourseDTO;
-import com.zr.test.demo.model.dto.OtherCourseQueryDTO;
-import com.zr.test.demo.model.dto.StatusDTO;
+import com.zr.test.demo.model.dto.*;
 import com.zr.test.demo.model.entity.Topic;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.zr.test.demo.model.vo.OtherCourseOneVO;
-import com.zr.test.demo.model.vo.OtherCourseVO;
+import com.zr.test.demo.model.vo.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  * <p>
@@ -30,4 +28,10 @@ public interface ITopicService extends IService<Topic> {
     Result<Object> delete(Long id, HttpServletRequest request);
 
     Result<Object> updateStatus(StatusDTO dto, HttpServletRequest request);
+
+    Result<List<OtherCourseListVO>> findList();
+
+    Result<PageInfo<OtherCourseWebVO>> listMore(OtherCourseListDTO dto);
+
+    Result<WebAfterDetailVO> detail(Long id);
 }

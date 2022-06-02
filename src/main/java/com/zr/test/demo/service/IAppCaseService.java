@@ -7,6 +7,7 @@ import com.zr.test.demo.model.dto.AppQueryDTO;
 import com.zr.test.demo.model.dto.StatusDTO;
 import com.zr.test.demo.model.entity.AppCase;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.zr.test.demo.model.vo.AppCaseDetailVO;
 import com.zr.test.demo.model.vo.AppCaseOneVO;
 import com.zr.test.demo.model.vo.AppCaseVO;
 
@@ -33,4 +34,6 @@ public interface IAppCaseService extends IService<AppCase> {
     Result<Object> delete(Long id, HttpServletRequest request);
 
     Result<Object> updateStatus(StatusDTO dto, HttpServletRequest request);
+
+    Result<AppCaseDetailVO> detail(Long id);
 }

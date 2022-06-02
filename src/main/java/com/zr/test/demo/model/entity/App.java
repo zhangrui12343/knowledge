@@ -39,9 +39,9 @@ public class App implements Serializable {
 
     private Long type;
 
-    private Long subject;
+    private String subject;
 
-    private Long platform;
+    private String platform;
 
     private String tags;
 

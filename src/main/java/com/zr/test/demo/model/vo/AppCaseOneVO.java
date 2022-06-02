@@ -26,8 +26,8 @@ public class AppCaseOneVO implements Serializable {
     private Long id;
     @ApiModelProperty(value = "软件名称", example = "1213")
     private String appName;
-    @ApiModelProperty(value = "软件名称", example = "1213")
-    private String appId;
+    @ApiModelProperty(value = "软件id", example = "1213")
+    private Long appId;
     @ApiModelProperty(value = "案例名称", example = "1213")
     private String caseName;
     @ApiModelProperty(value = "视频文件路径", example = "1213")
@@ -37,7 +37,7 @@ public class AppCaseOneVO implements Serializable {
     @ApiModelProperty(value = "软件介绍", example = "1213")
     private String appIntroduction;
 
-    @ApiModelProperty(value = "软件介绍", example = "1213")
+    @ApiModelProperty(value = "功能介绍", example = "1213")
     private String feature;
 
     @ApiModelProperty(value = "上下架", example = "1")

@@ -49,7 +49,7 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, Tag> implements ITagS
         if (id < 1) {
             Tag tag=new Tag();
             tag.setType(Math.abs(id.intValue()));
-            return Result.success(this.baseMapper.selectList(new QueryWrapper<>()));
+            return Result.success(this.baseMapper.selectList(new QueryWrapper<>(tag)));
         }
         FirstTag firstTag = new FirstTag();
         firstTag.setFirstId(id);
@@ -67,7 +67,7 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, Tag> implements ITagS
 
     @Override
     public Result<Object> update(Tag dto) {
-        if (dto.getId() != null) {
+        if (dto.getId() == null) {
             throw new CustomException(ErrorCode.SYS_PARAM_ERR, "id不能为空");
         }
         return Result.success(this.baseMapper.updateById(dto));

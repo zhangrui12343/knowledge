@@ -10,6 +10,8 @@ import com.zr.test.demo.component.exception.CustomException;
 import com.zr.test.demo.component.log.LogPrint;
 import com.zr.test.demo.config.enums.ErrorCode;
 import com.zr.test.demo.model.pojo.AuthKey;
+import com.zr.test.demo.repository.SysUserDaoImpl;
+import com.zr.test.demo.repository.UserDaoImpl;
 import com.zr.test.demo.util.*;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -18,6 +20,7 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
@@ -41,6 +44,11 @@ public class BaseAspect {
     private static Logger logger = LoggerFactory.getLogger(BaseAspect.class);
     @Value("${needToken}")
     private boolean needToken;
+    @Autowired
+    private UserDaoImpl dao1;
+    @Autowired
+    private SysUserDaoImpl dao;
+
     /**
      * 切点定义
      */
@@ -86,12 +94,22 @@ public class BaseAspect {
                     logger.error("无效token！");
                     throw new CustomException(ErrorCode.SYS_NO_AUTHORITY, "鉴权失败！");
                 }
-                //普通用户不能访问增删改的接口
-                if (authKey.getRoleId() == -1 && !GUserUri.startWith(request.getRequestURI())) {
-                    throw new CustomException(ErrorCode.SYS_NO_AUTHORITY);
-                }
-                //查询该用户是否存在，或者是否被禁用
+                //普通用户不能访问白名单之外的接口
+//                if (authKey.getRoleId() == -1) {
+//                    throw new CustomException(ErrorCode.SYS_NO_AUTHORITY);
+//                }
+                logger.info("authkey:{}",authKey);
+                if(authKey.getSystem()==1){
 
+                    if(!dao.checkUser(authKey.getUserId())){
+                        throw new CustomException(ErrorCode.SYS_NO_AUTHORITY,"用户被禁用或者不存在了");
+                    }
+                }else{
+                    //查询该用户是否存在，或者是否被禁用
+                    if(!dao1.checkUser(authKey.getUserId())){
+                        throw new CustomException(ErrorCode.SYS_NO_AUTHORITY,"用户被禁用或者不存在了");
+                    }
+                }
                 //延长sesion时间
                 session.setMaxInactiveInterval(30 * 60);
             }

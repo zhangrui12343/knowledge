@@ -2,11 +2,10 @@ package com.zr.test.demo.service;
 
 import com.zr.test.demo.common.PageInfo;
 import com.zr.test.demo.common.Result;
-import com.zr.test.demo.model.dto.AppDTO;
-import com.zr.test.demo.model.dto.AppQueryDTO;
-import com.zr.test.demo.model.dto.StatusDTO;
+import com.zr.test.demo.model.dto.*;
 import com.zr.test.demo.model.entity.App;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.zr.test.demo.model.vo.AppAndCaseVO;
 import com.zr.test.demo.model.vo.AppOneVO;
 import com.zr.test.demo.model.vo.AppVO;
 
@@ -33,7 +32,12 @@ public interface IAppService extends IService<App> {
 
     Result<Object> delete(Long id, HttpServletRequest request);
 
-    Result<Object> updateStatus(StatusDTO dto, HttpServletRequest request);
 
     Result<List<AppOneVO>> queryAppName(String name,HttpServletRequest request);
+
+    Result<PageInfo<AppAndCaseVO>> listByDto(AppQueryListDTO dto);
+
+    Result<List<App>> listU();
+
+    Result<Object> updateStatus(AppStatusDTO dto);
 }

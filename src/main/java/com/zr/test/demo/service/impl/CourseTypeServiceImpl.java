@@ -43,7 +43,7 @@ public class CourseTypeServiceImpl implements ICourseTypeService {
 
     @Override
     public Result<Object> add(CourseTypeDTO dto) {
-        if(StringUtil.isEmpty(dto.getName())||dto.getPid()==null||dto.getCategoryId()==null){
+        if (StringUtil.isEmpty(dto.getName()) || dto.getPid() == null || dto.getCategoryId() == null) {
             throw new CustomException(ErrorCode.SYS_PARAM_ERR);
         }
         CourseTypeEntity entity = new CourseTypeEntity();
@@ -53,11 +53,15 @@ public class CourseTypeServiceImpl implements ICourseTypeService {
 
     @Override
     public Result<List<CourseTypeVO>> query(Long id) {
-
-        CourseTypeEntity entity=new CourseTypeEntity();
-        entity.setCategoryId(id);
-        List<CourseTypeEntity> list = service.selectByEntity(entity);
         List<CourseTypeVO> res = new ArrayList<>();
+        List<CourseTypeEntity> list;
+        if (id == -1) {
+            list = service.selectByEntity(null);
+        } else {
+            CourseTypeEntity entity = new CourseTypeEntity();
+            entity.setCategoryId(id);
+            list = service.selectByEntity(entity);
+        }
         list.forEach(l -> {
             CourseTypeVO v = new CourseTypeVO();
             BeanUtils.copyProperties(l, v);
@@ -68,7 +72,7 @@ public class CourseTypeServiceImpl implements ICourseTypeService {
 
     @Override
     public Result<Object> update(CourseTypeDTO dto, HttpServletRequest request) {
-        if (dto.getId() == null||StringUtil.isEmpty(dto.getName())) {
+        if (dto.getId() == null || StringUtil.isEmpty(dto.getName())) {
             throw new CustomException(ErrorCode.SYS_PARAM_ERR);
         }
         CourseTypeEntity entity = new CourseTypeEntity();
@@ -85,7 +89,7 @@ public class CourseTypeServiceImpl implements ICourseTypeService {
         pids.add(id);
         List<Long> ids = selectChildren(new ArrayList<>(), pids);
         ids.add(id);
-         log.info("一共需要删除 {} 条", ids.size());
+        log.info("一共需要删除 {} 条", ids.size());
         return Result.success(service.deleteByIds(ids));
     }
 

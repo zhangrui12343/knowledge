@@ -39,12 +39,11 @@ public class CourseTypeController {
         return service.add(dto);
     }
 
-    @PostMapping("/query/id")
-    @ApiOperation("8.0.2 根据课程分类查询课程类型树")
+    @PostMapping("/query/{id}")
+    @ApiOperation("8.0.2 id为-1 查询所有，根据课程分类查询课程类型树")
     public Result<List<CourseTypeVO>> query(@PathVariable Long id) {
         return service.query(id);
     }
-
     @PostMapping("/update")
     @ApiOperation("8.0.3 修改课程类型")
     public Result<Object> update(HttpServletRequest request, @RequestBody CourseTypeDTO dto) {

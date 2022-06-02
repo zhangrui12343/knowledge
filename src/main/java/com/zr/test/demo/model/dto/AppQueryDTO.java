@@ -31,10 +31,10 @@ public class AppQueryDTO extends PageTDO implements Serializable {
     private Long type;
 
     @ApiModelProperty(value = "软件科目", example = "1213")
-    private Long subject;
+    private List<Long> subject;
 
     @ApiModelProperty(value = "软件平台", example = "1213")
-    private Long platform;
+    private List<Long> platform;
 
     @ApiModelProperty(value = "开始时间", example = "1213")
     private String startTime;

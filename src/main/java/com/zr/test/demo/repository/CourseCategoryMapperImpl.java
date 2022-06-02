@@ -30,7 +30,9 @@ public class CourseCategoryMapperImpl {
     public List<CourseCategoryEntity> selectByIds(List<Long> ids){
         return dao.selectBatchIds(ids);
     }
-
+    public CourseCategoryEntity selectById(Long id){
+        return dao.selectById(id);
+    }
     public int updateById(CourseCategoryEntity role){
         return dao.updateById(role);
     }

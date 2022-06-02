@@ -1,0 +1,34 @@
+package com.zr.test.demo.model.pojo;
+
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
+
+import java.io.Serializable;
+import java.util.List;
+
+/**
+ * <p>
+ * 
+ * </p>
+ *
+ * @author zr
+ * @since 2022-05-30
+ */
+@Data
+@EqualsAndHashCode(callSuper = false)
+@Accessors(chain = true)
+@ApiModel(value="首页师研教育", description="")
+public class TeacherInIndex implements Serializable {
+
+    private static final long serialVersionUID=1L;
+    @ApiModelProperty(value = "大类型id")
+    private Long id;
+    @ApiModelProperty(value = "大类型名称")
+    private String name;
+    @ApiModelProperty(value = "大类型图片")
+    private Long img;
+
+}

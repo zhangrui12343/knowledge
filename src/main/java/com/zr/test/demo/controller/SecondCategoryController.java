@@ -31,15 +31,14 @@ public class SecondCategoryController {
     @Autowired
     private ISecondCategoryService service;
 
-    @PostMapping("/add}")
+    @PostMapping("/add")
     @ApiOperation("14.0.1 新增分类")
     public Result<Object> add(@RequestBody SecondCategory dto) {
         return service.add(dto);
     }
-
-    @PostMapping("/query")
-    @ApiOperation("14.0.2 查询分类")
-    public Result<List<SecondCategory>> query(@RequestBody SecondCategory dto) {
+    @PostMapping("/query/{id}")
+    @ApiOperation("14.0.2 根据教育类型id查询小分类,id为-3 查询所有小分类,id=0,-1,-2分别按课后、专题、师研查询")
+    public Result<List<SecondCategory>> query(@PathVariable(name = "id") Long dto) {
         return service.queryByDto(dto);
     }
 

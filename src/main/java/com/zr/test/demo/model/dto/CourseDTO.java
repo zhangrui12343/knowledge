@@ -32,10 +32,10 @@ public class CourseDTO implements Serializable {
     @ApiModelProperty(value = "授课老师")
     private String teacher;
     @NotNull(message = "课程类型不能为空")
-    @ApiModelProperty(value = "根节点到末级所有课程类型id")
+    @ApiModelProperty(value = "根节点到末级所有课程分类id")
     private List<Long> category;
     @NotNull(message = "课程类分类能为空")
-    @ApiModelProperty(value = "根节点到末级所有课程分类id")
+    @ApiModelProperty(value = "根节点到末级所有课程类型id")
     private List<Long> courseTypeId;
     @NotNull(message = "课程标签不能为空")
     @ApiModelProperty(value = "课程标签id")

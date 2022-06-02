@@ -12,6 +12,8 @@ import com.zr.test.demo.model.entity.App;
 import com.zr.test.demo.model.entity.AppCase;
 import com.zr.test.demo.dao.AppCaseMapper;
 import com.zr.test.demo.model.entity.AppCategory;
+import com.zr.test.demo.model.vo.AppAndCaseVO;
+import com.zr.test.demo.model.vo.AppCaseDetailVO;
 import com.zr.test.demo.model.vo.AppCaseOneVO;
 import com.zr.test.demo.model.vo.AppCaseVO;
 import com.zr.test.demo.service.IAppCaseService;
@@ -55,6 +57,7 @@ public class AppCaseServiceImpl extends ServiceImpl<AppCaseMapper, AppCase> impl
     public Result<Object> add(AppCaseDTO dto, HttpServletRequest request) {
         AppCase appCase = new AppCase();
         BeanUtils.copyProperties(dto, appCase);
+        appCase.setTime(new Date());
         return Result.success(this.getBaseMapper().insert(appCase));
     }
 
@@ -66,7 +69,7 @@ public class AppCaseServiceImpl extends ServiceImpl<AppCaseMapper, AppCase> impl
         }
         queryWrapper1.orderByDesc("time");
         List<AppCase> appCases = this.getBaseMapper().selectList(queryWrapper1);
-        if(ListUtil.isEmpty(appCases)){
+        if (ListUtil.isEmpty(appCases)) {
             PageInfo<AppCaseVO> pageInfo = new PageInfo<>();
             pageInfo.setPage(dto.getPage());
             pageInfo.setPageSize(dto.getPageSize());
@@ -77,62 +80,62 @@ public class AppCaseServiceImpl extends ServiceImpl<AppCaseMapper, AppCase> impl
         if (dto.getType() != null) {
             queryWrapper.eq("type", dto.getType());
         }
-        if (dto.getSubject() != null) {
-            queryWrapper.eq("subject", dto.getSubject());
-        }
-        if (dto.getPlatform() != null) {
-            queryWrapper.eq("platform", dto.getPlatform());
-        }
 
         if (!StringUtil.isEmpty(dto.getName())) {
             queryWrapper.like("name", dto.getName());
         }
 
         List<App> apps = appService.getBaseMapper().selectList(queryWrapper);
-        Map<String,App> map=apps.stream().collect(Collectors.toMap(app->app.getId().toString(), e->e));
+        if (dto.getSubject() != null) {
+            apps = apps.stream().filter(e ->
+                    exist(dto.getSubject(), ListUtil.stringToList(e.getSubject()))).collect(Collectors.toList());
+        }
+        if (dto.getPlatform() != null) {
+            apps = apps.stream().filter(e ->
+                    exist(dto.getPlatform(), ListUtil.stringToList(e.getPlatform()))).collect(Collectors.toList());
+        }
+
+        Map<String, App> map = apps.stream().collect(Collectors.toMap(app -> app.getId().toString(), e -> e));
         List<AppCategory> categories = appCategoryService.getBaseMapper().selectList(null);
-        Map<String, String> map2 = categories.stream().collect(Collectors.toMap(e ->  e.getId().toString(), AppCategory::getName));
-        List<AppCaseVO> res=new ArrayList<>();
+        Map<String, String> map2 = categories.stream().collect(Collectors.toMap(e -> e.getId().toString(), AppCategory::getName));
+        List<AppCaseVO> res = new ArrayList<>();
         appCases.forEach(appCase -> {
-            if(!map.containsKey(appCase.getAppId().toString())){
+            if (!map.containsKey(appCase.getAppId().toString())) {
                 return;
             }
-            App app=map.get(appCase.getAppId().toString());
-            AppCaseVO vo=new AppCaseVO();
+            App app = map.get(appCase.getAppId().toString());
+            AppCaseVO vo = new AppCaseVO();
             vo.setId(appCase.getId());
             vo.setAppName(app.getName());
             vo.setCaseName(appCase.getCaseName());
             vo.setLogo(FileUtil.getBase64FilePath(fileRouterService.selectPath(app.getLogo())));
             vo.setType(Optional.ofNullable(map2.get(app.getType().toString())).orElse(""));
-            vo.setSubject(Optional.ofNullable(map2.get(app.getSubject().toString())).orElse(""));
-            vo.setPlatform(Optional.ofNullable(map2.get(app.getPlatform().toString())).orElse(""));
-            String[] arr = app.getTags().split(",");
-            StringBuilder sb = new StringBuilder();
-            for (String idStr : arr) {
-                String temp = map2.get(idStr);
-                if (StringUtil.isEmpty(temp)) {
-                    continue;
-                }
-                sb.append(temp).append(",");
+            if (!StringUtil.isEmpty(app.getSubject())) {
+                vo.setSubject(getString(app.getSubject(), map2));
             }
-            vo.setTags(sb.substring(0, sb.length() - 1));
+            if (!StringUtil.isEmpty(app.getPlatform())) {
+                vo.setPlatform(getString(app.getPlatform(), map2));
+            }
+            if (!StringUtil.isEmpty(app.getTags())) {
+                vo.setTags(getString(app.getTags(), map2));
+            }
             vo.setTime(TimeUtil.getTime(appCase.getTime()));
             vo.setStatus(appCase.getStatus());
             vo.setOrder(appCase.getOrder());
             res.add(vo);
         });
-        int total=res.size();
-        if(total==0){
+        int total = res.size();
+        if (total == 0) {
             PageInfo<AppCaseVO> pageInfo = new PageInfo<>();
             pageInfo.setPage(dto.getPage());
             pageInfo.setPageSize(dto.getPageSize());
             pageInfo.setTotal(0);
             return Result.success(pageInfo);
         }
-        if(!StringUtil.isEmpty(dto.getName())){
+        if (!StringUtil.isEmpty(dto.getName())) {
             res.sort(Comparator.comparing(AppCaseVO::getOrder).reversed());
         }
-        List<AppCaseVO> list= ListUtil.page(res,dto.getPage(),dto.getPageSize());
+        List<AppCaseVO> list = ListUtil.page(res, dto.getPage(), dto.getPageSize());
         PageInfo<AppCaseVO> pageInfo = new PageInfo<>();
         pageInfo.setPage(dto.getPage());
         pageInfo.setPageSize(dto.getPageSize());
@@ -141,14 +144,30 @@ public class AppCaseServiceImpl extends ServiceImpl<AppCaseMapper, AppCase> impl
         return Result.success(pageInfo);
     }
 
+    private String getString(String tags, Map<String, String> map2) {
+        String[] arr = tags.split(",");
+        StringBuilder sb = new StringBuilder();
+        for (String idStr : arr) {
+            String temp = map2.get(idStr);
+            if (StringUtil.isEmpty(temp)) {
+                continue;
+            }
+            sb.append(temp).append(",");
+        }
+        if(sb.length()==0){
+            return sb.toString();
+        }
+        return sb.substring(0, sb.length() - 1);
+    }
+
     @Override
     public Result<AppCaseOneVO> queryOne(Long id, HttpServletRequest request) {
-       AppCase appCase= this.baseMapper.selectById(id);
-        if(appCase==null){
+        AppCase appCase = this.baseMapper.selectById(id);
+        if (appCase == null) {
             return Result.success(null);
         }
-        AppCaseOneVO vo=new AppCaseOneVO();
-        BeanUtils.copyProperties(appCase,vo);
+        AppCaseOneVO vo = new AppCaseOneVO();
+        BeanUtils.copyProperties(appCase, vo);
         vo.setVideoId(appCase.getId());
         vo.setVideo(FileUtil.getBase64FilePath(fileRouterService.selectPath(appCase.getVideo())));
         return Result.success(vo);
@@ -160,19 +179,20 @@ public class AppCaseServiceImpl extends ServiceImpl<AppCaseMapper, AppCase> impl
         if (dto.getId() == null) {
             throw new CustomException(ErrorCode.SYS_PARAM_ERR);
         }
-        AppCase appCase= this.baseMapper.selectById(dto.getId());
-        if(!appCase.getVideo().equals(dto.getVideo())){
+        AppCase appCase = this.baseMapper.selectById(dto.getId());
+        if (!appCase.getVideo().equals(dto.getVideo())) {
             fileRouterService.deleteOldFile(appCase.getVideo());
         }
         AppCase newApp = new AppCase();
-        BeanUtils.copyProperties(dto,newApp);
+        BeanUtils.copyProperties(dto, newApp);
+        newApp.setTime(new Date());
         return Result.success(this.baseMapper.updateById(newApp));
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Result<Object> delete(Long id, HttpServletRequest request) {
-        AppCase appCase= this.baseMapper.selectById(id);
+        AppCase appCase = this.baseMapper.selectById(id);
         if (appCase == null) {
             return Result.success(0);
         }
@@ -186,5 +206,66 @@ public class AppCaseServiceImpl extends ServiceImpl<AppCaseMapper, AppCase> impl
         course.setId(dto.getId());
         course.setStatus(dto.getStatus());
         return Result.success(this.baseMapper.updateById(course));
+    }
+
+    @Override
+    public Result<AppCaseDetailVO> detail(Long id) {
+        AppCase appCase = this.baseMapper.selectById(id);
+        if(appCase==null){
+            return Result.success(null);
+        }
+        AppCaseDetailVO vo = new AppCaseDetailVO();
+        BeanUtils.copyProperties(appCase, vo);
+        vo.setTime(TimeUtil.getTime(appCase.getTime()));
+        vo.setVideoPath(FileUtil.getBase64FilePath(fileRouterService.selectPath(vo.getVideo())));
+        App app = appService.getBaseMapper().selectById(appCase.getAppId());
+        if (app != null) {
+            List<Long> tagIds = ListUtil.stringToList(app.getTags());
+            if (!ListUtil.isEmpty(tagIds)) {
+                List<AppCategory> tags = appCategoryService.getBaseMapper().selectBatchIds(tagIds);
+                if (!ListUtil.isEmpty(tags)) {
+                    vo.setTags(tags.stream().map(AppCategory::getName).collect(Collectors.toList()));
+                }
+                List<AppAndCaseVO> all = appService.getBaseMapper().selectAllNotMe(app.getId());
+                List<AppAndCaseVO> target = new ArrayList<>();
+                for (AppAndCaseVO e : all) {
+                    if (e.getTags() != null) {
+                        List<Long> tagIdList = ListUtil.stringToList((String) e.getTags());
+                        if (exist(tagIds, tagIdList)) {
+                            e.setTags(tagIdList);
+                            target.add(e);
+                            if (target.size() == 6) {
+                                break;
+                            }
+                        }
+                    }
+                }
+                //标签相同的app
+                vo.setApps(target);
+            }
+        }
+        AppCase appCase1 = new AppCase();
+        appCase1.setAppId(appCase.getAppId());
+        appCase1.setStatus(1);
+        QueryWrapper<AppCase> queryWrapper = new QueryWrapper<>(appCase1);
+        queryWrapper.ne("id", appCase.getId());
+        queryWrapper.orderByDesc("`order`");
+        List<AppCase> cases = this.baseMapper.selectList(queryWrapper);
+        if (!ListUtil.isEmpty(cases)) {
+            vo.setCases(cases);
+        } else {
+            vo.setCases(new ArrayList<>());
+        }
+        return Result.success(vo);
+    }
+
+    private boolean exist(List<Long> a, List<Long> b) {
+        HashSet<Long> set = new HashSet<>(a);
+        for (Long l : b) {
+            if (set.contains(l)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

@@ -30,10 +30,10 @@ public class AppOneVO {
     private Long type;
 
     @ApiModelProperty(value = "科目", example = "1213")
-    private Long subject;
+    private List<Long> subject;
 
     @ApiModelProperty(value = "平台", example = "1213")
-    private Long platform;
+    private List<Long> platform;
 
     @ApiModelProperty(value = "标签", example = "1213")
     private List<Long> tags;
@@ -44,7 +44,7 @@ public class AppOneVO {
     @ApiModelProperty(value = "上下架", example = "1213")
     private Integer status;
 
-    @ApiModelProperty(value = "上下架", example = "1213")
+    @ApiModelProperty(value = "是否通用 ", example = "1213")
     private Integer universal;
 
 

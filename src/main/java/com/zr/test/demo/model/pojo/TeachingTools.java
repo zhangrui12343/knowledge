@@ -6,6 +6,7 @@ import lombok.Data;
 public class TeachingTools {
     private Long id;
     private String name;
-    private String path;
+    private Long appid;
+    private Long logo;
 
 }

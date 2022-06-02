@@ -4,11 +4,8 @@ package com.zr.test.demo.controller;
 import com.zr.test.demo.common.PageInfo;
 import com.zr.test.demo.common.Result;
 import com.zr.test.demo.config.swagger.annotation.ApiAfterCourse;
-import com.zr.test.demo.model.dto.OtherCourseDTO;
-import com.zr.test.demo.model.dto.OtherCourseQueryDTO;
-import com.zr.test.demo.model.dto.StatusDTO;
-import com.zr.test.demo.model.vo.OtherCourseOneVO;
-import com.zr.test.demo.model.vo.OtherCourseVO;
+import com.zr.test.demo.model.dto.*;
+import com.zr.test.demo.model.vo.*;
 import com.zr.test.demo.service.IAfterCourseService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -16,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  * <p>
@@ -52,7 +50,7 @@ public class AfterCourseController {
 
     @PostMapping("/update")
     @ApiOperation("9.0.4 修改课后教育")
-    public Result<Object> update(OtherCourseDTO dto, HttpServletRequest request) {
+    public Result<Object> update(@RequestBody OtherCourseDTO dto, HttpServletRequest request) {
         return service.update(dto,request);
     }
 
@@ -67,5 +65,23 @@ public class AfterCourseController {
     public Result<Object> updateStatus(@RequestBody StatusDTO dto, HttpServletRequest request) {
         return service.updateStatus(dto,request);
     }
+
+    @PostMapping("/list")
+    @ApiOperation("9.0.7 前端用查询课后教育")
+    public Result<List<OtherCourseListVO>> list() {
+        return service.findList();
+    }
+    @PostMapping("/listMore")
+    @ApiOperation("9.0.8 前端用更多查询课后教育")
+    public Result<PageInfo<OtherCourseWebVO>> listMore(@RequestBody OtherCourseListDTO dto) {
+        return service.listMore(dto);
+    }
+
+    @PostMapping("/detail/{id}")
+    @ApiOperation("9.0.9 前端用查询课后详情")
+    public Result<WebAfterDetailVO> detail(@PathVariable Long id) {
+        return service.detail(id);
+    }
+
 }
 

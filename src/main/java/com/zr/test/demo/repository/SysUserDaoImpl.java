@@ -29,7 +29,9 @@ public class SysUserDaoImpl {
     public int updateById(SysUserEntity user){
         return userDao.updateById(user);
     }
-
+    public SysUserEntity selectById(Integer id){
+        return userDao.selectById(id);
+    }
     public int deleteById(Long id){
         return userDao.deleteById(id);
     }
@@ -42,6 +44,11 @@ public class SysUserDaoImpl {
         queryWrapper.ne("id",userId);
         queryWrapper.orderByDesc("id");
         return PageHelper.startPage(page,size).doSelectPage(()->userDao.selectList(queryWrapper));
+    }
+
+    public boolean checkUser(Integer userId) {
+        SysUserEntity userEntity= this.userDao.selectById(userId);
+        return userEntity != null && userEntity.getStatus() != 0;
     }
 //
 //    public IPage<UserEntity> selectByPage(UserEntity entity, int page, int size,boolean desc,String column){

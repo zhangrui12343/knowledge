@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.util.List;
+import java.util.Map;
 
 @Data
 public class ToolVO {
@@ -14,7 +15,7 @@ public class ToolVO {
     private String name;
 
     @ApiModelProperty(value = "矩阵所属log路径", example = "1213")
-    private List<String> logo;
+    private List<Map<String,String>> logos;
 
 
 }

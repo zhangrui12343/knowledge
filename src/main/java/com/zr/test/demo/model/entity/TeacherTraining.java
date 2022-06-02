@@ -35,10 +35,6 @@ public class TeacherTraining implements Serializable {
 
     private Long type;
 
-    private String categorys;
-
-    private String tags;
-
     private String description;
 
     private String docs;
@@ -49,5 +45,5 @@ public class TeacherTraining implements Serializable {
 
     private Date time;
 
-
+    private Long count;
 }

@@ -32,7 +32,7 @@ public class FirstCategory implements Serializable {
     private Long img;
     @TableField(value = "`order`")
     private Integer order;
-    private Long category;
+
     private Integer type;
 
 

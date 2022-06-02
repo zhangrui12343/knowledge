@@ -10,4 +10,6 @@ public class FileVO {
     private Long id;
     @ApiModelProperty(value = "文件相对路径", example = "路径经过 base64 + urlencode 编码后的字符串")
     private String path;
+    @ApiModelProperty(value = "文件名称  无后缀")
+    private String name;
 }

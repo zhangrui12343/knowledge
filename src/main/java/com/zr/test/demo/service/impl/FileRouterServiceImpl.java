@@ -1,6 +1,5 @@
 package com.zr.test.demo.service.impl;
 
-import com.sun.org.apache.regexp.internal.RE;
 import com.zr.test.demo.common.Result;
 import com.zr.test.demo.component.exception.CustomException;
 import com.zr.test.demo.config.enums.ErrorCode;
@@ -11,9 +10,7 @@ import com.zr.test.demo.model.vo.FileVO;
 import com.zr.test.demo.service.IFileRouterService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zr.test.demo.util.FileUtil;
-import com.zr.test.demo.util.ListUtil;
 import com.zr.test.demo.util.StringUtil;
-import com.zr.test.demo.util.TimeUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -27,11 +24,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -74,14 +67,19 @@ public class FileRouterServiceImpl extends ServiceImpl<FileRouterMapper, FileRou
             log.error("{}", e.getMessage(), e);
             throw new CustomException(ErrorCode.FILE_UPLOAD_FAIL);
         }
+
         FileRouter fileRouter = new FileRouter();
+        //存的kb
+        fileRouter.setSize(file.getSize()/1024);
         fileRouter.setFilePath(temp);
         fileRouter.setAbspath(dest.getAbsolutePath());
         fileRouter.setCreateTime(n);
+        fileRouter.setName(fileName.substring(0,fileName.lastIndexOf(".")));
         this.getBaseMapper().insert(fileRouter);
         FileVO vo=new FileVO();
         vo.setId(fileRouter.getId());
         vo.setPath(FileUtil.getBase64FilePath(temp));
+        vo.setName(fileRouter.getName());
         return Result.success(vo);
     }
 

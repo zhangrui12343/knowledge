@@ -35,8 +35,6 @@ public class AfterCourse implements Serializable {
 
     private Long type;
 
-    private Long category;
-
     private String description;
 
     private String docs;
@@ -46,5 +44,5 @@ public class AfterCourse implements Serializable {
     private Integer status;
 
     private Date time;
-
+    private Long count;
 }

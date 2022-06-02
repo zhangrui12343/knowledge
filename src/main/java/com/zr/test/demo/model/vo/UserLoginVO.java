@@ -12,5 +12,7 @@ public class UserLoginVO {
     private String token;
     @ApiModelProperty(value = "姓名", example = "1213")
     private String username;
+    @ApiModelProperty(value = "ip", example = "127")
+    private String ip;
 
 }

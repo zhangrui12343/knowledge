@@ -37,8 +37,6 @@ public class FirstCategoryVO implements Serializable {
     private Integer order;
     @ApiModelProperty(value = "分类名称", example = "1213")
     private String category;
-    @ApiModelProperty(value = "分类id", example = "1213")
-    private Long categoryId;
     @ApiModelProperty(value = "标签名称", example = "1213")
     private String tag;
 

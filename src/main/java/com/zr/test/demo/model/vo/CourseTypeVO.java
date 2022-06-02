@@ -29,5 +29,6 @@ public class CourseTypeVO implements Serializable {
     private Long pid;
     @ApiModelProperty(value = "名称", example = "1213")
     private String name;
-
+    @ApiModelProperty(value = "分类的末级id", example = "1213")
+    private Long categoryId;
 }

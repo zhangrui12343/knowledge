@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Select;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
+
 /**
  * <p>
  *  Mapper 接口
@@ -20,5 +21,5 @@ import org.springframework.stereotype.Service;
 public interface CourseMapper extends BaseMapper<CourseEntity> {
 
     @Select("update course set count= count +1 where id =#{id}")
-    int addCount(Long id);
+    void addCount(Long id);
 }

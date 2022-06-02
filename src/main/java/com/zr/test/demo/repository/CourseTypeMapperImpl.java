@@ -31,7 +31,9 @@ public class CourseTypeMapperImpl {
     public List<CourseTypeEntity> selectByIds(List<Long> ids){
         return dao.selectBatchIds(ids);
     }
-
+    public CourseTypeEntity selectById(Long id){
+        return dao.selectById(id);
+    }
     public int updateById(CourseTypeEntity role){
         return dao.updateById(role);
     }
